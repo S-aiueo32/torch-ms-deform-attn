@@ -1,0 +1,15 @@
+ms-deform-attn
+
+Derived from Deformable DETR by SenseTime:
+https://github.com/fundamentalvision/Deformable-DETR
+Source revision: 11169a60c33333af00a4849f1808023eba96a931
+Copyright (c) 2020 SenseTime. All Rights Reserved.
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+Upstream files acknowledge modifications from:
+https://github.com/chengdazhi/Deformable-Convolution-V2-PyTorch/tree/pytorch_1.0.0
+
+This distribution adds CPU forward/backward kernels, input validation,
+standalone packaging, tests, and benchmarks. Python autograd and reference
+functions are adapted from the upstream implementation. Original notices
+are retained in the derived source files. No upstream endorsement is implied.

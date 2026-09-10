@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=77", "wheel", "torch>=2.5,<3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ms-deform-attn"
+version = "0.1.0"
+description = "Standalone CPU multi-scale deformable attention with PyTorch autograd"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+dependencies = ["torch>=2.5,<3"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["ms_deform_attn"]

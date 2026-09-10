@@ -1,0 +1,4 @@
+include LICENSE NOTICE README.md
+recursive-include csrc *.cpp *.h
+recursive-include tests *.py
+recursive-include benchmarks *.py

@@ -4,8 +4,8 @@ import unittest
 import torch
 from torch.autograd import gradcheck
 
-from ms_deform_attn import _C as MSDA
-from ms_deform_attn import ms_deform_attn, MSDeformAttnFunction, ms_deform_attn_core_pytorch
+from torch_deform_attn import _C as MSDA
+from torch_deform_attn import ms_deform_attn, MSDeformAttnFunction, ms_deform_attn_core_pytorch
 
 
 class CPUAttentionTest(unittest.TestCase):

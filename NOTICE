@@ -1,4 +1,4 @@
-ms-deform-attn
+torch-deform-attn
 
 Derived from Deformable DETR by SenseTime:
 https://github.com/fundamentalvision/Deformable-DETR

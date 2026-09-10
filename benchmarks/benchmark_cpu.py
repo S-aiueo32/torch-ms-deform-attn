@@ -6,7 +6,7 @@ import platform
 import torch
 from torch.utils.benchmark import Timer
 
-from ms_deform_attn import ms_deform_attn, ms_deform_attn_core_pytorch
+from torch_deform_attn import ms_deform_attn, ms_deform_attn_core_pytorch
 
 
 def main():

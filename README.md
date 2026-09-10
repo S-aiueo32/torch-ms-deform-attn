@@ -1,12 +1,11 @@
-# ms-deform-attn
+# torch-deform-attn
 
 Standalone **CPU** multi-scale deformable attention for PyTorch, extracted from
 [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR).
 Includes a C++ forward/backward kernel, first-order autograd, and an independent
 `grid_sample` reference implementation. No CUDA toolkit or torchvision required.
 
-This is an initial source release, not yet published to PyPI. The distribution
-name is provisional. It implements the attention sampling/reduction operator;
+This is an initial source release, not yet published to PyPI. It implements the attention sampling/reduction operator;
 projection layers and the detection model are outside the package.
 
 ## Install
@@ -33,7 +32,7 @@ separate, potentially different PyTorch installation.
 
 ```python
 import torch
-from ms_deform_attn import ms_deform_attn
+from torch_deform_attn import ms_deform_attn
 
 shapes = torch.tensor([[4, 4], [2, 2]], dtype=torch.long)
 starts = torch.tensor([0, 16], dtype=torch.long)

@@ -3,7 +3,7 @@ requires = ["setuptools>=77", "wheel", "torch>=2.5,<3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ms-deform-attn"
+name = "torch-deform-attn"
 version = "0.1.0"
 description = "Standalone CPU multi-scale deformable attention with PyTorch autograd"
 readme = "README.md"
@@ -20,4 +20,4 @@ classifiers = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["ms_deform_attn"]
+packages = ["torch_deform_attn"]

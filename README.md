@@ -1,9 +1,10 @@
 # torch-deform-attn
 
-Standalone **CPU** multi-scale deformable attention for PyTorch, extracted from
+Standalone **CPU/CUDA** multi-scale deformable attention for PyTorch, extracted from
 [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR).
-Includes a C++ forward/backward kernel, first-order autograd, and an independent
-`grid_sample` reference implementation. No CUDA toolkit or torchvision required.
+Includes a C++ CPU kernel, the upstream CUDA kernels, first-order autograd, and
+an independent `grid_sample` reference implementation. CPU builds need neither
+the CUDA toolkit nor torchvision.
 
 This is an initial source release, not yet published to PyPI. It implements the attention sampling/reduction operator;
 projection layers and the detection model are outside the package.
@@ -13,8 +14,14 @@ projection layers and the detection model are outside the package.
 Requires Python 3.10+, PyTorch 2.5+ (below 3), and a C++17 compiler. Tested locally
 with Python 3.11 / PyTorch 2.5.1 on macOS arm64. Linux/macOS CI is included;
 Windows, other PyTorch versions, and prebuilt wheels are not yet validated.
-The first release supports CPU tensors only, including when PyTorch itself has
-CUDA support. It does not contain a CUDA or MPS backend.
+CUDA support is built automatically when CUDA-enabled PyTorch, the CUDA toolkit,
+and a visible GPU are available. Otherwise the extension builds for CPU. Both
+backends remain available in CUDA builds. MPS is unsupported.
+
+The CUDA sampling and reduction algorithms are retained from upstream. Changes
+are limited to packaging, current PyTorch APIs, launch error handling, input
+checks, and device/stream handling. CUDA compilation and runtime tests have not
+yet been verified on GPU hardware; the included hosted CI tests CPU builds.
 
 From this repository:
 
@@ -27,6 +34,18 @@ Build against the PyTorch installed in the target environment. Rebuild after
 changing PyTorch versions; locally built wheels are not guaranteed to work
 across PyTorch versions. `--no-build-isolation` avoids building against a
 separate, potentially different PyTorch installation.
+
+To explicitly select a backend at build time:
+
+```bash
+FORCE_CPU=1 python -m pip install --no-build-isolation .
+# Requires CUDA-enabled PyTorch and a matching CUDA toolkit:
+FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="8.0;8.6" python -m pip install --no-build-isolation .
+```
+
+For builds without a visible GPU, set `TORCH_CUDA_ARCH_LIST` to the compute
+capabilities of your deployment GPUs (the values above are examples).
+Use a clean checkout when switching CPU/CUDA builds to avoid stale object files.
 
 ## Use
 
@@ -53,7 +72,9 @@ output.square().mean().backward()
 | `attention_weights` | `[N, Q, M, L, P]` | Weights used directly, without softmax |
 | output | `[N, Q, M * D]` | Weighted sum of sampled features |
 
-All inputs must be on CPU. Floating tensors must share float32 or float64 dtype.
+All inputs must be on the same CPU or CUDA device. Floating tensors must share
+float32 or float64 dtype. For CUDA, move every tensor in the example to CUDA,
+including `shapes` and `starts`.
 Noncontiguous tensors are accepted. Sampling is bilinear, with zero padding and
 `align_corners=False`; finite coordinates outside [0, 1] are allowed.
 Nonfinite coordinates are not part of the supported input contract.
@@ -63,7 +84,12 @@ float16/bfloat16, and torch.compile/export integration are unsupported.
 `MSDeformAttnFunction.apply(value, shapes, starts, locations, weights, im2col_step)`
 is also exported for code using the upstream autograd API. The positive
 `im2col_step` argument is accepted for compatibility; the CPU kernel parallelizes
-over batch elements and does not use that chunk size.
+over batch elements and does not use that chunk size. CUDA retains upstream
+chunking: `N` must be divisible by `min(N, im2col_step)`, and empty dimensions
+are unsupported. CUDA backward uses atomic additions and is nondeterministic.
+Spatial shapes and level offsets must describe valid ranges in `value`; CUDA
+checks metadata shapes/dtypes but does not copy metadata to the host to validate
+those ranges on each call.
 
 ## Verify and benchmark
 
@@ -71,13 +97,16 @@ After installing the package:
 
 ```bash
 python -m unittest discover -s tests -v
+# CUDA tests run when the installed extension has CUDA support and a GPU is available.
 python benchmarks/benchmark_cpu.py --threads 1
 python benchmarks/benchmark_cpu.py --threads 4 --json
 ```
 
 Tests compare forward values and all three gradients against the PyTorch
 reference, run finite-difference gradcheck, and cover noncontiguous inputs,
-boundary/out-of-bounds sampling, level offsets, empty inputs, and invalid inputs.
+boundary/out-of-bounds sampling, level offsets, empty CPU inputs, and invalid inputs.
+CUDA tests also cover upstream channel-reduction paths, noncontiguous inputs,
+nondefault streams, and multiple devices when available. CPU-only runs skip them.
 Benchmarks report median CPU forward and forward+backward latency for three
 synthetic shapes. A speedup above 1 means C++ is faster. They do not measure
 whole-model latency or peak memory. No general performance advantage is claimed.

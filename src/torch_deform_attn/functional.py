@@ -19,6 +19,10 @@ from . import _C as MSDA
 class MSDeformAttnFunction(Function):
     @staticmethod
     def forward(ctx, value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights, im2col_step):
+        if value.is_cuda:
+            value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights = (
+                t.contiguous() for t in (value, value_spatial_shapes, value_level_start_index,
+                                        sampling_locations, attention_weights))
         ctx.im2col_step = im2col_step
         output = MSDA.ms_deform_attn_forward(
             value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights, ctx.im2col_step)
@@ -31,7 +35,7 @@ class MSDeformAttnFunction(Function):
         value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights = ctx.saved_tensors
         grad_value, grad_sampling_loc, grad_attn_weight = \
             MSDA.ms_deform_attn_backward(
-                value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights, grad_output, ctx.im2col_step)
+                value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights, grad_output.contiguous(), ctx.im2col_step)
 
         return grad_value, None, None, grad_sampling_loc, grad_attn_weight, None
 
@@ -60,7 +64,7 @@ def ms_deform_attn_core_pytorch(value, value_spatial_shapes, sampling_locations,
 
 def ms_deform_attn(value, spatial_shapes, level_start_index, sampling_locations,
                    attention_weights, im2col_step=64):
-    """Multi-scale deformable attention on CPU, with first-order autograd.
+    """Multi-scale deformable attention on CPU or CUDA, with first-order autograd.
 
     Args:
         value: [N, S, M, D], float32 or float64.
@@ -70,7 +74,7 @@ def ms_deform_attn(value, spatial_shapes, level_start_index, sampling_locations,
         attention_weights: [N, Q, M, L, P], same dtype as value.
         im2col_step: Positive compatibility argument; CPU does not chunk by it.
 
-    All inputs must be on CPU. Samples use bilinear interpolation with zero
+    All inputs must be on the same CPU or CUDA device. Samples use bilinear interpolation with zero
     padding and align_corners=False. Weights are used as supplied, without
     normalization. Returns [N, Q, M * D]. Higher-order gradients are unsupported.
     """

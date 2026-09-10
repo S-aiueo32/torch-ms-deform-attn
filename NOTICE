@@ -13,3 +13,9 @@ This distribution adds CPU forward/backward kernels, input validation,
 standalone packaging, tests, and benchmarks. Python autograd and reference
 functions are adapted from the upstream implementation. Original notices
 are retained in the derived source files. No upstream endorsement is implied.
+
+The CUDA interpolation/reduction kernels are retained from the upstream source
+revision above. Their headers also acknowledge Deformable ConvNets (Microsoft,
+Copyright (c) 2018 Microsoft). CUDA adaptations update PyTorch APIs, atomics,
+error reporting, device guarding, and package integration; algorithmic structure
+is retained.

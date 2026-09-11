@@ -70,25 +70,23 @@ at::Tensor ms_deform_attn_cuda_forward(
 
     const int im2col_step_ = std::min(batch, im2col_step);
 
-    TORCH_CHECK(batch % im2col_step_ == 0, "batch size must be divisible by min(batch size, im2col_step)");
+    // Every output element is assigned by the forward kernel.
+    auto output = at::empty({batch, num_query, num_heads, channels}, value.options());
 
-    auto output = at::zeros({batch, num_query, num_heads, channels}, value.options());
-
-    const int batch_n = im2col_step_;
-    auto output_n = output.view({batch/im2col_step_, batch_n, num_query, num_heads, channels});
-    auto per_value_size = spatial_size * num_heads * channels;
-    auto per_sample_loc_size = num_query * num_heads * num_levels * num_point * 2;
-    auto per_attn_weight_size = num_query * num_heads * num_levels * num_point;
-    for (int n = 0; n < batch/im2col_step_; ++n)
+    auto per_value_size = int64_t(spatial_size) * num_heads * channels;
+    auto per_sample_loc_size = int64_t(num_query) * num_heads * num_levels * num_point * 2;
+    auto per_attn_weight_size = int64_t(num_query) * num_heads * num_levels * num_point;
+    for (int n = 0; n < batch; n += im2col_step_)
     {
-        auto columns = output_n.select(0, n);
+        const int batch_n = std::min(im2col_step_, batch - n);
+        auto columns = output.narrow(0, n, batch_n);
         AT_DISPATCH_FLOATING_TYPES(value.scalar_type(), "ms_deform_attn_forward_cuda", ([&] {
             ms_deformable_im2col_cuda(at::cuda::getCurrentCUDAStream(),
-                value.data_ptr<scalar_t>() + n * im2col_step_ * per_value_size,
+                value.data_ptr<scalar_t>() + int64_t(n) * per_value_size,
                 spatial_shapes.data_ptr<int64_t>(),
                 level_start_index.data_ptr<int64_t>(),
-                sampling_loc.data_ptr<scalar_t>() + n * im2col_step_ * per_sample_loc_size,
-                attn_weight.data_ptr<scalar_t>() + n * im2col_step_ * per_attn_weight_size,
+                sampling_loc.data_ptr<scalar_t>() + int64_t(n) * per_sample_loc_size,
+                attn_weight.data_ptr<scalar_t>() + int64_t(n) * per_attn_weight_size,
                 batch_n, spatial_size, num_heads, channels, num_levels, num_query, num_point,
                 columns.data_ptr<scalar_t>());
 
@@ -132,33 +130,30 @@ std::vector<at::Tensor> ms_deform_attn_cuda_backward(
 
     const int im2col_step_ = std::min(batch, im2col_step);
 
-    TORCH_CHECK(batch % im2col_step_ == 0, "batch size must be divisible by min(batch size, im2col_step)");
-
     auto grad_value = at::zeros_like(value);
     auto grad_sampling_loc = at::zeros_like(sampling_loc);
     auto grad_attn_weight = at::zeros_like(attn_weight);
 
-    const int batch_n = im2col_step_;
-    auto per_value_size = spatial_size * num_heads * channels;
-    auto per_sample_loc_size = num_query * num_heads * num_levels * num_point * 2;
-    auto per_attn_weight_size = num_query * num_heads * num_levels * num_point;
-    auto grad_output_n = grad_output.view({batch/im2col_step_, batch_n, num_query, num_heads, channels});
+    auto per_value_size = int64_t(spatial_size) * num_heads * channels;
+    auto per_sample_loc_size = int64_t(num_query) * num_heads * num_levels * num_point * 2;
+    auto per_attn_weight_size = int64_t(num_query) * num_heads * num_levels * num_point;
 
-    for (int n = 0; n < batch/im2col_step_; ++n)
+    for (int n = 0; n < batch; n += im2col_step_)
     {
-        auto grad_output_g = grad_output_n.select(0, n);
+        const int batch_n = std::min(im2col_step_, batch - n);
+        auto grad_output_g = grad_output.narrow(0, n, batch_n);
         AT_DISPATCH_FLOATING_TYPES(value.scalar_type(), "ms_deform_attn_backward_cuda", ([&] {
             ms_deformable_col2im_cuda(at::cuda::getCurrentCUDAStream(),
                                     grad_output_g.data_ptr<scalar_t>(),
-                                    value.data_ptr<scalar_t>() + n * im2col_step_ * per_value_size,
+                                    value.data_ptr<scalar_t>() + int64_t(n) * per_value_size,
                                     spatial_shapes.data_ptr<int64_t>(),
                                     level_start_index.data_ptr<int64_t>(),
-                                    sampling_loc.data_ptr<scalar_t>() + n * im2col_step_ * per_sample_loc_size,
-                                    attn_weight.data_ptr<scalar_t>() + n * im2col_step_ * per_attn_weight_size,
+                                    sampling_loc.data_ptr<scalar_t>() + int64_t(n) * per_sample_loc_size,
+                                    attn_weight.data_ptr<scalar_t>() + int64_t(n) * per_attn_weight_size,
                                     batch_n, spatial_size, num_heads, channels, num_levels, num_query, num_point,
-                                    grad_value.data_ptr<scalar_t>() +  n * im2col_step_ * per_value_size,
-                                    grad_sampling_loc.data_ptr<scalar_t>() + n * im2col_step_ * per_sample_loc_size,
-                                    grad_attn_weight.data_ptr<scalar_t>() + n * im2col_step_ * per_attn_weight_size);
+                                    grad_value.data_ptr<scalar_t>() +  int64_t(n) * per_value_size,
+                                    grad_sampling_loc.data_ptr<scalar_t>() + int64_t(n) * per_sample_loc_size,
+                                    grad_attn_weight.data_ptr<scalar_t>() + int64_t(n) * per_attn_weight_size);
 
         }));
     }

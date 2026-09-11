@@ -20,7 +20,8 @@ backends remain available in CUDA builds. MPS is unsupported.
 
 The CUDA sampling and reduction algorithms are retained from upstream. Changes
 are limited to packaging, current PyTorch APIs, launch error handling, input
-checks, and device/stream handling. CUDA compilation and runtime tests have not
+checks, device/stream handling, partial batch chunks, and removal of redundant
+forward-output zero initialization. CUDA compilation and runtime tests have not
 yet been verified on GPU hardware; the included hosted CI tests CPU builds.
 
 From this repository:
@@ -78,18 +79,55 @@ including `shapes` and `starts`.
 Noncontiguous tensors are accepted. Sampling is bilinear, with zero padding and
 `align_corners=False`; finite coordinates outside [0, 1] are allowed.
 Nonfinite coordinates are not part of the supported input contract.
-Gradients are provided for value, locations, and weights. Higher-order gradients,
-float16/bfloat16, and torch.compile/export integration are unsupported.
+Gradients are provided for value, locations, and weights. Higher-order gradients
+and native float16/bfloat16 kernel arithmetic are unsupported. AMP accepts
+low-precision inputs by computing this operator in float32; see below.
 
 `MSDeformAttnFunction.apply(value, shapes, starts, locations, weights, im2col_step)`
 is also exported for code using the upstream autograd API. The positive
 `im2col_step` argument is accepted for compatibility; the CPU kernel parallelizes
-over batch elements and does not use that chunk size. CUDA retains upstream
-chunking: `N` must be divisible by `min(N, im2col_step)`, and empty dimensions
-are unsupported. CUDA backward uses atomic additions and is nondeterministic.
+over batch elements and does not use that chunk size. CUDA processes at most
+`im2col_step` batch elements per launch, including a smaller final chunk; any
+positive batch size is accepted. Empty CUDA dimensions remain unsupported. CUDA backward uses atomic additions and is nondeterministic.
 Spatial shapes and level offsets must describe valid ranges in `value`; CUDA
 checks metadata shapes/dtypes but does not copy metadata to the host to validate
 those ranges on each call.
+
+## AMP and torch.compile
+
+The public function and compatibility `.apply` entry point both support autocast
+on CPU and CUDA. Inside autocast, float16/bfloat16 values, locations, and weights
+are promoted to float32. Float32 inputs stay float32; float64 inputs are preserved.
+Output is float32 for the low-precision path, and autograd casts gradients back
+to the original input dtypes. Outside autocast, low-precision inputs are rejected.
+
+```python
+# All input tensors must already be on CUDA.
+with torch.autocast("cuda", dtype=torch.float16):
+    output = ms_deform_attn(value, shapes, starts, locations, weights)
+# Backward can run outside the autocast context, including with GradScaler.
+output.sum().backward()
+
+compiled_attention = torch.compile(ms_deform_attn, fullgraph=True, dynamic=True)
+output = compiled_attention(value.float(), shapes, starts,
+                            locations.float(), weights.float())
+```
+
+Forward and backward are registered custom operators with FakeTensor and
+autograd registrations. CPU tests cover full-graph compilation with AOT eager
+and Inductor, dynamic batch/query sizes, compiled AMP, and `torch.library.opcheck`.
+CUDA tests cover compiled forward/backward and AMP when a GPU is available.
+Compilation treats the attention operator as opaque; it does not fuse its CUDA
+kernel internals. Export/ONNX and higher-order differentiation are not claimed.
+
+## GPU CI
+
+`.github/workflows/cuda.yml` is a manually dispatched correctness workflow for a
+self-hosted Linux x64 runner labeled `gpu`, with an NVIDIA GPU and a CUDA toolkit
+compatible with the pinned PyTorch 2.5.1 installation. It builds the CUDA wheel
+from the sdist and tests both CPU and CUDA, without running benchmarks.
+The runner must be provisioned separately; adding this workflow alone does not
+provide GPU capacity. No GPU CI run has been verified yet.
 
 ## Verify and benchmark
 
@@ -106,14 +144,16 @@ Tests compare forward values and all three gradients against the PyTorch
 reference, run finite-difference gradcheck, and cover noncontiguous inputs,
 boundary/out-of-bounds sampling, level offsets, empty CPU inputs, and invalid inputs.
 CUDA tests also cover upstream channel-reduction paths, noncontiguous inputs,
-nondefault streams, and multiple devices when available. CPU-only runs skip them.
+nondefault streams, partial batch chunks, AMP, compilation, and multiple devices
+when available. CPU-only runs skip them.
 Benchmarks report median CPU forward and forward+backward latency for three
 synthetic shapes. A speedup above 1 means C++ is faster. They do not measure
 whole-model latency or peak memory. No general performance advantage is claimed.
 
 ### Local sample result
 
-One run on macOS 26.6.1 arm64, Python 3.11.16, PyTorch 2.5.1, float32,
+Historical result from commit `dac69a8`, before dispatcher/AMP integration.
+Not rerun for the current version. One run on macOS 26.6.1 arm64, Python 3.11.16, PyTorch 2.5.1, float32,
 one CPU thread, 0.3-second minimum measurement windows:
 
 | Case | Mode | C++ (ms) | PyTorch (ms) | Speedup |

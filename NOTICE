@@ -19,3 +19,6 @@ revision above. Their headers also acknowledge Deformable ConvNets (Microsoft,
 Copyright (c) 2018 Microsoft). CUDA adaptations update PyTorch APIs, atomics,
 error reporting, device guarding, and package integration; algorithmic structure
 is retained.
+
+Additional adaptations support partial CUDA batch chunks, avoid redundant forward
+initialization, and register PyTorch custom operators with AMP and compile support.

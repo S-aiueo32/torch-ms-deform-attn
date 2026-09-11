@@ -10,34 +10,15 @@
 
 import torch
 import torch.nn.functional as F
-from torch.autograd import Function
-from torch.autograd.function import once_differentiable
-
-from . import _C as MSDA
+from ._ops import forward as _forward
 
 
-class MSDeformAttnFunction(Function):
-    @staticmethod
-    def forward(ctx, value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights, im2col_step):
-        if value.is_cuda:
-            value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights = (
-                t.contiguous() for t in (value, value_spatial_shapes, value_level_start_index,
-                                        sampling_locations, attention_weights))
-        ctx.im2col_step = im2col_step
-        output = MSDA.ms_deform_attn_forward(
-            value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights, ctx.im2col_step)
-        ctx.save_for_backward(value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights)
-        return output
+class MSDeformAttnFunction:
+    """Compatibility entry point for upstream ``MSDeformAttnFunction.apply`` calls."""
 
     @staticmethod
-    @once_differentiable
-    def backward(ctx, grad_output):
-        value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights = ctx.saved_tensors
-        grad_value, grad_sampling_loc, grad_attn_weight = \
-            MSDA.ms_deform_attn_backward(
-                value, value_spatial_shapes, value_level_start_index, sampling_locations, attention_weights, grad_output.contiguous(), ctx.im2col_step)
-
-        return grad_value, None, None, grad_sampling_loc, grad_attn_weight, None
+    def apply(value, shapes, starts, locations, weights, im2col_step):
+        return ms_deform_attn(value, shapes, starts, locations, weights, im2col_step)
 
 
 def ms_deform_attn_core_pytorch(value, value_spatial_shapes, sampling_locations, attention_weights):
@@ -67,16 +48,26 @@ def ms_deform_attn(value, spatial_shapes, level_start_index, sampling_locations,
     """Multi-scale deformable attention on CPU or CUDA, with first-order autograd.
 
     Args:
-        value: [N, S, M, D], float32 or float64.
+        value: [N, S, M, D], float32/64, or float16/bfloat16 under autocast.
         spatial_shapes: [L, 2] int64, containing (height, width) for each level.
         level_start_index: [L] int64, each level's offset in S.
         sampling_locations: [N, Q, M, L, P, 2], normalized (x, y).
         attention_weights: [N, Q, M, L, P], same dtype as value.
-        im2col_step: Positive compatibility argument; CPU does not chunk by it.
+        im2col_step: Maximum CUDA batch chunk size; CPU does not chunk by it.
 
     All inputs must be on the same CPU or CUDA device. Samples use bilinear interpolation with zero
     padding and align_corners=False. Weights are used as supplied, without
     normalization. Returns [N, Q, M * D]. Higher-order gradients are unsupported.
     """
-    return MSDeformAttnFunction.apply(value, spatial_shapes, level_start_index,
-                                    sampling_locations, attention_weights, im2col_step)
+    # Keep interpolation and gradient accumulation in float32 under AMP.
+    # Casting here (outside the opaque operator) preserves gradients to low-precision inputs.
+    device_type = value.device.type
+    if device_type in ("cpu", "cuda") and torch.is_autocast_enabled(device_type):
+        value, sampling_locations, attention_weights = (
+            t.float() if t.dtype in (torch.float16, torch.bfloat16) else t
+            for t in (value, sampling_locations, attention_weights))
+        with torch.autocast(device_type=device_type, enabled=False):
+            return _forward(value, spatial_shapes, level_start_index,
+                            sampling_locations, attention_weights, im2col_step)
+    return _forward(value, spatial_shapes, level_start_index,
+                    sampling_locations, attention_weights, im2col_step)

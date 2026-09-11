@@ -1,0 +1,183 @@
+{
+  "torch": "2.5.1",
+  "python": "3.11.16",
+  "platform": "macOS-26.6.1-arm64-arm-64bit",
+  "device": "cpu",
+  "dtype": "float32",
+  "threads": 1,
+  "min_run_time_seconds": 1.0,
+  "compiler": "inductor",
+  "fullgraph": true,
+  "reference_shape_metadata": "static Python tuples in eager and compiled",
+  "results": [
+    {
+      "case": "small",
+      "mode": "forward",
+      "backend": "cpp_eager",
+      "median_ms": 0.09811249328777194,
+      "iqr_ms": 0.002447847509756695
+    },
+    {
+      "case": "small",
+      "mode": "forward",
+      "backend": "cpp_compiled",
+      "median_ms": 0.10518744820728898,
+      "iqr_ms": 0.003232280141673977
+    },
+    {
+      "case": "small",
+      "mode": "forward",
+      "backend": "pytorch_static_shapes_eager",
+      "median_ms": 0.31712494674138725,
+      "iqr_ms": 0.0072916562203317985
+    },
+    {
+      "case": "small",
+      "mode": "forward",
+      "backend": "pytorch_static_shapes_compiled",
+      "median_ms": 0.2775521483272314,
+      "iqr_ms": 0.00431251828558743
+    },
+    {
+      "case": "small",
+      "mode": "forward_backward",
+      "backend": "cpp_eager",
+      "median_ms": 0.626624992582947,
+      "iqr_ms": 0.00798340188339357
+    },
+    {
+      "case": "small",
+      "mode": "forward_backward",
+      "backend": "cpp_compiled",
+      "median_ms": 0.6392959039658308,
+      "iqr_ms": 0.008124997839331648
+    },
+    {
+      "case": "small",
+      "mode": "forward_backward",
+      "backend": "pytorch_static_shapes_eager",
+      "median_ms": 0.7945624995045364,
+      "iqr_ms": 0.009008307824842675
+    },
+    {
+      "case": "small",
+      "mode": "forward_backward",
+      "backend": "pytorch_static_shapes_compiled",
+      "median_ms": 0.6027079652994871,
+      "iqr_ms": 0.020270526874810457
+    },
+    {
+      "case": "decoder",
+      "mode": "forward",
+      "backend": "cpp_eager",
+      "median_ms": 2.368563029449433,
+      "iqr_ms": 0.06011524237692356
+    },
+    {
+      "case": "decoder",
+      "mode": "forward",
+      "backend": "cpp_compiled",
+      "median_ms": 2.3927500005811453,
+      "iqr_ms": 0.0654999166727066
+    },
+    {
+      "case": "decoder",
+      "mode": "forward",
+      "backend": "pytorch_static_shapes_eager",
+      "median_ms": 5.939750000834465,
+      "iqr_ms": 0.10854110587388277
+    },
+    {
+      "case": "decoder",
+      "mode": "forward",
+      "backend": "pytorch_static_shapes_compiled",
+      "median_ms": 8.38831247529015,
+      "iqr_ms": 0.16399036394432187
+    },
+    {
+      "case": "decoder",
+      "mode": "forward_backward",
+      "backend": "cpp_eager",
+      "median_ms": 16.14200003677979,
+      "iqr_ms": 0.49040644080378115
+    },
+    {
+      "case": "decoder",
+      "mode": "forward_backward",
+      "backend": "cpp_compiled",
+      "median_ms": 16.035292006563395,
+      "iqr_ms": 0.3017607086803764
+    },
+    {
+      "case": "decoder",
+      "mode": "forward_backward",
+      "backend": "pytorch_static_shapes_eager",
+      "median_ms": 17.067624954506755,
+      "iqr_ms": 0.27429155306890607
+    },
+    {
+      "case": "decoder",
+      "mode": "forward_backward",
+      "backend": "pytorch_static_shapes_compiled",
+      "median_ms": 15.99266700213775,
+      "iqr_ms": 0.23278198204934597
+    },
+    {
+      "case": "batched",
+      "mode": "forward",
+      "backend": "cpp_eager",
+      "median_ms": 9.953292028512806,
+      "iqr_ms": 0.21161424228921533
+    },
+    {
+      "case": "batched",
+      "mode": "forward",
+      "backend": "cpp_compiled",
+      "median_ms": 10.065166046842933,
+      "iqr_ms": 0.2467295271344483
+    },
+    {
+      "case": "batched",
+      "mode": "forward",
+      "backend": "pytorch_static_shapes_eager",
+      "median_ms": 21.13391598686576,
+      "iqr_ms": 0.26270796661265194
+    },
+    {
+      "case": "batched",
+      "mode": "forward",
+      "backend": "pytorch_static_shapes_compiled",
+      "median_ms": 47.35158407129347,
+      "iqr_ms": 0.43516699224710464
+    },
+    {
+      "case": "batched",
+      "mode": "forward_backward",
+      "backend": "cpp_eager",
+      "median_ms": 66.82287494186312,
+      "iqr_ms": 0.24168752133846283
+    },
+    {
+      "case": "batched",
+      "mode": "forward_backward",
+      "backend": "cpp_compiled",
+      "median_ms": 67.21508398186415,
+      "iqr_ms": 0.24341646349057555
+    },
+    {
+      "case": "batched",
+      "mode": "forward_backward",
+      "backend": "pytorch_static_shapes_eager",
+      "median_ms": 48.4702909598127,
+      "iqr_ms": 0.37333311047405005
+    },
+    {
+      "case": "batched",
+      "mode": "forward_backward",
+      "backend": "pytorch_static_shapes_compiled",
+      "median_ms": 72.78806302929297,
+      "iqr_ms": 0.33467623870819807
+    }
+  ],
+  "operator_source_commit": "a113d6a38b6d2f242236aeeecfb07c2b372a9e1f"
+}

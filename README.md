@@ -190,6 +190,48 @@ Raw results and reproduction parameters:
 Exact shapes are defined in `benchmarks/benchmark_cpu.py`. These are synthetic
 workloads on one machine, not whole-model or GPU results.
 
+### torch.compile comparison
+
+`benchmarks/benchmark_compile.py` compares eager and Inductor (`fullgraph=True`)
+for both implementations. Forward and backward compilation and warmup happen
+before timing. All timed paths first pass output or gradient comparisons against
+the eager reference. Shape tuples are static in both eager and compiled reference
+paths to avoid tensor-to-Python graph breaks, so their baseline differs from
+`benchmark_cpu.py`. These are operator-only measurements, not a compiled model.
+
+```bash
+python benchmarks/benchmark_compile.py --threads 1 > compile-1.json
+python benchmarks/benchmark_compile.py --threads 4 > compile-4.json
+```
+
+Same machine and PyTorch version as above; float32, median milliseconds,
+one-second minimum measurement windows. No GPU was available.
+
+| Threads | Case | Mode | C++ eager | C++ compiled | Reference eager | Reference compiled |
+| ---: | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | small | Forward | 0.098 | 0.105 | 0.317 | 0.278 |
+| 1 | small | Forward + backward | 0.627 | 0.639 | 0.795 | 0.603 |
+| 1 | decoder | Forward | 2.369 | 2.393 | 5.940 | 8.388 |
+| 1 | decoder | Forward + backward | 16.142 | 16.035 | 17.068 | 15.993 |
+| 1 | batched | Forward | 9.953 | 10.065 | 21.134 | 47.352 |
+| 1 | batched | Forward + backward | 66.823 | 67.215 | 48.470 | 72.788 |
+| 4 | small | Forward | 0.105 | 0.111 | 0.287 | 0.289 |
+| 4 | small | Forward + backward | 0.632 | 0.643 | 0.768 | 0.628 |
+| 4 | decoder | Forward | 2.488 | 2.501 | 2.819 | 8.613 |
+| 4 | decoder | Forward + backward | 17.097 | 17.096 | 7.402 | 10.948 |
+| 4 | batched | Forward | 10.349 | 10.419 | 9.169 | 48.825 |
+| 4 | batched | Forward + backward | 71.555 | 71.499 | 16.266 | 57.069 |
+
+Compilation gives no meaningful improvement to the C++ operator in these runs.
+It remains an opaque call, and compilation does not fix the extension's missing
+OpenMP support. The reference improves for small forward+backward workloads,
+but its larger workloads regress with this Inductor/PyTorch/platform combination.
+Compilation is not a guaranteed speedup; full-model behavior may differ.
+
+Raw results, variability (IQR), and measurement parameters:
+[1 thread](benchmarks/results/compile-cpu-threads-1.json),
+[4 threads](benchmarks/results/compile-cpu-threads-4.json).
+
 ## Build distributions
 
 ```bash

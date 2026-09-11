@@ -152,22 +152,43 @@ whole-model latency or peak memory. No general performance advantage is claimed.
 
 ### Local sample result
 
-Historical result from commit `dac69a8`, before dispatcher/AMP integration.
-Not rerun for the current version. One run on macOS 26.6.1 arm64, Python 3.11.16, PyTorch 2.5.1, float32,
-one CPU thread, 0.3-second minimum measurement windows:
+Measured source commit `5678212` on macOS 26.6.1 arm64, Python 3.11.16,
+PyTorch 2.5.1, eager float32. Each backend/mode used a one-second minimum
+measurement window; times are medians. Thread configurations were run sequentially.
+The extension includes the dispatcher/AMP changes; autocast and compilation were
+not enabled for these measurements. No CUDA GPU was available.
 
-| Case | Mode | C++ (ms) | PyTorch (ms) | Speedup |
-| --- | --- | ---: | ---: | ---: |
-| Small | Forward | 0.102 | 0.332 | 3.27x |
-| Small | Forward + backward | 0.601 | 0.818 | 1.36x |
-| Decoder | Forward | 2.449 | 6.108 | 2.49x |
-| Decoder | Forward + backward | 16.527 | 17.399 | 1.05x |
-| Batched | Forward | 10.593 | 21.618 | 2.04x |
-| Batched | Forward + backward | 69.809 | 49.726 | 0.71x |
+| Threads | Case | Mode | C++ (ms) | PyTorch (ms) | Speedup |
+| ---: | --- | --- | ---: | ---: | ---: |
+| 1 | small | Forward | 0.105 | 0.345 | 3.29x |
+| 1 | small | Forward + backward | 0.664 | 0.849 | 1.28x |
+| 1 | decoder | Forward | 2.545 | 6.386 | 2.51x |
+| 1 | decoder | Forward + backward | 17.612 | 18.142 | 1.03x |
+| 1 | batched | Forward | 10.958 | 22.472 | 2.05x |
+| 1 | batched | Forward + backward | 73.970 | 50.306 | 0.68x |
+| 4 | small | Forward | 0.104 | 0.293 | 2.81x |
+| 4 | small | Forward + backward | 0.646 | 0.771 | 1.19x |
+| 4 | decoder | Forward | 2.491 | 2.818 | 1.13x |
+| 4 | decoder | Forward + backward | 17.241 | 7.352 | 0.43x |
+| 4 | batched | Forward | 10.381 | 8.132 | 0.78x |
+| 4 | batched | Forward + backward | 72.964 | 16.544 | 0.23x |
 
-The batched forward+backward case is slower in C++. These are synthetic workloads
-on one machine, not a promise of faster training. Exact shapes are defined in
-`benchmarks/benchmark_cpu.py`; rerun on your target hardware and thread count.
+The C++ path wins the three single-thread forward cases. At four threads the
+reference scales better: batched forward+backward takes 16.544 ms versus 72.964 ms
+for C++, making C++ about 4.4x slower in that case.
+
+This build does not enable OpenMP for the extension, although the installed
+PyTorch uses OpenMP. In these headers `at::parallel_for` falls back to serial
+execution without OpenMP compiler support. Thus setting four PyTorch threads does
+not parallelize the C++ CPU kernel in this build. Also, the kernel currently
+partitions by batch only, so batch-one workloads have no kernel-level parallelism.
+These results describe this build, not a tuned multithreaded CPU implementation.
+
+Raw results and reproduction parameters:
+[1 thread](benchmarks/results/cpu-threads-1.json),
+[4 threads](benchmarks/results/cpu-threads-4.json).
+Exact shapes are defined in `benchmarks/benchmark_cpu.py`. These are synthetic
+workloads on one machine, not whole-model or GPU results.
 
 ## Build distributions
 

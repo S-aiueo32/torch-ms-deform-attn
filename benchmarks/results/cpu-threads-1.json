@@ -1,0 +1,55 @@
+{
+  "torch": "2.5.1",
+  "python": "3.11.16",
+  "platform": "macOS-26.6.1-arm64-arm-64bit",
+  "threads": 1,
+  "results": [
+    {
+      "case": "small",
+      "mode": "forward",
+      "cpp_ms": 0.10509169660508633,
+      "pytorch_ms": 0.3453416982665658,
+      "speedup": 3.2860988015474826
+    },
+    {
+      "case": "small",
+      "mode": "forward_backward",
+      "cpp_ms": 0.6643750239163637,
+      "pytorch_ms": 0.8494999492540956,
+      "speedup": 1.278645220957368
+    },
+    {
+      "case": "decoder",
+      "mode": "forward",
+      "cpp_ms": 2.545374969486147,
+      "pytorch_ms": 6.385958462487906,
+      "speedup": 2.5088478275470294
+    },
+    {
+      "case": "decoder",
+      "mode": "forward_backward",
+      "cpp_ms": 17.612416995689273,
+      "pytorch_ms": 18.142207991331816,
+      "speedup": 1.0300805389613596
+    },
+    {
+      "case": "batched",
+      "mode": "forward",
+      "cpp_ms": 10.958250029943883,
+      "pytorch_ms": 22.471708012744784,
+      "speedup": 2.0506657496716985
+    },
+    {
+      "case": "batched",
+      "mode": "forward_backward",
+      "cpp_ms": 73.97039653733373,
+      "pytorch_ms": 50.30631250701845,
+      "speedup": 0.6800871005420156
+    }
+  ],
+  "source_commit": "567821235a93eb58deb6406323b82272e0feeb1b",
+  "min_run_time_seconds": 1,
+  "dtype": "float32",
+  "execution": "eager",
+  "device": "cpu"
+}

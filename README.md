@@ -20,14 +20,15 @@ backends remain available in CUDA builds. MPS is unsupported.
 
 The CUDA sampling and reduction algorithms are retained from upstream. Changes
 are limited to packaging, current PyTorch APIs, launch error handling, input
-checks, device/stream handling, partial batch chunks, and removal of redundant
-forward-output zero initialization. CUDA compilation and runtime tests have not
-yet been verified on GPU hardware; the included hosted CI tests CPU builds.
+checks, device/stream handling, partial batch chunks, 64-bit memory offsets,
+determinism checks, and removal of redundant forward-output zero initialization.
+Hosted CI builds CPU and CUDA wheels; CUDA runtime tests require a GPU runner
+and have not yet been verified on GPU hardware.
 
 From this repository:
 
 ```bash
-python -m pip install torch setuptools wheel ninja
+python -m pip install torch 'setuptools>=77' 'packaging>=24.2' wheel ninja
 python -m pip install --no-build-isolation .
 ```
 
@@ -46,7 +47,28 @@ FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="8.0;8.6" python -m pip install --no-build-iso
 
 For builds without a visible GPU, set `TORCH_CUDA_ARCH_LIST` to the compute
 capabilities of your deployment GPUs (the values above are examples).
-Use a clean checkout when switching CPU/CUDA builds to avoid stale object files.
+The extension recompiles its sources when rebuilding, including when switching
+CPU/CUDA or OpenMP settings.
+
+CPU builds automatically enable OpenMP when the compiler can use the installed
+PyTorch's OpenMP runtime. macOS wheels that bundle `omp.h` and `libomp.dylib`
+need no additional OpenMP installation. Builds reuse PyTorch's runtime to avoid
+loading a second OpenMP library. If headers are missing, install your compiler's
+OpenMP development files or set `OMP_PREFIX` to a prefix containing `include/omp.h`.
+If detection fails, the build reports the reason and uses a serial CPU kernel.
+PyTorch builds with the native thread pool use that backend directly.
+On macOS, extensions and wheels target the running Python/PyTorch architecture,
+including with a universal2 Python. Cross-architecture `ARCHFLAGS` are rejected.
+
+```bash
+FORCE_OPENMP=1 python -m pip install --no-build-isolation .  # Require OpenMP; fail if unavailable.
+FORCE_OPENMP=0 python -m pip install --no-build-isolation .  # Disable OpenMP (native stays native).
+python -c 'from torch_deform_attn import _C; print(_C.cpu_parallel_backend)'
+```
+
+`torch.set_num_threads(...)` controls enabled CPU parallelism. The build diagnostic
+reports `openmp`, `native`, or `serial`; PyTorch's own configuration alone does
+not establish whether an extension was compiled with OpenMP.
 
 ## Use
 
@@ -85,13 +107,23 @@ low-precision inputs by computing this operator in float32; see below.
 
 `MSDeformAttnFunction.apply(value, shapes, starts, locations, weights, im2col_step)`
 is also exported for code using the upstream autograd API. The positive
-`im2col_step` argument is accepted for compatibility; the CPU kernel parallelizes
-over batch elements and does not use that chunk size. CUDA processes at most
+`im2col_step` argument is accepted for compatibility; the CPU kernel partitions
+forward by batch/query/head and backward by batch/head, and does not use that
+chunk size. Actual CPU parallel execution depends on build support. CUDA processes at most
 `im2col_step` batch elements per launch, including a smaller final chunk; any
-positive batch size is accepted. Empty CUDA dimensions remain unsupported. CUDA backward uses atomic additions and is nondeterministic.
-Spatial shapes and level offsets must describe valid ranges in `value`; CUDA
-checks metadata shapes/dtypes but does not copy metadata to the host to validate
-those ranges on each call.
+positive batch size fitting int32 is accepted. Empty CUDA dimensions remain
+unsupported. CUDA memory offsets use int64; individual dimensions must fit int32,
+and unsupported products or launch sizes are rejected before allocation/launch.
+Reduce `im2col_step` if a batch chunk exceeds the CUDA grid limit.
+
+CUDA backward uses atomic additions and is nondeterministic. With
+`torch.use_deterministic_algorithms(True)`, backward raises an error;
+`warn_only=True` emits a warning and permits execution.
+Spatial shapes and level offsets must describe valid ranges in `value`. CUDA
+validates these ranges on the device before accessing features, without a host
+synchronization. Invalid metadata triggers a device assertion, which may surface
+at the next CUDA synchronization. A device assertion invalidates the CUDA context;
+restart the process after such an error.
 
 ## AMP and torch.compile
 
@@ -120,14 +152,32 @@ CUDA tests cover compiled forward/backward and AMP when a GPU is available.
 Compilation treats the attention operator as opaque; it does not fuse its CUDA
 kernel internals. Export/ONNX and higher-order differentiation are not claimed.
 
-## GPU CI
+## CI
 
-`.github/workflows/cuda.yml` is a manually dispatched correctness workflow for a
-self-hosted Linux x64 runner labeled `gpu`, with an NVIDIA GPU and a CUDA toolkit
-compatible with the pinned PyTorch 2.5.1 installation. It builds the CUDA wheel
-from the sdist and tests both CPU and CUDA, without running benchmarks.
-The runner must be provisioned separately; adding this workflow alone does not
-provide GPU capacity. No GPU CI run has been verified yet.
+`.github/workflows/ci.yml` builds and tests installed CPU wheels on Linux with
+OpenMP enabled and disabled, and on macOS with OpenMP enabled. Worker-count tests
+check actual extension parallelism, and collision tests compare all gradients
+across thread counts.
+
+`.github/workflows/cuda-build.yml` runs on ordinary hosted Linux runners using a
+pinned PyTorch/CUDA development image. It builds a CUDA wheel from the sdist and
+runs the CPU, indexing, and integration tests against the installed wheel outside
+the checkout. Indexing tests exercise offsets above 2^31 and overflow rejection
+without allocating huge tensors. This workflow verifies CUDA compilation and
+host-side integration; it has no GPU and skips CUDA runtime tests.
+
+`.github/workflows/cuda.yml` provisions one Runpod GPU on manual dispatch, builds
+and tests the installed CUDA wheel, collects logs, and deletes the Pod. An ordinary
+GitHub-hosted job controls the GPU over SSH using the `RUNPOD_API_KEY` secret.
+The default is an L4, a $0.50/hour compute-price limit, and a 45-minute
+deadline. Its optional `sanitizer` input runs reduction and batch-chunk tests under
+Compute Sanitizer's `memcheck`, `racecheck`, or `synccheck` tool. Use `operation=check`
+to validate API access and pricing without renting a GPU.
+See [Runpod setup and cleanup](docs/gpu-runner.md) for account configuration,
+recovery after cancellation, and billing limits. A Runpod L4 run verified all 36
+tests (two hardware/build-specific skips), Compute Sanitizer memcheck with zero
+errors, artifact collection, and Pod deletion; see the
+[successful GPU run](https://github.com/S-aiueo32/torch-deform-attn/actions/runs/34704425778).
 
 ## Verify and benchmark
 
@@ -142,7 +192,8 @@ python benchmarks/benchmark_cpu.py --threads 4 --json
 
 Tests compare forward values and all three gradients against the PyTorch
 reference, run finite-difference gradcheck, and cover noncontiguous inputs,
-boundary/out-of-bounds sampling, level offsets, empty CPU inputs, and invalid inputs.
+boundary/out-of-bounds sampling, overlapping level offsets, colliding samples,
+empty CPU dimensions, and invalid inputs.
 CUDA tests also cover upstream channel-reduction paths, noncontiguous inputs,
 nondefault streams, partial batch chunks, AMP, compilation, and multiple devices
 when available. CPU-only runs skip them.
@@ -150,7 +201,44 @@ Benchmarks report median CPU forward and forward+backward latency for three
 synthetic shapes. A speedup above 1 means C++ is faster. They do not measure
 whole-model latency or peak memory. No general performance advantage is claimed.
 
-### Local sample result
+### CPU kernel optimization
+
+The CPU kernel computes the four neighbor offsets, boundary masks, and bilinear
+coefficients once per sampling point, then reuses them across channels. Backward
+accumulates coordinate and attention-weight gradients in local scalars before
+writing them once. Workers own separate batch/head pairs, so repeated samples
+and overlapping levels need no atomic additions.
+
+Measured against a separate build of commit `733c73a`, on macOS 26.6.1 arm64,
+Python 3.11.16 / PyTorch 2.5.1. The baseline and first optimized build used `-O3`
+without OpenMP; the final build also enables OpenMP using PyTorch's bundled runtime.
+All builds used a benchmark harness that checks outputs and all three gradients
+against the reference before timing. Runs were sequential, eager float32, with
+one-second minimum measurement windows. Times below are median milliseconds for
+**forward + backward**; speedup compares the baseline with the final OpenMP build.
+
+| Threads | Case | Before | Optimized serial | Optimized OpenMP | Speedup | Reference |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | small | 0.647 | 0.180 | 0.216 | 2.99x | 0.817 |
+| 1 | decoder | 17.205 | 3.409 | 4.346 | 3.96x | 17.003 |
+| 1 | batched | 69.506 | 15.499 | 20.495 | 3.39x | 48.075 |
+| 4 | small | 0.654 | 0.183 | 0.092 | 7.13x | 0.779 |
+| 4 | decoder | 17.786 | 3.663 | 1.189 | 14.96x | 7.419 |
+| 4 | batched | 72.961 | 16.170 | 5.448 | 13.39x | 16.266 |
+
+The OpenMP build scales forward + backward by 2.36–3.76x from one to four threads
+on these cases. Its single-thread backward is slower than the optimized serial
+build on this compiler; `FORCE_OPENMP=0` remains available for single-thread
+deployments. At four threads, the final operator is 2.99–8.49x faster than the
+reference. These are synthetic operator results on one machine; model and GPU
+performance remain unmeasured.
+
+[Raw before/after results](benchmarks/results/cpu-optimization.json) include
+forward timings, IQRs, commands, and source hashes. Reproduce with
+`python benchmarks/benchmark_cpu.py --threads 1 --min-run-time 1 --json` and
+`--threads 4` after building and installing each version separately.
+
+### Earlier local sample result
 
 Measured source commit `5678212` on macOS 26.6.1 arm64, Python 3.11.16,
 PyTorch 2.5.1, eager float32. Each backend/mode used a one-second minimum
@@ -177,10 +265,10 @@ The C++ path wins the three single-thread forward cases. At four threads the
 reference scales better: batched forward+backward takes 16.544 ms versus 72.964 ms
 for C++, making C++ about 4.4x slower in that case.
 
-This build does not enable OpenMP for the extension, although the installed
+That build does not enable OpenMP for the extension, although the installed
 PyTorch uses OpenMP. In these headers `at::parallel_for` falls back to serial
 execution without OpenMP compiler support. Thus setting four PyTorch threads does
-not parallelize the C++ CPU kernel in this build. Also, the kernel currently
+not parallelize the C++ CPU kernel in that build. Also, the kernel at that commit
 partitions by batch only, so batch-one workloads have no kernel-level parallelism.
 These results describe this build, not a tuned multithreaded CPU implementation.
 
@@ -190,7 +278,7 @@ Raw results and reproduction parameters:
 Exact shapes are defined in `benchmarks/benchmark_cpu.py`. These are synthetic
 workloads on one machine, not whole-model or GPU results.
 
-### torch.compile comparison
+### Earlier torch.compile comparison
 
 `benchmarks/benchmark_compile.py` compares eager and Inductor (`fullgraph=True`)
 for both implementations. Forward and backward compilation and warmup happen

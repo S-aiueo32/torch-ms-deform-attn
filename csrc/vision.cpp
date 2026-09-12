@@ -1,5 +1,6 @@
 #include <torch/csrc/utils/pybind.h>
 #include "ms_deform_attn_cpu.h"
+#include "cuda/index_utils.h"
 #ifdef WITH_CUDA
 #include "cuda/ms_deform_attn_cuda.h"
 #endif
@@ -33,6 +34,9 @@ std::vector<at::Tensor> backward(const at::Tensor& value, const at::Tensor& shap
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("ms_deform_attn_forward", &forward);
     m.def("ms_deform_attn_backward", &backward);
+    m.attr("cpu_parallel_backend") = ms_deform_attn_cpu_parallel_backend();
+    m.def("_cpu_parallel_worker_count", &ms_deform_attn_cpu_parallel_worker_count);
+    m.def("_check_cuda_indexing", &ms_deform_attn::check_cuda_indexing);
 #ifdef WITH_CUDA
     m.attr("with_cuda") = true;
 #else

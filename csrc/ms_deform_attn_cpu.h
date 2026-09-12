@@ -13,6 +13,9 @@
 #include <ATen/ATen.h>
 #include <vector>
 
+const char* ms_deform_attn_cpu_parallel_backend();
+int64_t ms_deform_attn_cpu_parallel_worker_count(int64_t work_items);
+
 at::Tensor
 ms_deform_attn_cpu_forward(
     const at::Tensor &value,

@@ -11,6 +11,7 @@
 
 #include <ATen/ATen.h>
 #include <ATen/Parallel.h>
+#include <atomic>
 #include <cmath>
 #include <vector>
 
@@ -48,7 +49,7 @@ void check_inputs(const at::Tensor& value, const at::Tensor& shapes,
     }
 }
 
-// Each worker owns whole batch elements, so backward accumulation needs no atomics.
+// Backward workers own whole (batch, head) pairs, so accumulation needs no atomics.
 // Coordinates follow grid_sample's bilinear, zero-padding, align_corners=False convention.
 template <typename scalar_t, bool backward>
 void kernel(const at::Tensor& value, const at::Tensor& shapes,
@@ -68,42 +69,89 @@ void kernel(const at::Tensor& value, const at::Tensor& shapes,
     auto* gv = backward ? grad_value.data_ptr<scalar_t>() : nullptr;
     auto* gl = backward ? grad_locations.data_ptr<scalar_t>() : nullptr;
     auto* gw = backward ? grad_weights.data_ptr<scalar_t>() : nullptr;
-    at::parallel_for(0, N, 1, [&](int64_t begin, int64_t end) {
-        for (int64_t n = begin; n < end; ++n)
-        for (int64_t q = 0; q < Q; ++q)
-        for (int64_t m = 0; m < M; ++m)
-        for (int64_t l = 0; l < L; ++l)
-        for (int64_t p = 0; p < P; ++p) {
-            const int64_t i = ((((n * Q + q) * M + m) * L + l) * P + p);
-            const auto H = shape[2 * l], W = shape[2 * l + 1];
-            const scalar_t x = loc[2 * i] * W - scalar_t(0.5);
-            const scalar_t y = loc[2 * i + 1] * H - scalar_t(0.5);
-            if (!(x > -1 && x < W && y > -1 && y < H)) continue;
-            const int64_t x0 = std::floor(x), y0 = std::floor(y);
-            const scalar_t dx = x - x0, dy = y - y0;
-            for (int64_t c = 0; c < D; ++c) {
-                const int64_t oi = ((n * Q + q) * M + m) * D + c;
-                for (int iy = 0; iy < 2; ++iy)
-                for (int ix = 0; ix < 2; ++ix) {
-                    const auto xx = x0 + ix, yy = y0 + iy;
-                    if (xx < 0 || xx >= W || yy < 0 || yy >= H) continue;
-                    const int64_t vi = ((n * S + start[l] + yy * W + xx) * M + m) * D + c;
-                    const scalar_t wx = ix ? dx : 1 - dx, wy = iy ? dy : 1 - dy;
+    const int64_t work_items = backward ? N * M : N * Q * M;
+    at::parallel_for(0, work_items, 1, [&](int64_t begin, int64_t end) {
+        for (int64_t task = begin; task < end; ++task) {
+            const int64_t n = backward ? task / M : task / (Q * M);
+            const int64_t m = task % M;
+            const int64_t query_begin = backward ? 0 : (task / M) % Q;
+            const int64_t query_end = backward ? Q : query_begin + 1;
+            for (int64_t q = query_begin; q < query_end; ++q)
+            for (int64_t l = 0; l < L; ++l)
+            for (int64_t p = 0; p < P; ++p) {
+                const int64_t i = ((((n * Q + q) * M + m) * L + l) * P + p);
+                const auto H = shape[2 * l], W = shape[2 * l + 1];
+                const scalar_t x = loc[2 * i] * W - scalar_t(0.5);
+                const scalar_t y = loc[2 * i + 1] * H - scalar_t(0.5);
+                if (!(x > -1 && x < W && y > -1 && y < H)) continue;
+                const int64_t x0 = std::floor(x), y0 = std::floor(y);
+                const scalar_t dx = x - x0, dy = y - y0;
+                const scalar_t lx = 1 - dx, ly = 1 - dy;
+                const scalar_t w00 = lx * ly, w01 = dx * ly;
+                const scalar_t w10 = lx * dy, w11 = dx * dy;
+                // The support check guarantees x0/y0 < W/H and x0+1/y0+1 >= 0.
+                const bool valid00 = x0 >= 0 && y0 >= 0;
+                const bool valid01 = x0 + 1 < W && y0 >= 0;
+                const bool valid10 = x0 >= 0 && y0 + 1 < H;
+                const bool valid11 = x0 + 1 < W && y0 + 1 < H;
+                const int64_t base = (n * S + start[l]) * M * D + m * D;
+                const int64_t offset00 = base + (y0 * W + x0) * M * D;
+                const int64_t offset01 = offset00 + M * D;
+                const int64_t offset10 = offset00 + W * M * D;
+                const int64_t offset11 = offset10 + M * D;
+                const int64_t oi = ((n * Q + q) * M + m) * D;
+                const scalar_t attention = weight[i];
+                scalar_t grad_attention = 0, grad_x = 0, grad_y = 0;
+                for (int64_t c = 0; c < D; ++c) {
+                    const scalar_t v00 = valid00 ? v[offset00 + c] : 0;
+                    const scalar_t v01 = valid01 ? v[offset01 + c] : 0;
+                    const scalar_t v10 = valid10 ? v[offset10 + c] : 0;
+                    const scalar_t v11 = valid11 ? v[offset11 + c] : 0;
+                    const scalar_t sample = v00 * w00 + v01 * w01 + v10 * w10 + v11 * w11;
                     if (backward) {
-                        const scalar_t g = go[oi];
-                        gv[vi] += g * weight[i] * wx * wy;
-                        gw[i] += g * v[vi] * wx * wy;
-                        gl[2 * i] += g * weight[i] * v[vi] * (ix ? W : -W) * wy;
-                        gl[2 * i + 1] += g * weight[i] * v[vi] * wx * (iy ? H : -H);
+                        const scalar_t g = go[oi + c];
+                        const scalar_t grad_sample = g * attention;
+                        if (valid00) gv[offset00 + c] += grad_sample * w00;
+                        if (valid01) gv[offset01 + c] += grad_sample * w01;
+                        if (valid10) gv[offset10 + c] += grad_sample * w10;
+                        if (valid11) gv[offset11 + c] += grad_sample * w11;
+                        grad_attention += g * sample;
+                        grad_x += grad_sample * (ly * (v01 - v00) + dy * (v11 - v10));
+                        grad_y += grad_sample * (lx * (v10 - v00) + dx * (v11 - v01));
                     } else {
-                        out[oi] += v[vi] * wx * wy * weight[i];
+                        out[oi + c] += sample * attention;
                     }
+                }
+                if (backward) {
+                    gw[i] = grad_attention;
+                    gl[2 * i] = grad_x * W;
+                    gl[2 * i + 1] = grad_y * H;
                 }
             }
         }
     });
 }
 } // namespace
+
+// Keep build diagnostics in the same translation unit as the attention kernel.
+const char* ms_deform_attn_cpu_parallel_backend() {
+#if AT_PARALLEL_OPENMP && defined(_OPENMP)
+    return "openmp";
+#elif AT_PARALLEL_NATIVE
+    return "native";
+#else
+    return "serial";
+#endif
+}
+
+int64_t ms_deform_attn_cpu_parallel_worker_count(int64_t work_items) {
+    TORCH_CHECK(work_items >= 0, "work_items must be nonnegative");
+    std::atomic<int64_t> workers{0};
+    at::parallel_for(0, work_items, 1, [&](int64_t, int64_t) {
+        workers.fetch_add(1, std::memory_order_relaxed);
+    });
+    return workers.load(std::memory_order_relaxed);
+}
 
 at::Tensor ms_deform_attn_cpu_forward(
     const at::Tensor& value, const at::Tensor& spatial_shapes,

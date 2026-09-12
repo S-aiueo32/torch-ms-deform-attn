@@ -1,5 +1,10 @@
 """CUDA regression tests; skipped unless a CUDA build and GPU are available."""
+import os
+import subprocess
+import sys
+import textwrap
 import unittest
+import warnings
 
 import torch
 from torch.autograd import gradcheck
@@ -20,8 +25,8 @@ class CUDAAttentionTest(unittest.TestCase):
 
     def test_reference_forward_backward(self):
         for dtype in (torch.float32, torch.float64):
-            # Exercise upstream small, power-of-two, and large-channel reductions.
-            for channels in (2, 32, 71, 1025):
+            # Cover each specialized, generic, and multi-block reduction family.
+            for channels in (2, 3, 32, 64, 71, 1024, 1025, 2048):
                 with self.subTest(dtype=dtype, channels=channels):
                     value, shapes, starts, loc, weights = self.inputs(dtype, channels)
                     actual = ms_deform_attn(value, shapes, starts, loc, weights, 1)
@@ -102,6 +107,61 @@ class CUDAAttentionTest(unittest.TestCase):
             ms_deform_attn(value, shapes.cpu(), starts, loc, weights)
         with self.assertRaisesRegex(RuntimeError, "dtypes must match"):
             ms_deform_attn(value, shapes, starts, loc.float(), weights)
+
+    def test_deterministic_algorithms(self):
+        enabled = torch.are_deterministic_algorithms_enabled()
+        warn_only = torch.is_deterministic_algorithms_warn_only_enabled()
+        try:
+            for compile in (False, True):
+                fn = torch.compile(ms_deform_attn, fullgraph=True) if compile else ms_deform_attn
+                args = self.inputs()
+                torch.use_deterministic_algorithms(True)
+                output = fn(*args)
+                with self.assertRaisesRegex(RuntimeError, "deterministic"):
+                    output.sum().backward()
+                torch.use_deterministic_algorithms(True, warn_only=True)
+                with warnings.catch_warnings(record=True) as captured:
+                    warnings.simplefilter("always")
+                    fn(*self.inputs()).sum().backward()
+                self.assertTrue(any("deterministic" in str(w.message) for w in captured))
+        finally:
+            torch.use_deterministic_algorithms(enabled, warn_only=warn_only)
+
+    def test_invalid_metadata_device_assert(self):
+        # Device assertions invalidate the CUDA context; isolate each case.
+        # Exercise the guard in each backward reduction family as well.
+        cases = (([0, 1], 0, 2), ([1, 1], -1, 3), ([1, 1], 1, 64),
+                 ([2**32 + 1, 1], 0, 71), ([1, 2**63 - 1], 0, 1025),
+                 ([1, 1], 2**32, 2048))
+        for shape, start, channels in cases:
+            for backward in (False, True):
+                with self.subTest(shape=shape, start=start, backward=backward):
+                    code = textwrap.dedent(f"""
+                        import torch
+                        from torch_deform_attn import _C
+                        value = torch.ones(1, 1, 1, {channels}, device="cuda")
+                        shapes = torch.tensor([{shape!r}], device="cuda")
+                        starts = torch.tensor([{start!r}], device="cuda")
+                        loc = torch.full((1, 1, 1, 1, 1, 2), 0.5, device="cuda")
+                        weight = torch.ones(1, 1, 1, 1, 1, device="cuda")
+                        args = (value, shapes, starts, loc, weight)
+                        try:
+                            if {backward!r}:
+                                _C.ms_deform_attn_backward(*args, torch.ones(1, 1, {channels}, device="cuda"), 1)
+                            else:
+                                _C.ms_deform_attn_forward(*args, 1)
+                            torch.cuda.synchronize()
+                        except RuntimeError as error:
+                            if "device-side assert" in str(error):
+                                raise SystemExit(0)
+                            raise
+                        raise AssertionError("Invalid CUDA metadata was accepted")
+                    """)
+                    env = dict(os.environ, CUDA_LAUNCH_BLOCKING="1")
+                    result = subprocess.run([sys.executable, "-c", code], env=env,
+                                            capture_output=True, text=True, timeout=60)
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.assertIn("Spatial level exceeds the value tensor", result.stderr)
 
     @unittest.skipUnless(torch.cuda.device_count() >= 2, "Requires two GPUs")
     def test_noncurrent_device(self):

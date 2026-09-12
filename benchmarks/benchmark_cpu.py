@@ -6,7 +6,7 @@ import platform
 import torch
 from torch.utils.benchmark import Timer
 
-from torch_deform_attn import ms_deform_attn, ms_deform_attn_core_pytorch
+from torch_deform_attn import _C, ms_deform_attn, ms_deform_attn_core_pytorch
 
 
 def main():
@@ -38,7 +38,13 @@ def main():
         def reference():
             return ms_deform_attn_core_pytorch(value, shapes, locations, weights)
 
-        torch.testing.assert_close(extension(), reference())
+        # Check the same forward and backward paths that will be timed.
+        actual, expected = extension(), reference()
+        torch.testing.assert_close(actual, expected)
+        differentiable = (value, locations, weights)
+        for a, e in zip(torch.autograd.grad(actual, differentiable, grad),
+                        torch.autograd.grad(expected, differentiable, grad)):
+            torch.testing.assert_close(a, e, atol=2e-4, rtol=1e-4)
         for mode in ("forward", "forward_backward"):
             timings = {}
             for backend, fn in (("cpp", extension), ("pytorch", reference)):
@@ -53,10 +59,14 @@ def main():
                                     num_threads=args.threads).blocked_autorange(
                                         min_run_time=args.min_run_time)
                 timings[backend + "_ms"] = measurement.median * 1000
+                timings[backend + "_iqr_ms"] = measurement.iqr * 1000
             rows.append(dict(case=name, mode=mode, **timings,
                              speedup=timings["pytorch_ms"] / timings["cpp_ms"]))
     report = dict(torch=torch.__version__, python=platform.python_version(),
-                  platform=platform.platform(), threads=args.threads, results=rows)
+                  platform=platform.platform(), threads=args.threads,
+                  device="cpu", dtype="float32", min_run_time_seconds=args.min_run_time,
+                  cpu_parallel_backend=getattr(_C, "cpu_parallel_backend", "unknown"),
+                  results=rows)
     if args.json:
         print(json.dumps(report, indent=2))
     else:

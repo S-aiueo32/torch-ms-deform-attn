@@ -7,12 +7,13 @@
 * Modified from https://github.com/chengdazhi/Deformable-Convolution-V2-PyTorch/tree/pytorch_1.0.0
 **************************************************************************************************
 */
-// Modified: current tensor APIs, input validation, and CUDA device guarding.
+// Modified: tensor validation, safe indexing, device guarding, and determinism checks.
 
 #include <vector>
 #include "ms_deform_im2col_cuda.cuh"
 
 #include <ATen/ATen.h>
+#include <ATen/Context.h>
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>
 #include <cuda.h>
@@ -20,7 +21,7 @@
 
 
 namespace {
-void check_inputs(const at::Tensor& value, const at::Tensor& shapes,
+std::vector<int64_t> check_inputs(const at::Tensor& value, const at::Tensor& shapes,
                   const at::Tensor& starts, const at::Tensor& loc,
                   const at::Tensor& weight, int step) {
     TORCH_CHECK(value.is_cuda(), "value must be CUDA");
@@ -44,6 +45,9 @@ void check_inputs(const at::Tensor& value, const at::Tensor& shapes,
                 loc.size(4) > 0 && loc.size(5) == 2, "Invalid or empty sampling_locations shape");
     TORCH_CHECK(weight.sizes() == loc.sizes().slice(0, 5), "Invalid attention_weights shape");
     TORCH_CHECK(step > 0, "im2col_step must be positive");
+    return ms_deform_attn::check_cuda_indexing(
+        {value.size(0), value.size(1), value.size(2), value.size(3),
+         shapes.size(0), loc.size(1), loc.size(4)}, step);
 }
 } // namespace
 
@@ -55,7 +59,7 @@ at::Tensor ms_deform_attn_cuda_forward(
     const at::Tensor &attn_weight,
     const int im2col_step)
 {
-    check_inputs(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
+    const auto indexing = check_inputs(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
     const c10::cuda::CUDAGuard device_guard(value.device());
 
     const int batch = value.size(0);
@@ -68,17 +72,17 @@ at::Tensor ms_deform_attn_cuda_forward(
     const int num_query = sampling_loc.size(1);
     const int num_point = sampling_loc.size(4);
 
-    const int im2col_step_ = std::min(batch, im2col_step);
+    const int im2col_step_ = static_cast<int>(indexing[0]);
 
     // Every output element is assigned by the forward kernel.
     auto output = at::empty({batch, num_query, num_heads, channels}, value.options());
 
-    auto per_value_size = int64_t(spatial_size) * num_heads * channels;
-    auto per_sample_loc_size = int64_t(num_query) * num_heads * num_levels * num_point * 2;
-    auto per_attn_weight_size = int64_t(num_query) * num_heads * num_levels * num_point;
-    for (int n = 0; n < batch; n += im2col_step_)
+    const auto per_value_size = indexing[1];
+    const auto per_sample_loc_size = indexing[2];
+    const auto per_attn_weight_size = indexing[3];
+    for (int64_t n = 0; n < batch; n += im2col_step_)
     {
-        const int batch_n = std::min(im2col_step_, batch - n);
+        const int batch_n = static_cast<int>(std::min<int64_t>(im2col_step_, batch - n));
         auto columns = output.narrow(0, n, batch_n);
         AT_DISPATCH_FLOATING_TYPES(value.scalar_type(), "ms_deform_attn_forward_cuda", ([&] {
             ms_deformable_im2col_cuda(at::cuda::getCurrentCUDAStream(),
@@ -93,7 +97,7 @@ at::Tensor ms_deform_attn_cuda_forward(
         }));
     }
 
-    output = output.view({batch, num_query, num_heads*channels});
+    output = output.view({batch, num_query, int64_t(num_heads) * channels});
 
     return output;
 }
@@ -109,13 +113,15 @@ std::vector<at::Tensor> ms_deform_attn_cuda_backward(
     const int im2col_step)
 {
 
-    check_inputs(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
+    const auto indexing = check_inputs(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
     TORCH_CHECK(grad_output.device() == value.device() && grad_output.scalar_type() == value.scalar_type(),
                 "grad_output device and dtype must match value");
     TORCH_CHECK(grad_output.is_contiguous(), "CUDA grad_output must be contiguous");
     TORCH_CHECK(grad_output.dim() == 3 && grad_output.size(0) == value.size(0) &&
                 grad_output.size(1) == sampling_loc.size(1) &&
                 grad_output.size(2) == value.size(2) * value.size(3), "Invalid grad_output shape");
+    // Floating-point atomic additions have no deterministic implementation.
+    at::globalContext().alertNotDeterministic("ms_deform_attn_cuda_backward");
     const c10::cuda::CUDAGuard device_guard(value.device());
 
     const int batch = value.size(0);
@@ -128,19 +134,19 @@ std::vector<at::Tensor> ms_deform_attn_cuda_backward(
     const int num_query = sampling_loc.size(1);
     const int num_point = sampling_loc.size(4);
 
-    const int im2col_step_ = std::min(batch, im2col_step);
+    const int im2col_step_ = static_cast<int>(indexing[0]);
 
     auto grad_value = at::zeros_like(value);
     auto grad_sampling_loc = at::zeros_like(sampling_loc);
     auto grad_attn_weight = at::zeros_like(attn_weight);
 
-    auto per_value_size = int64_t(spatial_size) * num_heads * channels;
-    auto per_sample_loc_size = int64_t(num_query) * num_heads * num_levels * num_point * 2;
-    auto per_attn_weight_size = int64_t(num_query) * num_heads * num_levels * num_point;
+    const auto per_value_size = indexing[1];
+    const auto per_sample_loc_size = indexing[2];
+    const auto per_attn_weight_size = indexing[3];
 
-    for (int n = 0; n < batch; n += im2col_step_)
+    for (int64_t n = 0; n < batch; n += im2col_step_)
     {
-        const int batch_n = std::min(im2col_step_, batch - n);
+        const int batch_n = static_cast<int>(std::min<int64_t>(im2col_step_, batch - n));
         auto grad_output_g = grad_output.narrow(0, n, batch_n);
         AT_DISPATCH_FLOATING_TYPES(value.scalar_type(), "ms_deform_attn_backward_cuda", ([&] {
             ms_deformable_col2im_cuda(at::cuda::getCurrentCUDAStream(),

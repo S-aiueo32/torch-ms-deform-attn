@@ -1,21 +1,42 @@
 name: CPU package
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-14]
+        include:
+          - os: ubuntu-latest
+            openmp: "0"
+            backend: serial
+          - os: ubuntu-latest
+            openmp: "1"
+            backend: openmp
+          - os: macos-14
+            openmp: "1"
+            backend: openmp
+    name: ${{ matrix.os }} / ${{ matrix.backend }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     env:
       FORCE_CPU: "1"
+      FORCE_OPENMP: ${{ matrix.openmp }}
+      EXPECTED_CPU_BACKEND: ${{ matrix.backend }}
+      MAX_JOBS: "2"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: python -m pip install torch==2.5.1 numpy setuptools wheel ninja build
+      - name: Install Linux CPU PyTorch
+        if: runner.os == 'Linux'
+        run: python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - name: Install macOS PyTorch
+        if: runner.os == 'macOS'
+        run: python -m pip install torch==2.5.1
+      - run: python -m pip install numpy 'setuptools>=77' wheel ninja build
       - run: python -m build --sdist --no-isolation
       - run: python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
       - run: python -m pip install --no-deps dist/*.whl
@@ -23,4 +44,5 @@ jobs:
         run: |
           cp -R tests "$RUNNER_TEMP/msda-tests"
           cd "$RUNNER_TEMP"
+          python -c 'import os; from torch_deform_attn import _C; assert not _C.with_cuda; assert _C.cpu_parallel_backend == os.environ["EXPECTED_CPU_BACKEND"], _C.cpu_parallel_backend'
           python -m unittest discover -s msda-tests -v

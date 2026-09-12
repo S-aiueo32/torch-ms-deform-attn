@@ -477,7 +477,8 @@ def run(api, args):
         if remaining <= 60:
             raise ControllerError("Insufficient controller time remains for CUDA checks")
         remote = ("cd /workspace/ci/source && timeout --signal=TERM --kill-after=30s "
-                  f"{remaining - 30}s bash scripts/run_cuda_checks.sh {args.sanitizer} /workspace/ci/results")
+                  f"{remaining - 30}s bash scripts/run_cuda_checks.sh {args.sanitizer} /workspace/ci/results"
+                  + (" benchmark" if args.benchmark else ""))
         with (args.output_dir / "controller.log").open("wb") as output:
             result = stream_command(ssh + [remote], output, deadline, tee=True)
         if result:
@@ -562,6 +563,8 @@ def parse_args(argv=None):
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
     run_parser.add_argument("--sanitizer", choices=("none", "memcheck", "racecheck", "synccheck"), default="none")
+    run_parser.add_argument("--benchmark", action="store_true",
+                            help="Benchmark the installed CUDA wheel after correctness tests")
     run_parser.add_argument("--timeout-minutes", type=int, default=45)
     args = parser.parse_args(argv)
     if hasattr(args, "gpu") and args.gpu not in GPU_IDS:

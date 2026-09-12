@@ -66,7 +66,7 @@ class ControllerTest(unittest.TestCase):
             run_id="456", attempt="1", state_dir=self.root / "state",
             output_dir=self.root / "output", source=self.root / "source",
             gpu="A5000", max_hourly_usd=Decimal("0.50"),
-            timeout_minutes=5, sanitizer="none",
+            timeout_minutes=5, sanitizer="none", benchmark=False,
         )
         self.owner = ci.identity(self.args)
         self.created = (ci.utc_now() - timedelta(minutes=1)).isoformat()
@@ -244,6 +244,32 @@ class ControllerTest(unittest.TestCase):
             with self.assertRaisesRegex(ci.ControllerError, "exceeds"):
                 ci.run(api, self.args)
         wait.assert_not_called()
+        self.assertFalse(api.pods)
+
+    def test_benchmark_collects_results_and_deletes_pod(self):
+        self.prepare_run()
+        self.args.benchmark = True
+        api = FakeAPI()
+        with mock.patch.object(ci, "wait_for_ssh", return_value=["ssh"]), \
+                mock.patch.object(ci, "stream_command", return_value=0) as command, \
+                mock.patch.object(ci, "collect_artifacts") as collect:
+            ci.run(api, self.args)
+        self.assertIn("run_cuda_checks.sh none /workspace/ci/results benchmark",
+                      command.call_args.args[0][-1])
+        collect.assert_called_once_with(["ssh"], self.args.output_dir)
+        self.assertFalse(api.pods)
+        self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
+
+    def test_benchmark_failure_collects_logs_and_deletes_pod(self):
+        self.prepare_run()
+        self.args.benchmark = True
+        api = FakeAPI()
+        with mock.patch.object(ci, "wait_for_ssh", return_value=["ssh"]), \
+                mock.patch.object(ci, "stream_command", return_value=1), \
+                mock.patch.object(ci, "collect_artifacts") as collect:
+            with self.assertRaisesRegex(ci.ControllerError, "exit status 1"):
+                ci.run(api, self.args)
+        collect.assert_called_once_with(["ssh"], self.args.output_dir)
         self.assertFalse(api.pods)
 
     def test_cleanup_failure_after_passing_tests_fails_the_run(self):

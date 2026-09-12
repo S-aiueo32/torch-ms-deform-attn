@@ -4,11 +4,15 @@ on:
     paths:
       - 'scripts/**'
       - '.github/workflows/cuda.yml'
+      - '.github/workflows/cuda-benchmark.yml'
+      - 'benchmarks/benchmark_cuda.py'
       - '.github/workflows/runpod-*.yml'
   pull_request:
     paths:
       - 'scripts/**'
       - '.github/workflows/cuda.yml'
+      - '.github/workflows/cuda-benchmark.yml'
+      - 'benchmarks/benchmark_cuda.py'
       - '.github/workflows/runpod-*.yml'
   workflow_dispatch:
 permissions:

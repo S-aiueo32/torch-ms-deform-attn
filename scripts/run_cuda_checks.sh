@@ -2,8 +2,14 @@
 # Run from the repository root inside a CUDA 12.4 development container.
 set -euo pipefail
 
-if [[ $# -ne 2 ]]; then
-    printf 'Usage: bash scripts/run_cuda_checks.sh {none|memcheck|racecheck|synccheck} OUTPUT_DIR\n' >&2
+if [[ $# -lt 2 || $# -gt 3 ]]; then
+    printf 'Usage: bash scripts/run_cuda_checks.sh {none|memcheck|racecheck|synccheck} OUTPUT_DIR [benchmark]\n' >&2
+    exit 2
+fi
+
+cuda_checks_benchmark=${3:-}
+if [[ -n "$cuda_checks_benchmark" && "$cuda_checks_benchmark" != benchmark ]]; then
+    printf 'Unsupported workload: %s\n' "$cuda_checks_benchmark" >&2
     exit 2
 fi
 
@@ -85,6 +91,12 @@ PY
             "$cuda_checks_python" -m unittest -v \
             test_cuda.CUDAAttentionTest.test_reference_forward_backward \
             test_cuda.CUDAAttentionTest.test_partial_batch_chunk
+    fi
+    if [[ "$cuda_checks_benchmark" == benchmark ]]; then
+        cp -- "$cuda_checks_source/benchmarks/benchmark_cuda.py" "$cuda_checks_temp/benchmark_cuda.py"
+        cd -- "$cuda_checks_temp"
+        nvidia-smi > "$cuda_checks_output/nvidia-smi.txt"
+        "$cuda_checks_python" benchmark_cuda.py > "$cuda_checks_output/benchmark-cuda.json"
     fi
     printf 'CUDA validation completed successfully.\n'
 }

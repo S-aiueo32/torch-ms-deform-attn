@@ -1,5 +1,7 @@
 # Run CUDA checks on Runpod
 
+[Back to README](../README.md) · [Development and CI](development.md) · [GPU benchmarks](gpu-benchmarks.md)
+
 The **CUDA correctness** workflow (`cuda.yml`) rents one Runpod GPU, builds and
 tests the installed CUDA wheel, uploads logs and distributions, and deletes the
 Pod. Start it from GitHub Actions with **Run workflow**. The default configuration

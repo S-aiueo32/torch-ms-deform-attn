@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import platform
 import re
 import shlex
 import subprocess
@@ -8,6 +9,7 @@ import tempfile
 
 import torch
 from setuptools import setup
+from setuptools.command.bdist_wheel import bdist_wheel
 from setuptools.errors import LinkError
 from torch.utils.cpp_extension import (
     BuildExtension, CppExtension, CUDAExtension, CUDA_HOME, get_cxx_compiler,
@@ -48,6 +50,40 @@ def macos_openmp_runtime(torch_dir):
     raise RuntimeError("cannot locate the OpenMP runtime used by PyTorch")
 
 
+def without_macos_arch_flags(command):
+    result = []
+    tokens = iter(command)
+    for token in tokens:
+        if token == "-arch":
+            next(tokens, None)
+        else:
+            result.append(token)
+    return result
+
+
+def macos_target_flags():
+    # Importing torch confirms that its binary supports this process architecture.
+    # A universal2 Python can otherwise request slices absent from torch/lib.
+    architecture = platform.machine()
+    flags = shlex.split(os.getenv("ARCHFLAGS", ""))
+    for index, flag in enumerate(flags):
+        if flag == "-arch" and (index + 1 == len(flags) or flags[index + 1] != architecture):
+            raise RuntimeError(
+                f"ARCHFLAGS must target the running Python/PyTorch architecture ({architecture})"
+            )
+    return ["-arch", architecture]
+
+
+class TorchBdistWheel(bdist_wheel):
+    def get_tag(self):
+        python_tag, abi_tag, platform_tag = super().get_tag()
+        if sys.platform == "darwin":
+            # Retain wheel's binary-derived minimum macOS version, but do not
+            # label a thin extension universal2 just because Python is universal2.
+            platform_tag = re.sub(r"(?:universal2|arm64|x86_64)$", platform.machine(), platform_tag)
+        return python_tag, abi_tag, platform_tag
+
+
 class OptionalOpenMPBuildExtension(BuildExtension):
     def probe_openmp(self, compile_flags, link_flags):
         # Use the same C++ command and environment flags as the extension build.
@@ -58,6 +94,9 @@ class OptionalOpenMPBuildExtension(BuildExtension):
             # Recent setuptools selects compiler_so_cxx for .cpp files. Keep the
             # entire command, including wrappers such as "ccache clang++".
             compile_command = list(getattr(self.compiler, "compiler_so_cxx", self.compiler.compiler_so))
+        target_flags = getattr(self, "target_flags", [])
+        if target_flags:
+            compile_command = without_macos_arch_flags(compile_command)
         with tempfile.TemporaryDirectory(prefix="torch-deform-attn-openmp-") as directory:
             source = Path(directory) / "probe.cpp"
             obj = Path(directory) / "probe.o"
@@ -70,7 +109,7 @@ class OptionalOpenMPBuildExtension(BuildExtension):
                 "{ count += omp_get_thread_num() >= 0; }\n"
                 "return count < 1; }\n"
             )
-            command = compile_command + compile_flags + ["-c", str(source), "-o", str(obj)]
+            command = compile_command + target_flags + compile_flags + ["-c", str(source), "-o", str(obj)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=30)
             if result.returncode:
                 detail = "\n".join((result.stderr or result.stdout).strip().splitlines()[-4:])
@@ -80,7 +119,7 @@ class OptionalOpenMPBuildExtension(BuildExtension):
                 # Let it select the configured C++ linker and retain architecture,
                 # sysroot, wrapper, and environment flags without duplicating them.
                 self.compiler.link_executable(
-                    [str(obj)], str(executable), extra_postargs=link_flags, target_lang="c++",
+                    [str(obj)], str(executable), extra_postargs=target_flags + link_flags, target_lang="c++",
                 )
             except LinkError as error:
                 raise RuntimeError(f"OpenMP runtime link check failed: {error}") from error
@@ -129,6 +168,11 @@ class OptionalOpenMPBuildExtension(BuildExtension):
         raise RuntimeError(last_error)
 
     def build_extensions(self):
+        self.target_flags = macos_target_flags() if sys.platform == "darwin" else []
+        if self.target_flags:
+            # Unlike setuptools' compiler/linker, PyTorch's Ninja writer does not
+            # strip inherited -arch options when extra arguments select one arch.
+            self.compiler.compiler_so = without_macos_arch_flags(self.compiler.compiler_so)
         setting = os.getenv("FORCE_OPENMP")
         if setting not in (None, "0", "1"):
             raise RuntimeError("FORCE_OPENMP must be 0 (disabled) or 1 (required); unset means auto")
@@ -161,8 +205,8 @@ class OptionalOpenMPBuildExtension(BuildExtension):
                           "FORCE_OPENMP=1 makes this an error")
         print(f"torch-deform-attn CPU parallel backend: {backend} ({detail})", flush=True)
         for extension in self.extensions:
-            extension.extra_compile_args["cxx"].extend(compile_flags)
-            extension.extra_link_args.extend(link_flags)
+            extension.extra_compile_args["cxx"].extend(self.target_flags + compile_flags)
+            extension.extra_link_args.extend(self.target_flags + link_flags)
         # Distutils does not track changed compiler flags. Rebuild when switching
         # auto/on/off so an existing serial object cannot survive an OpenMP build.
         self.force = True
@@ -190,5 +234,5 @@ setup(
         define_macros=[("WITH_CUDA", None)] if with_cuda else [],
         extra_compile_args=compile_args,
     )],
-    cmdclass={"build_ext": OptionalOpenMPBuildExtension},
+    cmdclass={"build_ext": OptionalOpenMPBuildExtension, "bdist_wheel": TorchBdistWheel},
 )

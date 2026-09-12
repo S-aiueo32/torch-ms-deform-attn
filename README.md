@@ -28,7 +28,7 @@ and have not yet been verified on GPU hardware.
 From this repository:
 
 ```bash
-python -m pip install torch setuptools wheel ninja
+python -m pip install torch 'setuptools>=77' 'packaging>=24.2' wheel ninja
 python -m pip install --no-build-isolation .
 ```
 
@@ -57,6 +57,8 @@ loading a second OpenMP library. If headers are missing, install your compiler's
 OpenMP development files or set `OMP_PREFIX` to a prefix containing `include/omp.h`.
 If detection fails, the build reports the reason and uses a serial CPU kernel.
 PyTorch builds with the native thread pool use that backend directly.
+On macOS, extensions and wheels target the running Python/PyTorch architecture,
+including with a universal2 Python. Cross-architecture `ARCHFLAGS` are rejected.
 
 ```bash
 FORCE_OPENMP=1 python -m pip install --no-build-isolation .  # Require OpenMP; fail if unavailable.

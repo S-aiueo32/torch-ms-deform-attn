@@ -29,7 +29,7 @@ jobs:
             "$CUDA_BUILD_IMAGE" bash -euo pipefail <<'BASH'
           nvcc --version
           python -c 'import torch; assert torch.__version__.split("+")[0] == "2.5.1"; assert torch.version.cuda == "12.4"; assert not torch.cuda.is_available()'
-          python -m pip install --no-cache-dir numpy 'setuptools>=77' wheel ninja build
+          python -m pip install --no-cache-dir numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
           python -m build --sdist --no-isolation
           python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
           python -m pip install --no-deps dist/*.whl

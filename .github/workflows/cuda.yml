@@ -15,7 +15,7 @@ on:
       gpu:
         description: Rent one Secure Cloud GPU (no automatic model substitution)
         type: choice
-        default: NVIDIA RTX A5000
+        default: NVIDIA L4
         options: [NVIDIA RTX A5000, NVIDIA L4, NVIDIA GeForce RTX 4090]
       max_hourly_usd:
         description: Maximum accepted compute price in USD/hour (checked before and after creation)

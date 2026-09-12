@@ -3,7 +3,7 @@
 The **CUDA correctness** workflow (`cuda.yml`) rents one Runpod GPU, builds and
 tests the installed CUDA wheel, uploads logs and distributions, and deletes the
 Pod. Start it from GitHub Actions with **Run workflow**. The default configuration
-is one RTX A5000 on Secure Cloud, on-demand, with a 45-minute controller deadline
+is one L4 on Secure Cloud, on-demand, with a 45-minute controller deadline
 and a $0.50/hour compute-price limit.
 
 An ordinary GitHub-hosted Ubuntu job controls the Pod over SSH. This works with
@@ -50,7 +50,7 @@ gh workflow run cuda.yml --repo S-aiueo32/torch-deform-attn \
 gh workflow run cuda.yml --repo S-aiueo32/torch-deform-attn \
   --ref codex/attention-performance-and-safety \
   --field operation=test --field sanitizer=none \
-  --field gpu='NVIDIA RTX A5000' --field max_hourly_usd=0.50 \
+  --field gpu='NVIDIA L4' --field max_hourly_usd=0.50 \
   --field timeout_minutes=45
 ```
 

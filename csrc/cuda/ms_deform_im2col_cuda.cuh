@@ -8,7 +8,7 @@
 * Copyright (c) 2018 Microsoft
 **************************************************************************
 */
-// Modified: PyTorch atomics, checked metadata, and 64-bit tensor indexing.
+// Modified: PyTorch atomics, checked metadata, 64-bit indexing, and launch bounds.
 
 #include <cstdio>
 #include <algorithm>
@@ -27,6 +27,9 @@
       i += int64_t(blockDim.x) * gridDim.x)
 
 const int CUDA_NUM_THREADS = 1024;
+// Match each kernel's launch bound to the largest block used by the dispatch
+// below. Without a bound, double precision and 64-bit indexing can make the
+// compiler allocate too many registers for a 1024-thread block to launch.
 inline int GET_BLOCKS(const int64_t N, const int num_threads)
 {
   return ms_deform_attn::cuda_blocks(N, num_threads);
@@ -254,7 +257,8 @@ __device__ void ms_deform_attn_col2im_bilinear_gm(const scalar_t* &bottom_data,
 
 
 template <typename scalar_t>
-__global__ void ms_deformable_im2col_gpu_kernel(const int64_t n,
+__global__ void __launch_bounds__(CUDA_NUM_THREADS)
+ms_deformable_im2col_gpu_kernel(const int64_t n,
                                                 const scalar_t *data_value,
                                                 const int64_t *data_spatial_shapes,
                                                 const int64_t *data_level_start_index,
@@ -321,7 +325,8 @@ __global__ void ms_deformable_im2col_gpu_kernel(const int64_t n,
 }
 
 template <typename scalar_t, unsigned int blockSize>
-__global__ void ms_deformable_col2im_gpu_kernel_shm_blocksize_aware_reduce_v1(const int64_t n,
+__global__ void __launch_bounds__(blockSize)
+ms_deformable_col2im_gpu_kernel_shm_blocksize_aware_reduce_v1(const int64_t n,
                                                 const scalar_t *grad_col,
                                                 const scalar_t *data_value,
                                                 const int64_t *data_spatial_shapes,
@@ -429,7 +434,8 @@ __global__ void ms_deformable_col2im_gpu_kernel_shm_blocksize_aware_reduce_v1(co
 
 
 template <typename scalar_t, unsigned int blockSize>
-__global__ void ms_deformable_col2im_gpu_kernel_shm_blocksize_aware_reduce_v2(const int64_t n,
+__global__ void __launch_bounds__(blockSize)
+ms_deformable_col2im_gpu_kernel_shm_blocksize_aware_reduce_v2(const int64_t n,
                                                 const scalar_t *grad_col,
                                                 const scalar_t *data_value,
                                                 const int64_t *data_spatial_shapes,
@@ -539,7 +545,8 @@ __global__ void ms_deformable_col2im_gpu_kernel_shm_blocksize_aware_reduce_v2(co
 
 
 template <typename scalar_t>
-__global__ void ms_deformable_col2im_gpu_kernel_shm_reduce_v1(const int64_t n,
+__global__ void __launch_bounds__(64)
+ms_deformable_col2im_gpu_kernel_shm_reduce_v1(const int64_t n,
                                                 const scalar_t *grad_col,
                                                 const scalar_t *data_value,
                                                 const int64_t *data_spatial_shapes,
@@ -647,7 +654,8 @@ __global__ void ms_deformable_col2im_gpu_kernel_shm_reduce_v1(const int64_t n,
 }
 
 template <typename scalar_t>
-__global__ void ms_deformable_col2im_gpu_kernel_shm_reduce_v2(const int64_t n,
+__global__ void __launch_bounds__(CUDA_NUM_THREADS)
+ms_deformable_col2im_gpu_kernel_shm_reduce_v2(const int64_t n,
                                                 const scalar_t *grad_col,
                                                 const scalar_t *data_value,
                                                 const int64_t *data_spatial_shapes,
@@ -763,7 +771,8 @@ __global__ void ms_deformable_col2im_gpu_kernel_shm_reduce_v2(const int64_t n,
 }
 
 template <typename scalar_t>
-__global__ void ms_deformable_col2im_gpu_kernel_shm_reduce_v2_multi_blocks(const int64_t n,
+__global__ void __launch_bounds__(CUDA_NUM_THREADS)
+ms_deformable_col2im_gpu_kernel_shm_reduce_v2_multi_blocks(const int64_t n,
                                                 const scalar_t *grad_col,
                                                 const scalar_t *data_value,
                                                 const int64_t *data_spatial_shapes,
@@ -880,7 +889,8 @@ __global__ void ms_deformable_col2im_gpu_kernel_shm_reduce_v2_multi_blocks(const
 
 
 template <typename scalar_t>
-__global__ void ms_deformable_col2im_gpu_kernel_gm(const int64_t n,
+__global__ void __launch_bounds__(CUDA_NUM_THREADS)
+ms_deformable_col2im_gpu_kernel_gm(const int64_t n,
                                                 const scalar_t *grad_col,
                                                 const scalar_t *data_value,
                                                 const int64_t *data_spatial_shapes,

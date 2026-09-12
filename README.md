@@ -169,7 +169,7 @@ host-side integration; it has no GPU and skips CUDA runtime tests.
 `.github/workflows/cuda.yml` provisions one Runpod GPU on manual dispatch, builds
 and tests the installed CUDA wheel, collects logs, and deletes the Pod. An ordinary
 GitHub-hosted job controls the GPU over SSH using the `RUNPOD_API_KEY` secret.
-The default is an RTX A5000, a $0.50/hour compute-price limit, and a 45-minute
+The default is an L4, a $0.50/hour compute-price limit, and a 45-minute
 deadline. Its optional `sanitizer` input runs reduction and batch-chunk tests under
 Compute Sanitizer's `memcheck`, `racecheck`, or `synccheck` tool. Use `operation=check`
 to validate API access and pricing without renting a GPU.

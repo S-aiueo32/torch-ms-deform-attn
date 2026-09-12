@@ -199,6 +199,25 @@ class ControllerTest(unittest.TestCase):
         self.assertFalse(api.pods)
         self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
 
+    def test_definite_creation_rejections_preserve_status_and_still_cleanup(self):
+        self.prepare_run()
+        for status in (400, 401, 402, 403, 404, 422, 429):
+            with self.subTest(status=status):
+                self.args.state_dir = self.root / f"state-{status}"
+                api = FakeAPI()
+                failure = ci.APIError("POST /pods", status)
+                api.request = mock.Mock(side_effect=failure)
+                with mock.patch.object(ci, "recover_create") as recovery, \
+                        mock.patch.object(ci, "cleanup", wraps=ci.cleanup) as cleanup:
+                    with self.assertRaises(ci.APIError) as caught:
+                        ci.run(api, self.args)
+                self.assertIs(caught.exception, failure)
+                self.assertIn(f"HTTP {status}", str(caught.exception))
+                api.request.assert_called_once()
+                recovery.assert_not_called()
+                cleanup.assert_called_once_with(api, self.args)
+                self.assertFalse(api.pods)
+
     def test_failed_quote_never_creates_a_pod(self):
         self.prepare_run()
         api = FakeAPI()

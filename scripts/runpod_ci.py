@@ -451,7 +451,13 @@ def run(api, args):
         print(f"Requesting one {args.gpu} Pod (limit ${args.max_hourly_usd}/hour)", flush=True)
         try:
             pod = api.request("POST", "/pods", payload)
-        except APIError:
+        except APIError as failure:
+            # Definite request rejection (including quota/auth/rate-limit errors)
+            # is not a lost creation response. Preserve its HTTP status; the outer
+            # finally still performs ownership-scoped cleanup. HTTP 408 remains
+            # ambiguous, like a connection timeout or server-side failure.
+            if failure.status is not None and failure.status != 408 and not 500 <= failure.status < 600:
+                raise
             pod = recover_create(api, owner, created)
         if not isinstance(pod, dict) or not re.fullmatch(r"[A-Za-z0-9_-]+", str(pod.get("id", ""))):
             pod = recover_create(api, owner, created)

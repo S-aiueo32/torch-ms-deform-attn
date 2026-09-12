@@ -166,14 +166,15 @@ the checkout. Indexing tests exercise offsets above 2^31 and overflow rejection
 without allocating huge tensors. This workflow verifies CUDA compilation and
 host-side integration; it has no GPU and skips CUDA runtime tests.
 
-`.github/workflows/cuda.yml` is a manually dispatched correctness workflow for a
-self-hosted Linux x64 runner labeled `gpu`, with an NVIDIA GPU and a CUDA toolkit
-compatible with the pinned PyTorch 2.5.1 installation. It builds the CUDA wheel
-from the sdist and tests both CPU and CUDA, without running benchmarks. Its optional
-`sanitizer` input runs reduction and batch-chunk tests under Compute Sanitizer's
-`memcheck`, `racecheck`, or `synccheck` tool.
-The runner must be provisioned separately; adding this workflow alone does not
-provide GPU capacity. No GPU CI run has been verified yet.
+`.github/workflows/cuda.yml` provisions one Runpod GPU on manual dispatch, builds
+and tests the installed CUDA wheel, collects logs, and deletes the Pod. An ordinary
+GitHub-hosted job controls the GPU over SSH using the `RUNPOD_API_KEY` secret.
+The default is an RTX A5000, a $0.50/hour compute-price limit, and a 45-minute
+deadline. Its optional `sanitizer` input runs reduction and batch-chunk tests under
+Compute Sanitizer's `memcheck`, `racecheck`, or `synccheck` tool. Use `operation=check`
+to validate API access and pricing without renting a GPU.
+See [Runpod setup and cleanup](docs/gpu-runner.md) for account configuration,
+recovery after cancellation, and billing limits. No GPU CI run has been verified yet.
 
 ## Verify and benchmark
 

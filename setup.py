@@ -8,6 +8,7 @@ import tempfile
 
 import torch
 from setuptools import setup
+from setuptools.errors import LinkError
 from torch.utils.cpp_extension import (
     BuildExtension, CppExtension, CUDAExtension, CUDA_HOME, get_cxx_compiler,
 )
@@ -51,10 +52,12 @@ class OptionalOpenMPBuildExtension(BuildExtension):
     def probe_openmp(self, compile_flags, link_flags):
         # Use the same C++ command and environment flags as the extension build.
         if self.use_ninja:
-            compiler = shlex.split(get_cxx_compiler())
+            # PyTorch's Ninja writer uses CXX with compiler_so's trailing flags.
+            compile_command = shlex.split(get_cxx_compiler()) + list(self.compiler.compiler_so[1:])
         else:
-            compiler = list(self.compiler.compiler_so[:1])
-        compiler_flags = list(self.compiler.compiler_so[1:])
+            # Recent setuptools selects compiler_so_cxx for .cpp files. Keep the
+            # entire command, including wrappers such as "ccache clang++".
+            compile_command = list(getattr(self.compiler, "compiler_so_cxx", self.compiler.compiler_so))
         with tempfile.TemporaryDirectory(prefix="torch-deform-attn-openmp-") as directory:
             source = Path(directory) / "probe.cpp"
             obj = Path(directory) / "probe.o"
@@ -67,16 +70,20 @@ class OptionalOpenMPBuildExtension(BuildExtension):
                 "{ count += omp_get_thread_num() >= 0; }\n"
                 "return count < 1; }\n"
             )
-            commands = [
-                compiler + compiler_flags + compile_flags + ["-c", str(source), "-o", str(obj)],
-                compiler + [str(obj), "-o", str(executable)] + link_flags
-                + shlex.split(os.getenv("LDFLAGS", "")),
-            ]
-            for command in commands:
-                result = subprocess.run(command, capture_output=True, text=True, timeout=30)
-                if result.returncode:
-                    detail = "\n".join((result.stderr or result.stdout).strip().splitlines()[-4:])
-                    raise RuntimeError(detail or f"compiler exited with status {result.returncode}")
+            command = compile_command + compile_flags + ["-c", str(source), "-o", str(obj)]
+            result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+            if result.returncode:
+                detail = "\n".join((result.stderr or result.stdout).strip().splitlines()[-4:])
+                raise RuntimeError(detail or f"compiler exited with status {result.returncode}")
+            try:
+                # The extension also links through setuptools, even with Ninja.
+                # Let it select the configured C++ linker and retain architecture,
+                # sysroot, wrapper, and environment flags without duplicating them.
+                self.compiler.link_executable(
+                    [str(obj)], str(executable), extra_postargs=link_flags, target_lang="c++",
+                )
+            except LinkError as error:
+                raise RuntimeError(f"OpenMP runtime link check failed: {error}") from error
 
     def openmp_flags(self):
         if self.compiler.compiler_type != "unix":
@@ -148,6 +155,8 @@ class OptionalOpenMPBuildExtension(BuildExtension):
                         f"{error}"
                     ) from error
                 backend = "serial"
+                if self.compiler.compiler_type == "unix":
+                    compile_flags = ["-fno-openmp"]
                 detail = (f"OpenMP unavailable: {error}. Set OMP_PREFIX to its header prefix; "
                           "FORCE_OPENMP=1 makes this an error")
         print(f"torch-deform-attn CPU parallel backend: {backend} ({detail})", flush=True)

@@ -41,20 +41,20 @@ listed model within your accepted price limit or retry when capacity returns.
 
 ```bash
 gh workflow run cuda.yml --repo S-aiueo32/torch-deform-attn \
-  --ref codex/attention-performance-and-safety --field operation=check
+  --ref main --field operation=check
 ```
 
 ## Run tests
 
 ```bash
 gh workflow run cuda.yml --repo S-aiueo32/torch-deform-attn \
-  --ref codex/attention-performance-and-safety \
+  --ref main \
   --field operation=test --field sanitizer=none \
   --field gpu='NVIDIA L4' --field max_hourly_usd=0.50 \
   --field timeout_minutes=45
 ```
 
-After merging, use `--ref main`. The checkout's exact commit is transferred via
+Select another branch with `--ref` when needed. The checkout's exact commit is transferred via
 `git archive`; GitHub credentials and the `.git` directory are excluded.
 `scripts/run_cuda_checks.sh` builds an sdist and wheel in an isolated environment,
 installs the wheel, then executes the complete CPU/CUDA test suite outside the
@@ -65,6 +65,12 @@ Logs and built distributions appear in the run's `cuda-runpod-*` artifact, retai
 for seven days. A failed remote test fails the Actions job. Each new run rents a
 fresh Pod; the workflow never substitutes a more expensive GPU model by itself.
 Only one CUDA workflow runs at a time.
+
+Validated on NVIDIA L4 with Python 3.11, PyTorch 2.5.1, and CUDA 12.4:
+36 tests completed with two expected skips (CPU-only build and a second GPU),
+and Compute Sanitizer memcheck reported zero errors. The same run saved the
+wheel/log artifacts and verified Pod deletion. See
+[the successful run](https://github.com/S-aiueo32/torch-deform-attn/actions/runs/34704425778).
 
 ## Cleanup and costs
 

@@ -174,7 +174,10 @@ deadline. Its optional `sanitizer` input runs reduction and batch-chunk tests un
 Compute Sanitizer's `memcheck`, `racecheck`, or `synccheck` tool. Use `operation=check`
 to validate API access and pricing without renting a GPU.
 See [Runpod setup and cleanup](docs/gpu-runner.md) for account configuration,
-recovery after cancellation, and billing limits. No GPU CI run has been verified yet.
+recovery after cancellation, and billing limits. A Runpod L4 run verified all 36
+tests (two hardware/build-specific skips), Compute Sanitizer memcheck with zero
+errors, artifact collection, and Pod deletion; see the
+[successful GPU run](https://github.com/S-aiueo32/torch-deform-attn/actions/runs/34704425778).
 
 ## Verify and benchmark
 

@@ -42,7 +42,12 @@ class ControllerError(RuntimeError):
 class APIError(ControllerError):
     def __init__(self, operation, status=None):
         self.status = status
-        super().__init__(f"Runpod {operation} failed" + (f" (HTTP {status})" if status else ""))
+        message = f"Runpod {operation} failed" + (f" (HTTP {status})" if status else "")
+        if status == 402:
+            message += "; check prepaid credits and spending limits in Runpod Billing before retrying"
+        elif status in (401, 403):
+            message += "; check RUNPOD_API_KEY and its permission for this operation"
+        super().__init__(message)
 
 
 def utc_now():

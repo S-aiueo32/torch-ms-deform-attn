@@ -34,6 +34,11 @@ First dispatch `operation=check`. This checks API access and the GPU price witho
 creating or modifying a Pod. It does not prove that credit or quota is sufficient
 for a subsequent deployment.
 
+If creation returns HTTP 402, check prepaid credits and spending limits in Runpod
+Billing before dispatching again. HTTP 401/403 indicates an API key or permission
+problem. An unavailable GPU is rejected before a Pod is requested; choose another
+listed model within your accepted price limit or retry when capacity returns.
+
 ```bash
 gh workflow run cuda.yml --repo S-aiueo32/torch-deform-attn \
   --ref codex/attention-performance-and-safety --field operation=check

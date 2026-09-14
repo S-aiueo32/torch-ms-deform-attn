@@ -7,13 +7,16 @@ import sys
 import unittest
 
 import torch
+from sampling_cases import SamplingCases
 from torch.autograd import gradcheck
 
 from torch_ms_deform_attn import _C as MSDA
 from torch_ms_deform_attn import MSDeformAttnFunction, ms_deform_attn, ms_deform_attn_core_pytorch
 
 
-class CPUAttentionTest(unittest.TestCase):
+class CPUAttentionTest(SamplingCases, unittest.TestCase):
+    sampling_device = "cpu"
+
     def inputs(self, dtype=torch.double, noncontiguous=False):
         torch.manual_seed(7)
         shapes = torch.tensor([[3, 4], [2, 2]], dtype=torch.long)
@@ -97,49 +100,6 @@ print(json.dumps({
                     actual_grads = torch.autograd.grad(actual, inputs, grad)
                     expected_grads = torch.autograd.grad(expected, inputs, grad)
                     for a, e in zip(actual_grads, expected_grads):
-                        torch.testing.assert_close(a, e)
-
-    def test_padding_support_and_channel_sizes(self):
-        # Exercise all neighbor masks near the support boundary without sampling
-        # exactly at a nondifferentiable pixel/support boundary.
-        shapes = torch.tensor([[2, 3]], dtype=torch.long)
-        starts = torch.tensor([0], dtype=torch.long)
-        pixels = torch.tensor(
-            [
-                [-0.75, 0.3],
-                [2.75, 0.3],
-                [0.3, -0.75],
-                [0.3, 1.75],
-                [-1.25, 0.3],
-                [3.25, 0.3],
-                [0.3, -1.25],
-                [0.3, 2.25],
-                [-0.75, -0.75],
-                [2.75, -0.75],
-                [-0.75, 1.75],
-                [2.75, 1.75],
-                [0.3, 0.7],
-            ],
-            dtype=torch.double,
-        )
-        for dtype in (torch.float32, torch.float64):
-            for channels in (1, 7, 32):
-                with self.subTest(dtype=dtype, channels=channels):
-                    torch.manual_seed(19)
-                    value = torch.randn(1, 6, 2, channels, dtype=dtype, requires_grad=True)
-                    locations = ((pixels + 0.5) / torch.tensor([3, 2])).to(dtype)
-                    locations = locations.view(1, -1, 1, 1, 1, 2).repeat(1, 1, 2, 1, 1, 1)
-                    locations.requires_grad_()
-                    weights = torch.randn(1, len(pixels), 2, 1, 1, dtype=dtype, requires_grad=True)
-                    actual = ms_deform_attn(value, shapes, starts, locations, weights)
-                    expected = ms_deform_attn_core_pytorch(value, shapes, locations, weights)
-                    torch.testing.assert_close(actual, expected)
-                    grad = torch.randn_like(actual)
-                    inputs = (value, locations, weights)
-                    for a, e in zip(
-                        torch.autograd.grad(actual, inputs, grad),
-                        torch.autograd.grad(expected, inputs, grad),
-                    ):
                         torch.testing.assert_close(a, e)
 
     def test_colliding_samples_and_overlapping_levels(self):

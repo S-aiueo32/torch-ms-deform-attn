@@ -8,16 +8,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            openmp: "0"
-            backend: serial
-          - os: ubuntu-latest
-            openmp: "1"
-            backend: openmp
-          - os: macos-14
-            openmp: "1"
-            backend: openmp
-    name: ${{ matrix.os }} / ${{ matrix.backend }}
+          - {os: ubuntu-latest, python: '3.10', torch: '2.5.0', openmp: '0', backend: serial}
+          - {os: ubuntu-latest, python: '3.11', torch: '2.5.1', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.7.1', openmp: '1', backend: openmp}
+    name: ${{ matrix.os }} / Python ${{ matrix.python }} / torch ${{ matrix.torch }} / ${{ matrix.backend }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     env:
@@ -25,17 +19,14 @@ jobs:
       FORCE_OPENMP: ${{ matrix.openmp }}
       EXPECTED_CPU_BACKEND: ${{ matrix.backend }}
       MAX_JOBS: "2"
+      TORCH_VERSION: ${{ matrix.torch }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python }}
       - name: Install Linux CPU PyTorch
-        if: runner.os == 'Linux'
-        run: python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-      - name: Install macOS PyTorch
-        if: runner.os == 'macOS'
-        run: python -m pip install torch==2.5.1
+        run: python -m pip install "torch==$TORCH_VERSION" --index-url https://download.pytorch.org/whl/cpu
       - run: python -m pip install numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
       - run: python -m build --sdist --no-isolation
       - run: python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
@@ -46,3 +37,29 @@ jobs:
           cd "$RUNNER_TEMP"
           python -c 'import os; from torch_ms_deform_attn import _C; assert not _C.with_cuda; assert _C.cpu_parallel_backend == os.environ["EXPECTED_CPU_BACKEND"], _C.cpu_parallel_backend'
           python -m unittest discover -s msda-tests -v
+      - name: Record matrix result
+        if: always()
+        env:
+          RESULT: ${{ job.status }}
+          PYTHON_VERSION: ${{ matrix.python }}
+        run: echo "$GITHUB_SHA | $RUNNER_OS | Python $PYTHON_VERSION | torch $TORCH_VERSION | $EXPECTED_CPU_BACKEND | $RESULT" >> "$GITHUB_STEP_SUMMARY"
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      FORCE_CPU: '1'
+      FORCE_OPENMP: '1'
+      MAX_JOBS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja
+      - name: Rebuild the same checkout after upgrading PyTorch
+        run: |
+          for version in 2.5.0 2.7.1; do
+            python -m pip install "torch==$version" --index-url https://download.pytorch.org/whl/cpu
+            python setup.py build_ext --inplace --force
+            PYTHONPATH=src python -m unittest discover -s tests -v
+          done

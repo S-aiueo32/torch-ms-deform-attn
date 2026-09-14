@@ -14,8 +14,35 @@ existing environment with your chosen PyTorch version.
 
 Requires Python 3.10+, PyTorch >=2.5,<3, and a C++17 compiler. CUDA builds also
 require CUDA-enabled PyTorch and a matching CUDA toolkit. MPS is unsupported.
-CI covers Python 3.11 / PyTorch 2.5.1 on Linux and macOS; Windows and other
-PyTorch versions are not covered by the checked-in CI matrix.
+The dependency range permits installation; it is not a tested Cartesian product.
+The maintained support and CI matrix is Linux-only. The validation targets
+below use published wheels from the
+[official PyTorch version table](https://pytorch.org/get-started/previous-versions/).
+Other Python/PyTorch versions in the dependency range, macOS, Windows, and other CUDA
+pairs are best effort. 2.7.1 is the selected newer regression series, not a claim
+that it is the newest available release.
+
+| Platform | Python | PyTorch | Backend/toolkit | Build / test evidence |
+| --- | --- | --- | --- | --- |
+| Linux | 3.10 | 2.5.0 | CPU serial (declared lower bounds) | CPU package job; not run (Actions unavailable) |
+| Linux | 3.11 | 2.5.1 | CPU OpenMP | CPU tests passed in the CUDA wheel; CPU-only wheel job unverified |
+| Linux | 3.12 | 2.7.1 | CPU OpenMP | CPU package job; not run (Actions unavailable) |
+| Linux | 3.11 | 2.5.1 | CUDA 12.4 | Local L4 sdist-to-wheel build, full suite and all four sanitizers passed |
+| Linux | 3.11 | 2.7.1 | CUDA 12.6 | Local L4 sdist-to-wheel build, full suite and all four sanitizers passed |
+
+The successful local results above refer only to source
+`c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`; see the
+[full logs and environment records](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/fedcad0064f3cea79146be9ca181c97f53aeeda8/docs/validation/2026-09-14-p1/README.md).
+Historical macOS runs remain in the evidence archive as supplemental results;
+they do not add macOS to the support matrix. Unexecuted Linux CPU-only rows
+remain best effort.
+
+Each CPU job writes its SHA and result to the Actions summary. The `rebuild` job
+builds and tests 2.5.0 then 2.7.1 in the same checkout and Python 3.11 environment.
+A build-only CUDA success does not establish GPU runtime support. Dispatch CUDA
+correctness once per pair using `torch_version`; actual Python/toolkit versions
+appear in the logs. Until successful build and runtime evidence exists, new rows
+are validation targets with best-effort status, not certified combinations.
 
 ## Install from source
 

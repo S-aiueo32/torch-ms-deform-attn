@@ -55,7 +55,8 @@ uv sync --locked
 uv run --locked python -m unittest discover -s tests -v
 ```
 
-CPU CI covers Linux and macOS with Python 3.11 / PyTorch 2.5.1. CUDA correctness
+CPU CI targets Linux with the Python/PyTorch combinations in the
+[support matrix](docs/installation.md#prerequisites). CUDA correctness
 and Compute Sanitizer memcheck have been recorded on an NVIDIA L4 with CUDA 12.4;
 see the [GPU validation record](docs/gpu-runner.md#run-tests).
 The declared dependency range is broader than this tested configuration.

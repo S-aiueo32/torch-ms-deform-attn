@@ -4,11 +4,24 @@ permissions:
   contents: read
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - torch: '2.5.1'
+            cuda: '12.4'
+            image: pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel@sha256:14611869895df612b7b07227d5925f30ec3cd6673bad58ce3d84ed107950e014
+          - torch: '2.7.1'
+            cuda: '12.6'
+            image: pytorch/pytorch:2.7.1-cuda12.6-cudnn9-devel
+    name: torch ${{ matrix.torch }} / CUDA ${{ matrix.cuda }} build only
     # Compile CUDA and exercise its host-side checks without requiring a GPU.
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      CUDA_BUILD_IMAGE: pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel@sha256:14611869895df612b7b07227d5925f30ec3cd6673bad58ce3d84ed107950e014
+      CUDA_BUILD_IMAGE: ${{ matrix.image }}
+      EXPECTED_TORCH: ${{ matrix.torch }}
+      EXPECTED_CUDA: ${{ matrix.cuda }}
       FORCE_CUDA: "1"
       FORCE_OPENMP: "1"
       TORCH_CUDA_ARCH_LIST: "8.0"
@@ -25,10 +38,10 @@ jobs:
         run: |
           docker run --rm -i \
             --volume "$GITHUB_WORKSPACE:/workspace" --workdir /workspace \
-            --env FORCE_CUDA --env FORCE_OPENMP --env TORCH_CUDA_ARCH_LIST --env MAX_JOBS \
+            --env EXPECTED_TORCH --env EXPECTED_CUDA --env FORCE_CUDA --env FORCE_OPENMP --env TORCH_CUDA_ARCH_LIST --env MAX_JOBS \
             "$CUDA_BUILD_IMAGE" bash -euo pipefail <<'BASH'
           nvcc --version
-          python -c 'import torch; assert torch.__version__.split("+")[0] == "2.5.1"; assert torch.version.cuda == "12.4"; assert not torch.cuda.is_available()'
+          python -c 'import os, torch; assert torch.__version__.split("+")[0] == os.environ["EXPECTED_TORCH"]; assert torch.version.cuda == os.environ["EXPECTED_CUDA"]; assert not torch.cuda.is_available()'
           python -m pip install --no-cache-dir numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
           python -m build --sdist --no-isolation
           python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist

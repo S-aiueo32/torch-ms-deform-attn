@@ -64,7 +64,7 @@ checkout. Select `memcheck`, `racecheck`, or `synccheck` to additionally run the
 kernel reduction and partial-batch tests under Compute Sanitizer.
 
 Logs and built distributions appear in the run's `cuda-runpod-*` artifact, retained
-for seven days. A failed remote test fails the Actions job. Each new run rents a
+for 90 days. A failed remote test fails the Actions job. Each new run rents a
 fresh Pod; the workflow never substitutes a more expensive GPU model by itself.
 Only one CUDA workflow runs at a time.
 
@@ -73,6 +73,25 @@ Validated on NVIDIA L4 with Python 3.11, PyTorch 2.5.1, and CUDA 12.4:
 and Compute Sanitizer memcheck reported zero errors. The same run saved the
 wheel/log artifacts and verified Pod deletion. See
 [the successful run](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/34704425778).
+
+## Run the same checks from a local controller
+
+Set `RUNPOD_API_KEY` in the local controller environment. It is never transferred
+to the GPU. Use a unique numeric run identifier and fresh, separate directories:
+
+```bash
+python scripts/runpod_ci.py run \
+  --repository OWNER/REPO --repository-id NUMERIC_REPOSITORY_ID \
+  --run-id UNIQUE_NUMERIC_ID --attempt 1 --source . \
+  --state-dir /tmp/msda-state-UNIQUE_ID --output-dir /tmp/msda-results-UNIQUE_ID \
+  --gpu L4 --sanitizer memcheck --max-hourly-usd 0.50 --timeout-minutes 60
+```
+
+This uses the same source-archive, installed-wheel tests, artifact collection and
+verified Pod deletion as Actions. Preserve the controller log and final state
+alongside the output artifacts. Do not copy the temporary SSH private keys into
+release evidence. The source SHA is resolved once before archiving, so later
+checkout changes do not change the code being tested.
 
 ## Cleanup and costs
 
@@ -114,3 +133,38 @@ References: [Runpod API keys](https://docs.runpod.io/get-started/api-keys),
 [GPU catalog](https://docs.runpod.io/api-reference-v2/catalog/get-a-gpu-type),
 [SSH](https://docs.runpod.io/pods/configuration/use-ssh),
 [Pod pricing](https://docs.runpod.io/pods/pricing).
+
+## Required release validation
+
+Before publishing any release, the maintainer must:
+
+1. Resolve the release tag to a full source SHA. Run **CUDA correctness** on that
+   commit/branch, or use the local controller with a checkout at that SHA.
+   Ordinary **CUDA package build** is build-only evidence.
+2. Require a successful test run. For Actions, its `headSha` must match that SHA.
+   For a local controller, retain the source archive and controller log, require
+   exit status zero and `phase: deleted` in its state file, and verify the SHA in
+   the output JSON. `operation=check` does not run tests.
+3. Download its `cuda-runpod-RUN-ATTEMPT` artifact (or use the local controller's
+   output `artifacts` directory) and run
+   `python scripts/verify_cuda_release.py --sha FULL_SHA --evidence PATH/TO/artifacts`.
+   Missing evidence, a different SHA, a failed suite or unexpected skips reject
+   the release. Only the explicitly named CPU-only-wheel and two-GPU tests may
+   skip in this single-GPU CUDA-build configuration.
+4. Attach `cuda-tests.json`, `cuda-completion.json`, `cuda-checks.log` and
+   `nvidia-smi.txt` to the GitHub release **before publishing it**, and include
+   the source SHA, Actions run URL or local run identifier, GPU/toolchain, counts and skip reasons in its
+   release notes. These release assets are the long-term record; the 90-day
+   Actions artifact is only temporary storage. Repeat for each claimed CUDA pair.
+
+The JSON records hardware, driver, Python/PyTorch/toolkit and build flags. A
+completion record is written only after the requested sanitizer also succeeds.
+This is a required maintainer release gate: the repository has no automatic
+release publisher. The verifier validates contents, not provenance; download
+only from the trusted successful workflow or local controller run and check its
+SHA and completion status.
+
+The local controller path and evidence verifier were exercised on both L4
+PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6 at source
+`c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`. See the
+[archived reports, logs and cleanup records](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/fedcad0064f3cea79146be9ca181c97f53aeeda8/docs/validation/2026-09-14-p1/README.md).

@@ -60,8 +60,9 @@ Select another branch with `--ref` when needed. The checkout's exact commit is t
 `git archive`; GitHub credentials and the `.git` directory are excluded.
 `scripts/run_cuda_checks.sh` builds an sdist and wheel in an isolated environment,
 installs the wheel, then executes the complete CPU/CUDA test suite outside the
-checkout. Select `memcheck`, `racecheck`, or `synccheck` to additionally run the
-kernel reduction and partial-batch tests under Compute Sanitizer.
+checkout. Select `memcheck`, `racecheck`, `synccheck`, `initcheck`, or `all` to additionally
+run positive reduction, partial-batch, padding, offset and collision cases under
+Compute Sanitizer. `all` reuses one wheel/Pod for all four tools.
 
 Logs and built distributions appear in the run's `cuda-runpod-*` artifact, retained
 for 90 days. A failed remote test fails the Actions job. Each new run rents a
@@ -168,3 +169,24 @@ The local controller path and evidence verifier were exercised on both L4
 PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6 at source
 `c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`. See the
 [archived reports, logs and cleanup records](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/fedcad0064f3cea79146be9ca181c97f53aeeda8/docs/validation/2026-09-14-p1/README.md).
+
+## Sanitizer evidence and scope
+
+Use `sanitizer=all` for release-candidate validation. Each tool must return zero
+with `--error-exitcode 1`; inspect the tool summary in its individual
+`sanitizer-TOOL.log`. Archive those logs with the exact source SHA and tool version
+alongside the release evidence described in T02. A historical memcheck pass is
+not racecheck/synccheck/initcheck evidence for another revision. All four tools passed on both PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6
+with L4; see the [revision-bound P1 evidence](validation/2026-09-14-p1/README.md).
+
+Only named positive sampling/reduction tests run under sanitizers. Tests that
+intentionally trigger device assertions still run in isolated subprocesses in
+the normal suite, but cannot contaminate the sanitizer verdict. The reduction
+table grows with T03; T04's shared sampling suite is a prerequisite of this PR.
+
+Racecheck diagnoses supported shared-memory hazards; it does not prove absence
+of global-memory races. Synccheck diagnoses supported synchronization misuse.
+Initcheck covers uninitialized device global-memory reads under its default
+scope; it is not a complete memory-safety proof. Memcheck complements these
+checks. Consult the installed Compute Sanitizer version's documentation and do
+not infer guarantees for memory types or execution paths the tool did not check.

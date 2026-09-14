@@ -718,7 +718,9 @@ def parse_args(argv=None):
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
     run_parser.add_argument(
-        "--sanitizer", choices=("none", "memcheck", "racecheck", "synccheck"), default="none"
+        "--sanitizer",
+        choices=("none", "memcheck", "racecheck", "synccheck", "initcheck", "all"),
+        default="none",
     )
     run_parser.add_argument(
         "--benchmark",

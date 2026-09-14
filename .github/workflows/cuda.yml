@@ -11,7 +11,7 @@ on:
         description: Optional CUDA kernel memory/synchronization check
         type: choice
         default: none
-        options: [none, memcheck, racecheck, synccheck]
+        options: [none, memcheck, racecheck, synccheck, initcheck, all]
       operation:
         description: Run CUDA tests, or check Runpod credentials/pricing without renting a GPU
         type: choice

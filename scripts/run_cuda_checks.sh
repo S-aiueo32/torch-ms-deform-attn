@@ -3,7 +3,7 @@
 set -euo pipefail
 
 if [[ $# -lt 2 || $# -gt 3 ]]; then
-    printf 'Usage: bash scripts/run_cuda_checks.sh {none|memcheck|racecheck|synccheck} OUTPUT_DIR [benchmark]\n' >&2
+    printf 'Usage: bash scripts/run_cuda_checks.sh {none|memcheck|racecheck|synccheck|initcheck|all} OUTPUT_DIR [benchmark]\n' >&2
     exit 2
 fi
 
@@ -15,7 +15,7 @@ fi
 
 cuda_checks_sanitizer=$1
 case "$cuda_checks_sanitizer" in
-    none|memcheck|racecheck|synccheck) ;;
+    none|memcheck|racecheck|synccheck|initcheck|all) ;;
     *) printf 'Unsupported sanitizer: %s\n' "$cuda_checks_sanitizer" >&2; exit 2 ;;
 esac
 
@@ -101,11 +101,22 @@ PY
 
     if [[ "$cuda_checks_sanitizer" != none ]]; then
         cd -- "$cuda_checks_temp/tests"
-        compute-sanitizer --tool "$cuda_checks_sanitizer" \
-            --error-exitcode 1 --target-processes all \
-            "$cuda_checks_python" -m unittest -v \
-            test_cuda.CUDAAttentionTest.test_reference_forward_backward \
-            test_cuda.CUDAAttentionTest.test_partial_batch_chunk
+        local -a cuda_checks_tools=("$cuda_checks_sanitizer")
+        if [[ "$cuda_checks_sanitizer" == all ]]; then
+            cuda_checks_tools=(memcheck racecheck synccheck initcheck)
+        fi
+        for cuda_checks_tool in "${cuda_checks_tools[@]}"; do
+            # Explicit positive cases exclude device-assert subprocess tests.
+            # T03 expands reduction coverage; T04 supplies sampling cases.
+            compute-sanitizer --tool "$cuda_checks_tool" \
+                --error-exitcode 1 --target-processes all \
+                "$cuda_checks_python" -m unittest -v \
+                test_cuda.CUDAAttentionTest.test_reference_forward_backward \
+                test_cuda.CUDAAttentionTest.test_partial_batch_chunk \
+                test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes \
+                test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata \
+                2>&1 | tee "$cuda_checks_output/sanitizer-$cuda_checks_tool.log"
+        done
     fi
     if [[ "$cuda_checks_benchmark" == benchmark ]]; then
         cp -- "$cuda_checks_source/benchmarks/benchmark_cuda.py" "$cuda_checks_temp/benchmark_cuda.py"

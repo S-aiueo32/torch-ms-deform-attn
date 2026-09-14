@@ -35,6 +35,10 @@ run_checks() {
     export FORCE_CPU=0 FORCE_CUDA=1 FORCE_OPENMP=1 MAX_JOBS=2
     export PYTHONUNBUFFERED=1
 
+    export CUDA_CHECKS_SOURCE_SHA=${CUDA_CHECKS_SOURCE_SHA:-$(git rev-parse HEAD)}
+    export CUDA_CHECKS_SANITIZER="$cuda_checks_sanitizer"
+    printf 'Source SHA: %s\n' "$CUDA_CHECKS_SOURCE_SHA"
+    nvidia-smi > "$cuda_checks_output/nvidia-smi.txt"
     python3.11 --version
     nvcc --version
     if [[ "$cuda_checks_sanitizer" != none ]]; then
@@ -82,7 +86,8 @@ assert _C.cpu_parallel_backend == "openmp", _C.cpu_parallel_backend
 assert Path(_C.__file__).resolve().is_relative_to(Path(sys.prefix).resolve()), _C.__file__
 print("Installed extension:", _C.__file__)
 PY
-    "$cuda_checks_python" -m unittest discover -s tests -v
+    cp -- "$cuda_checks_source/scripts/cuda_test_report.py" "$cuda_checks_temp/"
+    "$cuda_checks_python" cuda_test_report.py --output "$cuda_checks_output/cuda-tests.json"
 
     if [[ "$cuda_checks_sanitizer" != none ]]; then
         cd -- "$cuda_checks_temp/tests"
@@ -98,7 +103,15 @@ PY
         nvidia-smi > "$cuda_checks_output/nvidia-smi.txt"
         "$cuda_checks_python" benchmark_cuda.py > "$cuda_checks_output/benchmark-cuda.json"
     fi
-    printf 'CUDA validation completed successfully.\n'
+    "$cuda_checks_python" - "$cuda_checks_output/cuda-completion.json" <<'PY'
+import json, os, sys
+from pathlib import Path
+Path(sys.argv[1]).write_text(json.dumps({
+    "source_sha": os.environ["CUDA_CHECKS_SOURCE_SHA"],
+    "sanitizer": os.environ["CUDA_CHECKS_SANITIZER"], "success": True,
+}, indent=2) + "\n")
+PY
+    printf 'CUDA validation completed successfully.\n' 
 }
 
 # A bare pipeline preserves errexit inside run_checks and reports tee failures.

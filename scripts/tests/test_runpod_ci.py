@@ -193,6 +193,7 @@ class ControllerTest(unittest.TestCase):
         self.assertEqual(set(api.pods), {"ownedpod", "otherpod", "malformedpod"})
 
     def prepare_run(self):
+        mock.patch.object(ci.subprocess, "check_output", return_value="a" * 40).start()
         scripts = self.args.source / "scripts"
         scripts.mkdir(parents=True)
         (scripts / "runpod_bootstrap.sh").write_text("#!/bin/bash\ntrue\n")

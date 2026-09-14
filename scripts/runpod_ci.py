@@ -513,6 +513,14 @@ def run(api, args):
         raise ControllerError("Missing scripts/runpod_bootstrap.sh in the source checkout")
     api.quote(args.gpu, args.max_hourly_usd)
     public, host_private = generate_keys(args.state_dir, pod_name(owner))
+    source_sha = subprocess.check_output(
+        ["git", "-C", str(args.source), "rev-parse", "HEAD"],
+        text=True,
+        env=child_environment(),
+        timeout=30,
+    ).strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", source_sha):
+        raise ControllerError("Invalid archived source SHA")
     archive = args.state_dir / "source.tar"
     subprocess.run(
         [
@@ -522,7 +530,7 @@ def run(api, args):
             "archive",
             "--format=tar",
             "--output=" + str(archive),
-            "HEAD",
+            source_sha,
         ],
         check=True,
         env=child_environment(),
@@ -591,7 +599,7 @@ def run(api, args):
         if remaining <= 60:
             raise ControllerError("Insufficient controller time remains for CUDA checks")
         remote = (
-            "cd /workspace/ci/source && timeout --signal=TERM --kill-after=30s "
+            f"cd /workspace/ci/source && CUDA_CHECKS_SOURCE_SHA={source_sha} timeout --signal=TERM --kill-after=30s "
             f"{remaining - 30}s bash scripts/run_cuda_checks.sh {args.sanitizer} /workspace/ci/results"
             + (" benchmark" if args.benchmark else "")
         )

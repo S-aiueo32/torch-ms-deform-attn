@@ -80,4 +80,10 @@ jobs:
           name: cuda-runpod-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/runpod-results/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 90
+      - name: Record revision and GPU evidence location
+        if: always() && inputs.operation == 'test'
+        run: |
+          echo "Source SHA: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "GPU runtime evidence: cuda-runpod-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Review cuda-tests.json, cuda-completion.json and cuda-checks.log; archive with the release." >> "$GITHUB_STEP_SUMMARY"

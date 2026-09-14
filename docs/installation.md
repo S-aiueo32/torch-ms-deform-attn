@@ -23,13 +23,20 @@ that it is the newest available release.
 
 | Platform | Python | PyTorch | Backend/toolkit | Build / test evidence |
 | --- | --- | --- | --- | --- |
-| Linux | 3.10 | 2.5.0 | CPU serial (declared lower bounds) | CPU package job; pending first run |
-| Linux | 3.11 | 2.5.1 | CPU OpenMP | CPU package job; per-revision result |
-| macOS arm64 | 3.11 | 2.5.1 | CPU OpenMP | CPU package job; per-revision result |
-| Linux | 3.12 | 2.7.1 | CPU OpenMP | CPU package job; pending first run |
-| macOS arm64 | 3.12 | 2.7.1 | CPU OpenMP | CPU package job; pending first run |
-| Linux | 3.11 | 2.5.1 | CUDA 12.4 | Build job + historical L4 run linked in GPU guide; new revisions require a new GPU run |
-| Linux | container Python | 2.7.1 | CUDA 12.6 | Build job + manual GPU target; unverified until both succeed |
+| Linux | 3.10 | 2.5.0 | CPU serial (declared lower bounds) | CPU package job; not run (Actions unavailable) |
+| Linux | 3.11 | 2.5.1 | CPU OpenMP | CPU tests passed in the CUDA wheel; CPU-only wheel job unverified |
+| macOS arm64 | 3.11 | 2.5.1 | CPU OpenMP | Local build and full CPU suite passed |
+| Linux | 3.12 | 2.7.1 | CPU OpenMP | CPU package job; not run (Actions unavailable) |
+| macOS arm64 | 3.12 | 2.7.1 | CPU OpenMP | Local sdist-to-wheel build and installed-wheel suite passed |
+| Linux | 3.11 | 2.5.1 | CUDA 12.4 | Local L4 sdist-to-wheel build, full suite and all four sanitizers passed |
+| Linux | 3.11 | 2.7.1 | CUDA 12.6 | Local L4 sdist-to-wheel build, full suite and all four sanitizers passed |
+
+The successful local results above refer only to source
+`c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`; see the
+[full logs and environment records](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/fedcad0064f3cea79146be9ca181c97f53aeeda8/docs/validation/2026-09-14-p1/README.md).
+The declared lower bounds also passed on macOS arm64 / Python 3.10.21 /
+PyTorch 2.5.0. Upgrading that same environment to 2.7.1 and rebuilding in the
+same checkout passed again. Unexecuted Linux CPU-only rows remain best effort.
 
 Each CPU job writes its SHA and result to the Actions summary. The `rebuild` job
 builds and tests 2.5.0 then 2.7.1 in the same checkout and Python 3.11 environment.

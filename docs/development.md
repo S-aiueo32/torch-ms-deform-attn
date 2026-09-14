@@ -80,6 +80,7 @@ available. A CPU-only test run does not validate CUDA execution.
 | Workflow | Coverage |
 | --- | --- |
 | [Lint](../.github/workflows/lint.yml) | Ruff lint/format across Python files; ty checks for `src/` |
+| [Publish to PyPI](../.github/workflows/publish.yml) | Release tag and GPU evidence checks; sdist build and Trusted Publishing; manual build-only validation |
 | [CPU package](../.github/workflows/ci.yml) | Linux serial/OpenMP; explicit Python/PyTorch pairs in the [support matrix](installation.md#prerequisites) |
 | [CUDA package build](../.github/workflows/cuda-build.yml) | Pinned PyTorch 2.5.1 / CUDA 12.4 image; compilation and host-side tests without a GPU |
 | [CUDA correctness](../.github/workflows/cuda.yml) | Manual Runpod GPU run; installed-wheel tests and optional Compute Sanitizer |
@@ -127,7 +128,37 @@ Locally built wheels are not guaranteed to work across PyTorch versions. Publish
 the source distribution so users can compile against their installed PyTorch
 and select CPU or CUDA support.
 
-## Publish to PyPI with uv
+## Publish to PyPI with GitHub Actions
+
+The [publish workflow](../.github/workflows/publish.yml) runs when a GitHub release
+is published, including prereleases. It requires a tag of `vVERSION` matching
+`project.version` in `pyproject.toml`, verifies the attached GPU evidence against
+the checked-out release commit, builds and validates an sdist, and publishes it.
+The publish job downloads that archive from the build job and uses
+[PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/);
+no API token secret is needed. Only that job receives `id-token: write`.
+
+One-time setup:
+
+1. Create the GitHub Actions environment `pypi`. Configure its deployment rules
+   for release tags and any required reviewers.
+2. On PyPI, add a Trusted Publisher for `torch-ms-deform-attn` with this GitHub
+   repository's owner/name, workflow filename `publish.yml`, and environment
+   name `pypi`. For the first release, create a pending publisher.
+
+For each release, update the package version and commit the changes. Complete
+the [required GPU release validation](gpu-runner.md#required-release-validation)
+for that exact commit. Create the matching `vVERSION` tag and a draft GitHub
+release, attach the four required evidence files and add the validation details
+to its notes, then publish the release. Missing or mismatched evidence fails the
+workflow before upload. The evidence verifier checks contents; maintainers must
+still ensure the assets came from a trusted validation run.
+
+Use **Actions → Publish to PyPI → Run workflow** to build and validate an sdist
+without uploading. Manual runs do not require a release tag or GPU evidence and
+save the archive as the `pypi-sdist` artifact. They do not validate GPU behavior.
+
+## Publish to PyPI manually with uv
 
 Before publishing, complete the [required GPU release validation](gpu-runner.md#required-release-validation) for the exact source SHA and archive the evidence with the GitHub release. A CPU or CUDA build-only CI success is insufficient.
 

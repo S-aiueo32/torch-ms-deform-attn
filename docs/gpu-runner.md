@@ -160,8 +160,9 @@ Before publishing any release, the maintainer must:
 
 The JSON records hardware, driver, Python/PyTorch/toolkit and build flags. A
 completion record is written only after the requested sanitizer also succeeds.
-This is a required maintainer release gate: the repository has no automatic
-release publisher. The verifier validates contents, not provenance; download
+The [PyPI publish workflow](../.github/workflows/publish.yml) downloads these
+four release assets and runs the verifier before building the distribution.
+The verifier validates contents, not provenance; download
 only from the trusted successful workflow or local controller run and check its
 SHA and completion status.
 

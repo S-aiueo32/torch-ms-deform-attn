@@ -257,6 +257,7 @@ setup(
         (CUDAExtension if with_cuda else CppExtension)(
             "torch_ms_deform_attn._C",
             sources=sources,
+            include_dirs=["."],
             define_macros=[("WITH_CUDA", None)] if with_cuda else [],
             extra_compile_args=compile_args,
         )

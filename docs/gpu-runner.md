@@ -122,8 +122,8 @@ Use `sanitizer=all` for release-candidate validation. Each tool must return zero
 with `--error-exitcode 1`; inspect the tool summary in its individual
 `sanitizer-TOOL.log`. Archive those logs with the exact source SHA and tool version
 alongside the release evidence described in T02. A historical memcheck pass is
-not racecheck/synccheck/initcheck evidence for another revision. These additional
-tools remain **unverified until a successful GPU run is attached**.
+not racecheck/synccheck/initcheck evidence for another revision. All four tools passed on both PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6
+with L4; see the [revision-bound P1 evidence](validation/2026-09-14-p1/README.md).
 
 Only named positive sampling/reduction tests run under sanitizers. Tests that
 intentionally trigger device assertions still run in isolated subprocesses in

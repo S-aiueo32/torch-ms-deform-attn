@@ -65,7 +65,7 @@ run positive reduction, partial-batch, padding, offset and collision cases under
 Compute Sanitizer. `all` reuses one wheel/Pod for all four tools.
 
 Logs and built distributions appear in the run's `cuda-runpod-*` artifact, retained
-for seven days. A failed remote test fails the Actions job. Each new run rents a
+for 90 days. A failed remote test fails the Actions job. Each new run rents a
 fresh Pod; the workflow never substitutes a more expensive GPU model by itself.
 Only one CUDA workflow runs at a time.
 
@@ -136,3 +136,27 @@ Initcheck covers uninitialized device global-memory reads under its default
 scope; it is not a complete memory-safety proof. Memcheck complements these
 checks. Consult the installed Compute Sanitizer version's documentation and do
 not infer guarantees for memory types or execution paths the tool did not check.
+## Required release validation
+
+Before publishing any release, the maintainer must:
+
+1. Resolve the release tag to a full source SHA and dispatch **CUDA correctness**
+   on that commit/branch. Ordinary **CUDA package build** is build-only evidence.
+2. Require a successful `operation=test` run whose Actions `headSha` is that SHA.
+   Check Pod cleanup succeeded. `operation=check` does not run tests.
+3. Download its `cuda-runpod-RUN-ATTEMPT` artifact and run
+   `python scripts/verify_cuda_release.py --sha FULL_SHA --evidence PATH/TO/artifacts`.
+   Missing evidence, a different SHA, a failed suite or unexpected skips reject
+   the release. Only the explicitly named CPU-only-wheel and two-GPU tests may
+   skip in this single-GPU CUDA-build configuration.
+4. Attach `cuda-tests.json`, `cuda-completion.json`, `cuda-checks.log` and
+   `nvidia-smi.txt` to the GitHub release **before publishing it**, and include
+   the source SHA, Actions run URL, GPU/toolchain, counts and skip reasons in its
+   release notes. These release assets are the long-term record; the 90-day
+   Actions artifact is only temporary storage. Repeat for each claimed CUDA pair.
+
+The JSON records hardware, driver, Python/PyTorch/toolkit and build flags. A
+completion record is written only after the requested sanitizer also succeeds.
+This is a required maintainer release gate: the repository has no automatic
+release publisher. The verifier validates contents, not provenance; download
+only from the trusted successful workflow run and check its SHA and conclusion.

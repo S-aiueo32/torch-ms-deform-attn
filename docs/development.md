@@ -110,11 +110,14 @@ With [uv](https://docs.astral.sh/uv/guides/package/) installed, build a source
 distribution for PyPI:
 
 ```bash
-uv build --sdist --no-sources --out-dir dist/pypi
+uv build --sdist --no-sources --no-config --out-dir dist/pypi
 ```
 
-uv installs the build dependencies declared in `pyproject.toml` in an isolated
-environment. The archive includes the CPU/CUDA sources, tests, documentation,
+`--no-config` bypasses the project's editable-build isolation override, so uv
+installs the build dependencies declared in `pyproject.toml` in an isolated
+environment. The CI publisher instead installs CPU PyTorch and the build tools
+explicitly and builds with `--no-build-isolation`.
+The archive includes the CPU/CUDA sources, tests, documentation,
 and license files.
 
 For a local wheel, use the development environment's PyTorch:

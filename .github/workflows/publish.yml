@@ -63,8 +63,13 @@ jobs:
           python scripts/verify_cuda_release.py \
             --sha "$(git rev-parse HEAD)" --evidence "$RUNNER_TEMP/release-evidence"
           test -s "$RUNNER_TEMP/release-evidence/nvidia-smi.txt"
+      - name: Install source build dependencies
+        # setup.py imports torch even for sdist; the project disables build isolation.
+        run: |
+          uv pip install --system 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
+          uv pip install --system 'setuptools>=77' 'packaging>=24.2' wheel
       - name: Build source distribution
-        run: uv build --sdist --no-sources --out-dir dist/pypi
+        run: uv build --sdist --no-sources --no-build-isolation --out-dir dist/pypi
       - name: Validate distribution without uploading
         run: uv publish --dry-run dist/pypi/*.tar.gz
       - uses: actions/upload-artifact@v4

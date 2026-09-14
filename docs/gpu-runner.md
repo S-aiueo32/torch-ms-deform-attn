@@ -138,8 +138,9 @@ References: [Runpod API keys](https://docs.runpod.io/get-started/api-keys),
 
 Before publishing any release, the maintainer must:
 
-1. Resolve the release tag to a full source SHA and dispatch **CUDA correctness**
-   on that commit/branch. Ordinary **CUDA package build** is build-only evidence.
+1. Resolve the release tag to a full source SHA. Run **CUDA correctness** on that
+   commit/branch, or use the local controller with a checkout at that SHA.
+   Ordinary **CUDA package build** is build-only evidence.
 2. Require a successful test run. For Actions, its `headSha` must match that SHA.
    For a local controller, retain the source archive and controller log, require
    exit status zero and `phase: deleted` in its state file, and verify the SHA in
@@ -162,3 +163,8 @@ This is a required maintainer release gate: the repository has no automatic
 release publisher. The verifier validates contents, not provenance; download
 only from the trusted successful workflow or local controller run and check its
 SHA and completion status.
+
+The local controller path and evidence verifier were exercised on both L4
+PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6 at source
+`c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`. See the
+[archived reports, logs and cleanup records](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/fedcad0064f3cea79146be9ca181c97f53aeeda8/docs/validation/2026-09-14-p1/README.md).

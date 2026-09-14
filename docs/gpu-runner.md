@@ -60,8 +60,9 @@ Select another branch with `--ref` when needed. The checkout's exact commit is t
 `git archive`; GitHub credentials and the `.git` directory are excluded.
 `scripts/run_cuda_checks.sh` builds an sdist and wheel in an isolated environment,
 installs the wheel, then executes the complete CPU/CUDA test suite outside the
-checkout. Select `memcheck`, `racecheck`, or `synccheck` to additionally run the
-kernel reduction and partial-batch tests under Compute Sanitizer.
+checkout. Select `memcheck`, `racecheck`, `synccheck`, `initcheck`, or `all` to additionally
+run positive reduction, partial-batch, padding, offset and collision cases under
+Compute Sanitizer. `all` reuses one wheel/Pod for all four tools.
 
 Logs and built distributions appear in the run's `cuda-runpod-*` artifact, retained
 for seven days. A failed remote test fails the Actions job. Each new run rents a
@@ -114,3 +115,24 @@ References: [Runpod API keys](https://docs.runpod.io/get-started/api-keys),
 [GPU catalog](https://docs.runpod.io/api-reference-v2/catalog/get-a-gpu-type),
 [SSH](https://docs.runpod.io/pods/configuration/use-ssh),
 [Pod pricing](https://docs.runpod.io/pods/pricing).
+
+## Sanitizer evidence and scope
+
+Use `sanitizer=all` for release-candidate validation. Each tool must return zero
+with `--error-exitcode 1`; inspect the tool summary in its individual
+`sanitizer-TOOL.log`. Archive those logs with the exact source SHA and tool version
+alongside the release evidence described in T02. A historical memcheck pass is
+not racecheck/synccheck/initcheck evidence for another revision. These additional
+tools remain **unverified until a successful GPU run is attached**.
+
+Only named positive sampling/reduction tests run under sanitizers. Tests that
+intentionally trigger device assertions still run in isolated subprocesses in
+the normal suite, but cannot contaminate the sanitizer verdict. The reduction
+table grows with T03; T04's shared sampling suite is a prerequisite of this PR.
+
+Racecheck diagnoses supported shared-memory hazards; it does not prove absence
+of global-memory races. Synccheck diagnoses supported synchronization misuse.
+Initcheck covers uninitialized device global-memory reads under its default
+scope; it is not a complete memory-safety proof. Memcheck complements these
+checks. Consult the installed Compute Sanitizer version's documentation and do
+not infer guarantees for memory types or execution paths the tool did not check.

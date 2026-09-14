@@ -8,13 +8,16 @@ import unittest
 import warnings
 
 import torch
+from sampling_cases import SamplingCases
 from torch.autograd import gradcheck
 
 from torch_ms_deform_attn import _C, ms_deform_attn, ms_deform_attn_core_pytorch
 
 
 @unittest.skipUnless(torch.cuda.is_available() and _C.with_cuda, "Requires CUDA extension and GPU")
-class CUDAAttentionTest(unittest.TestCase):
+class CUDAAttentionTest(SamplingCases, unittest.TestCase):
+    sampling_device = "cuda"
+
     def inputs(self, dtype=torch.double, channels=2, device="cuda", batch=2):
         torch.manual_seed(13)
         shapes = torch.tensor([[3, 4], [2, 2]], device=device)

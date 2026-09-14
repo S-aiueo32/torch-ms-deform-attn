@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=77", "packaging>=24.2", "wheel", "torch>=2.5,<3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "torch-ms-deform-attn"
+version = "0.1.0"
+description = "Standalone CPU/CUDA multi-scale deformable attention with PyTorch autograd"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+dependencies = ["torch>=2.5,<3"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["torch_ms_deform_attn"]
+
+[dependency-groups]
+dev = [
+    { include-group = "lint" },
+    "torch==2.5.1",
+    "numpy",
+    "setuptools>=77",
+    "packaging>=24.2",
+    "wheel",
+    "ninja",
+]
+lint = ["ruff>=0.15,<0.16", "ty", "jaxtyping>=0.3,<0.4"]
+
+[tool.ty.src]
+include = ["src"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# jaxtyping shape strings are not Python forward-reference expressions.
+"src/torch_ms_deform_attn/functional.py" = ["F722"]
+"src/torch_ms_deform_attn/_C.pyi" = ["F722"]
+
+[tool.uv]
+# Install PyTorch and build tools before compiling the editable extension.
+no-build-isolation-package = ["torch-ms-deform-attn"]
+cache-keys = [
+    { file = "pyproject.toml" },
+    { file = "setup.py" },
+    { file = "csrc/**/*" },
+    { env = "FORCE_CPU" },
+    { env = "FORCE_CUDA" },
+    { env = "FORCE_OPENMP" },
+    { env = "OMP_PREFIX" },
+    { env = "TORCH_CUDA_ARCH_LIST" },
+]
+
+[tool.uv.dependency-groups]
+dev = { requires-python = ">=3.10,<3.13" }

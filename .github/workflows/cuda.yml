@@ -1,0 +1,83 @@
+name: CUDA correctness
+on:
+  workflow_dispatch:
+    inputs:
+      sanitizer:
+        description: Optional CUDA kernel memory/synchronization check
+        type: choice
+        default: none
+        options: [none, memcheck, racecheck, synccheck]
+      operation:
+        description: Run CUDA tests, or check Runpod credentials/pricing without renting a GPU
+        type: choice
+        default: test
+        options: [test, check]
+      gpu:
+        description: Rent one Secure Cloud GPU (no automatic model substitution)
+        type: choice
+        default: NVIDIA L4
+        options: [NVIDIA RTX A5000, NVIDIA L4, NVIDIA GeForce RTX 4090]
+      max_hourly_usd:
+        description: Maximum accepted compute price in USD/hour (checked before and after creation)
+        type: string
+        default: '0.50'
+      timeout_minutes:
+        description: Maximum controller execution time in minutes (5-60)
+        type: number
+        default: 45
+permissions:
+  contents: read
+concurrency:
+  group: runpod-cuda
+  cancel-in-progress: false
+jobs:
+  test:
+    # This controller provisions a Runpod GPU and runs the checks over SSH.
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      GPU: ${{ inputs.gpu }}
+      SANITIZER: ${{ inputs.sanitizer }}
+      MAX_HOURLY_USD: ${{ inputs.max_hourly_usd }}
+      TIMEOUT_MINUTES: ${{ inputs.timeout_minutes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check account access and GPU quote
+        if: inputs.operation == 'check'
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+        run: |
+          python3 scripts/runpod_ci.py check \
+            --gpu "$GPU" --max-hourly-usd "$MAX_HOURLY_USD"
+      - name: Start Runpod GPU, test CUDA, and delete Pod
+        if: inputs.operation == 'test'
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+        run: |
+          python3 scripts/runpod_ci.py run \
+            --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
+            --output-dir "$RUNNER_TEMP/runpod-results" \
+            --gpu "$GPU" --sanitizer "$SANITIZER" \
+            --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES"
+      - name: Retry cleanup after failure or cancellation
+        if: always() && inputs.operation == 'test'
+        timeout-minutes: 5
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+        run: |
+          python3 scripts/runpod_ci.py cleanup \
+            --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
+            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+            --state-dir "$RUNNER_TEMP/runpod-state"
+      - name: Upload CUDA logs and wheel
+        if: always() && inputs.operation == 'test'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuda-runpod-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runpod-results/
+          if-no-files-found: ignore
+          retention-days: 7

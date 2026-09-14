@@ -1,0 +1,40 @@
+name: CUDA package build
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  build:
+    # Compile CUDA and exercise its host-side checks without requiring a GPU.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CUDA_BUILD_IMAGE: pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel@sha256:14611869895df612b7b07227d5925f30ec3cd6673bad58ce3d84ed107950e014
+      FORCE_CUDA: "1"
+      FORCE_OPENMP: "1"
+      TORCH_CUDA_ARCH_LIST: "8.0"
+      MAX_JOBS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reclaim unused host tool cache for the CUDA development image
+        # Python and the CUDA toolkit come from the container in this job.
+        run: |
+          test "$RUNNER_TOOL_CACHE" = /opt/hostedtoolcache
+          sudo rm -rf "$RUNNER_TOOL_CACHE"
+          df -h /
+      - name: Build source distribution and test the installed CUDA wheel
+        run: |
+          docker run --rm -i \
+            --volume "$GITHUB_WORKSPACE:/workspace" --workdir /workspace \
+            --env FORCE_CUDA --env FORCE_OPENMP --env TORCH_CUDA_ARCH_LIST --env MAX_JOBS \
+            "$CUDA_BUILD_IMAGE" bash -euo pipefail <<'BASH'
+          nvcc --version
+          python -c 'import torch; assert torch.__version__.split("+")[0] == "2.5.1"; assert torch.version.cuda == "12.4"; assert not torch.cuda.is_available()'
+          python -m pip install --no-cache-dir numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
+          python -m build --sdist --no-isolation
+          python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
+          python -m pip install --no-deps dist/*.whl
+          cp -R tests /tmp/msda-tests
+          cd /tmp
+          python -c 'from torch_ms_deform_attn import _C; assert _C.with_cuda; assert _C.cpu_parallel_backend == "openmp", _C.cpu_parallel_backend'
+          python -m unittest discover -s msda-tests -v
+          BASH

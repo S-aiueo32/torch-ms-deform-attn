@@ -1,0 +1,21 @@
+name: Lint
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.5"
+      - run: uv sync --locked --only-group lint
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - name: Install CPU PyTorch for type information
+        run: uv pip install 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
+      - run: uv run --no-sync ty check

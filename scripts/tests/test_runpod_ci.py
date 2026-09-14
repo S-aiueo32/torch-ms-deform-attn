@@ -273,6 +273,27 @@ class ControllerTest(unittest.TestCase):
         wait.assert_not_called()
         self.assertFalse(api.pods)
 
+    def test_selected_torch_version_and_source_sha_reach_remote(self):
+        self.prepare_run()
+        for version in ("2.5.1", "2.7.1"):
+            with self.subTest(torch_version=version):
+                self.args.torch_version = version
+                self.args.state_dir = self.root / f"state-{version}"
+                api = FakeAPI()
+                with (
+                    mock.patch.object(ci, "wait_for_ssh", return_value=["ssh"]),
+                    mock.patch.object(ci, "stream_command", return_value=0) as command,
+                    mock.patch.object(ci, "collect_artifacts"),
+                ):
+                    ci.run(api, self.args)
+                remote = command.call_args.args[0][-1]
+                self.assertIn(f"CUDA_CHECKS_TORCH_VERSION={version} ", remote)
+                self.assertIn(f"CUDA_CHECKS_SOURCE_SHA={'a' * 40} ", remote)
+                payload = next(payload for method, _, payload in api.calls if method == "POST")
+                self.assertIn(f"pytorch:{version}-", payload["image"])
+                self.assertFalse(api.pods)
+                self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
+
     def test_benchmark_collects_results_and_deletes_pod(self):
         self.prepare_run()
         self.args.benchmark = True

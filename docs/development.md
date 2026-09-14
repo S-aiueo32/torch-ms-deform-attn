@@ -80,7 +80,7 @@ available. A CPU-only test run does not validate CUDA execution.
 | Workflow | Coverage |
 | --- | --- |
 | [Lint](../.github/workflows/lint.yml) | Ruff lint/format across Python files; ty checks for `src/` |
-| [CPU package](../.github/workflows/ci.yml) | Linux serial/OpenMP and macOS OpenMP; Python 3.11 / PyTorch 2.5.1 |
+| [CPU package](../.github/workflows/ci.yml) | Linux serial/OpenMP; explicit Python/PyTorch pairs in the [support matrix](installation.md#prerequisites) |
 | [CUDA package build](../.github/workflows/cuda-build.yml) | Pinned PyTorch 2.5.1 / CUDA 12.4 image; compilation and host-side tests without a GPU |
 | [CUDA correctness](../.github/workflows/cuda.yml) | Manual Runpod GPU run; installed-wheel tests and optional Compute Sanitizer |
 | [CUDA benchmark](../.github/workflows/cuda-benchmark.yml) | Manual Runpod GPU run; installed-wheel tests and eager CUDA latency measurements |

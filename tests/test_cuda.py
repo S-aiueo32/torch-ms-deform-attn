@@ -8,13 +8,16 @@ import unittest
 import warnings
 
 import torch
+from sampling_cases import SamplingCases
 from torch.autograd import gradcheck
 
 from torch_ms_deform_attn import _C, ms_deform_attn, ms_deform_attn_core_pytorch
 
 
 @unittest.skipUnless(torch.cuda.is_available() and _C.with_cuda, "Requires CUDA extension and GPU")
-class CUDAAttentionTest(unittest.TestCase):
+class CUDAAttentionTest(SamplingCases, unittest.TestCase):
+    sampling_device = "cuda"
+
     def inputs(self, dtype=torch.double, channels=2, device="cuda", batch=2):
         torch.manual_seed(13)
         shapes = torch.tensor([[3, 4], [2, 2]], device=device)
@@ -29,18 +32,49 @@ class CUDAAttentionTest(unittest.TestCase):
     def test_reference_forward_backward(self):
         for dtype in (torch.float32, torch.float64):
             # Cover each specialized, generic, and multi-block reduction family.
-            for channels in (2, 3, 32, 64, 71, 1024, 1025, 2048):
+            for index, channels in enumerate(
+                (
+                    1,
+                    2,
+                    4,
+                    8,
+                    16,
+                    32,
+                    64,
+                    128,
+                    256,
+                    512,
+                    1024,
+                    3,
+                    31,
+                    33,
+                    63,
+                    65,
+                    71,
+                    127,
+                    129,
+                    1023,
+                    1025,
+                    2048,
+                    2049,
+                )
+            ):
                 with self.subTest(dtype=dtype, channels=channels):
-                    value, shapes, starts, loc, weights = self.inputs(dtype, channels)
-                    actual = ms_deform_attn(value, shapes, starts, loc, weights, 1)
+                    # Rotate batch=1, remainder chunks, and step larger than batch.
+                    batch, step = ((1, 1), (3, 2), (2, 64))[index % 3]
+                    value, shapes, starts, loc, weights = self.inputs(dtype, channels, batch=batch)
+                    actual = ms_deform_attn(value, shapes, starts, loc, weights, step)
                     expected = ms_deform_attn_core_pytorch(value, shapes, loc, weights)
-                    torch.testing.assert_close(actual, expected, atol=2e-5, rtol=1e-4)
+                    # float32 reductions accumulate up to 2049 channels, and value
+                    # gradients use atomics; double should retain double accuracy.
+                    atol, rtol = (2e-4, 1e-4) if dtype == torch.float32 else (1e-10, 1e-9)
+                    torch.testing.assert_close(actual, expected, atol=atol, rtol=rtol)
                     grad = torch.randn_like(actual)
                     for a, e in zip(
                         torch.autograd.grad(actual, (value, loc, weights), grad),
                         torch.autograd.grad(expected, (value, loc, weights), grad),
                     ):
-                        torch.testing.assert_close(a, e, atol=2e-4, rtol=1e-4)
+                        torch.testing.assert_close(a, e, atol=atol, rtol=rtol)
 
     def test_partial_batch_chunk(self):
         for batch, step in ((3, 2), (5, 2), (2, 64)):

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run from the repository root inside a CUDA 12.4 development container.
+# Run inside a matching CUDA development container (see installation matrix).
 set -euo pipefail
 
 if [[ $# -lt 2 || $# -gt 3 ]]; then
@@ -35,26 +35,36 @@ run_checks() {
     export FORCE_CPU=0 FORCE_CUDA=1 FORCE_OPENMP=1 MAX_JOBS=2
     export PYTHONUNBUFFERED=1
 
+    export CUDA_CHECKS_TORCH_VERSION=${CUDA_CHECKS_TORCH_VERSION:-2.5.1}
+    case "$CUDA_CHECKS_TORCH_VERSION" in
+        2.5.1) export CUDA_CHECKS_TOOLKIT=12.4; cuda_checks_index=cu124 ;;
+        2.7.1) export CUDA_CHECKS_TOOLKIT=12.6; cuda_checks_index=cu126 ;;
+        *) echo 'Unsupported validation PyTorch version' >&2; exit 2 ;;
+    esac
+    local cuda_checks_base_python=${CUDA_CHECKS_PYTHON:-python3.11}
+    "$cuda_checks_base_python" --version
     export CUDA_CHECKS_SOURCE_SHA=${CUDA_CHECKS_SOURCE_SHA:-$(git rev-parse HEAD)}
     export CUDA_CHECKS_SANITIZER="$cuda_checks_sanitizer"
     printf 'Source SHA: %s\n' "$CUDA_CHECKS_SOURCE_SHA"
     nvidia-smi > "$cuda_checks_output/nvidia-smi.txt"
-    python3.11 --version
     nvcc --version
     if [[ "$cuda_checks_sanitizer" != none ]]; then
         compute-sanitizer --version
     fi
 
-    python3.11 -m venv "$cuda_checks_temp/venv"
+    "$cuda_checks_base_python" -m venv "$cuda_checks_temp/venv"
     export PATH="$cuda_checks_temp/venv/bin:$PATH"
     local cuda_checks_python="$cuda_checks_temp/venv/bin/python"
     "$cuda_checks_python" -m pip install --no-cache-dir \
-        torch==2.5.1 numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
+        numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
+    "$cuda_checks_python" -m pip install --no-cache-dir "torch==$CUDA_CHECKS_TORCH_VERSION" \
+        --index-url "https://download.pytorch.org/whl/$cuda_checks_index"
     "$cuda_checks_python" - <<'PY'
+import os
 import torch
 
-assert torch.__version__.split("+")[0] == "2.5.1", torch.__version__
-assert torch.version.cuda == "12.4", torch.version.cuda
+assert torch.__version__.split("+")[0] == os.environ["CUDA_CHECKS_TORCH_VERSION"], torch.__version__
+assert torch.version.cuda == os.environ["CUDA_CHECKS_TOOLKIT"], torch.version.cuda
 assert torch.cuda.is_available(), "CUDA validation requires a visible GPU"
 print("PyTorch:", torch.__version__, "CUDA:", torch.version.cuda)
 for device in range(torch.cuda.device_count()):

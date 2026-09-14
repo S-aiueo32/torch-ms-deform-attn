@@ -2,6 +2,11 @@ name: CUDA correctness
 on:
   workflow_dispatch:
     inputs:
+      torch_version:
+        description: Validated PyTorch/toolkit pair (2.5.1/cu124 or 2.7.1/cu126)
+        type: choice
+        default: '2.5.1'
+        options: ['2.5.1', '2.7.1']
       sanitizer:
         description: Optional CUDA kernel memory/synchronization check
         type: choice
@@ -36,6 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
+      TORCH_VERSION: ${{ inputs.torch_version }}
       GPU: ${{ inputs.gpu }}
       SANITIZER: ${{ inputs.sanitizer }}
       MAX_HOURLY_USD: ${{ inputs.max_hourly_usd }}
@@ -61,7 +67,7 @@ jobs:
             --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
             --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
             --output-dir "$RUNNER_TEMP/runpod-results" \
-            --gpu "$GPU" --sanitizer "$SANITIZER" \
+            --gpu "$GPU" --sanitizer "$SANITIZER" --torch-version "$TORCH_VERSION" \
             --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES"
       - name: Retry cleanup after failure or cancellation
         if: always() && inputs.operation == 'test'

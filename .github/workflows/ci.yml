@@ -10,9 +10,7 @@ jobs:
         include:
           - {os: ubuntu-latest, python: '3.10', torch: '2.5.0', openmp: '0', backend: serial}
           - {os: ubuntu-latest, python: '3.11', torch: '2.5.1', openmp: '1', backend: openmp}
-          - {os: macos-14, python: '3.11', torch: '2.5.1', openmp: '1', backend: openmp}
           - {os: ubuntu-latest, python: '3.12', torch: '2.7.1', openmp: '1', backend: openmp}
-          - {os: macos-14, python: '3.12', torch: '2.7.1', openmp: '1', backend: openmp}
     name: ${{ matrix.os }} / Python ${{ matrix.python }} / torch ${{ matrix.torch }} / ${{ matrix.backend }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
@@ -28,11 +26,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install Linux CPU PyTorch
-        if: runner.os == 'Linux'
         run: python -m pip install "torch==$TORCH_VERSION" --index-url https://download.pytorch.org/whl/cpu
-      - name: Install macOS PyTorch
-        if: runner.os == 'macOS'
-        run: python -m pip install "torch==$TORCH_VERSION"
       - run: python -m pip install numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
       - run: python -m build --sdist --no-isolation
       - run: python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist

@@ -17,7 +17,7 @@ class InputContractCases:
         for index in range(5):
             bad = list(args)
             bad[index] = bad[index].unsqueeze(0)
-            cases.append((f"rank-{index}", bad, 2, "shape|nonempty"))
+            cases.append((f"rank-{index}", bad, 2, "shape|nonempty|must match"))
         for index, axis in (
             (1, 1),
             (2, 0),

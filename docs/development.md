@@ -80,7 +80,7 @@ available. A CPU-only test run does not validate CUDA execution.
 | Workflow | Coverage |
 | --- | --- |
 | [Lint](../.github/workflows/lint.yml) | Ruff lint/format across Python files; ty checks for `src/` |
-| [Publish to PyPI](../.github/workflows/publish.yml) | Release tag and GPU evidence checks; sdist build and Trusted Publishing; manual build-only validation |
+| [Publish to PyPI / TestPyPI](../.github/workflows/publish.yml) | Release tag and GPU evidence checks; sdist build and Trusted Publishing; manual build-only validation or TestPyPI upload |
 | [CPU package](../.github/workflows/ci.yml) | Linux serial/OpenMP; explicit Python/PyTorch pairs in the [support matrix](installation.md#prerequisites) |
 | [CUDA package build](../.github/workflows/cuda-build.yml) | Pinned PyTorch 2.5.1 / CUDA 12.4 image; compilation and host-side tests without a GPU |
 | [CUDA correctness](../.github/workflows/cuda.yml) | Manual Runpod GPU run; installed-wheel tests and optional Compute Sanitizer |
@@ -128,7 +128,7 @@ Locally built wheels are not guaranteed to work across PyTorch versions. Publish
 the source distribution so users can compile against their installed PyTorch
 and select CPU or CUDA support.
 
-## Publish to PyPI with GitHub Actions
+## Publish to PyPI / TestPyPI with GitHub Actions
 
 The [publish workflow](../.github/workflows/publish.yml) runs when a GitHub release
 is published, including prereleases. It requires a tag of `vVERSION` matching
@@ -154,27 +154,66 @@ to its notes, then publish the release. Missing or mismatched evidence fails the
 workflow before upload. The evidence verifier checks contents; maintainers must
 still ensure the assets came from a trusted validation run.
 
-Use **Actions → Publish to PyPI → Run workflow** to build and validate an sdist
-without uploading. Manual runs do not require a release tag or GPU evidence and
-save the archive as the `pypi-sdist` artifact. They do not validate GPU behavior.
+The current version is `0.1.0rc1`; use tag `v0.1.0rc1` and mark the GitHub release
+as a prerelease. Increment to `0.1.0rc2`, etc. for subsequent candidates; use
+`0.1.0` only for the final release. Keep `uv.lock` in sync with `uv lock`.
+
+Use **Actions → Publish to PyPI / TestPyPI → Run workflow** with a target:
+
+| Trigger / target | Result |
+| --- | --- |
+| Manual / `build-only` (default) | Build and validate; no upload |
+| Manual / `testpypi` | Build, validate and upload to TestPyPI |
+| Published GitHub release, including RCs | Verify release tag/GPU evidence and upload to PyPI |
+
+Manual runs do not require a release tag or GPU evidence and save the archive
+as the `pypi-sdist` artifact. They do not validate GPU behavior. TestPyPI is for
+packaging tests; PyPI releases still require the GPU evidence above.
+
+### TestPyPI setup and installation
+
+Create the GitHub environment `testpypi`, allowing the `main` branch and `v*`
+tags. On [TestPyPI](https://test.pypi.org/manage/account/publishing/), register a
+separate Trusted Publisher (or pending publisher for a new project) with the
+same project, owner and repository, workflow `publish.yml`, and environment
+`testpypi`. PyPI's publisher registration does not configure TestPyPI.
+The workflow uses `https://test.pypi.org/legacy/` for uploads.
+
+After registering the publisher, run:
+
+```bash
+gh workflow run publish.yml --ref main --field target=testpypi
+```
+
+Install prerequisites from PyPI first, then install only this package from
+TestPyPI:
+
+```bash
+python -m pip install 'torch>=2.5,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
+python -m pip install --no-build-isolation --no-deps \
+  --index-url https://test.pypi.org/simple/ torch-ms-deform-attn==0.1.0rc1
+```
+
+Uploaded filenames cannot be reused for changed archives. Increment the RC
+version before uploading another candidate to the same index.
 
 ## Publish to PyPI manually with uv
 
 Before publishing, complete the [required GPU release validation](gpu-runner.md#required-release-validation) for the exact source SHA and archive the evidence with the GitHub release. A CPU or CUDA build-only CI success is insufficient.
 
-The current release version is `0.1.0` in `pyproject.toml`. For later releases,
+The current release version is `0.1.0rc1` in `pyproject.toml`. For later releases,
 update that version before building and use the matching filename below.
 
 Validate the archive without uploading it:
 
 ```bash
-uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.0.tar.gz
+uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.0rc1.tar.gz
 ```
 
 Set your PyPI API token in the `UV_PUBLISH_TOKEN` environment variable, then run:
 
 ```bash
-uv publish dist/pypi/torch_ms_deform_attn-0.1.0.tar.gz
+uv publish dist/pypi/torch_ms_deform_attn-0.1.0rc1.tar.gz
 ```
 
 uv publishes to PyPI by default; no Twine or extra index configuration is needed.
@@ -184,7 +223,7 @@ PyPI release filenames cannot be replaced with changed contents.
 After publishing, install into an environment with the build prerequisites:
 
 ```bash
-uv pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+uv pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc1
 ```
 
 For performance measurements, see [benchmarks](benchmarks.md).

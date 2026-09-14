@@ -129,6 +129,8 @@ and select CPU or CUDA support.
 
 ## Publish to PyPI with uv
 
+Before publishing, complete the [required GPU release validation](gpu-runner.md#required-release-validation) for the exact source SHA and archive the evidence with the GitHub release. A CPU or CUDA build-only CI success is insufficient.
+
 The current release version is `0.1.0` in `pyproject.toml`. For later releases,
 update that version before building and use the matching filename below.
 

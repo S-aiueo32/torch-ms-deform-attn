@@ -257,7 +257,8 @@ setup(
         (CUDAExtension if with_cuda else CppExtension)(
             "torch_ms_deform_attn._C",
             sources=sources,
-            include_dirs=["."],
+            # Ninja compiles from its build directory, including sdist builds.
+            include_dirs=[str(Path(__file__).resolve().parent)],
             define_macros=[("WITH_CUDA", None)] if with_cuda else [],
             extra_compile_args=compile_args,
         )

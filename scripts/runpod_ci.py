@@ -499,6 +499,8 @@ def collect_artifacts(ssh, directory):
 
 
 def run(api, args):
+    torch_version = getattr(args, "torch_version", "2.5.1")
+    image = IMAGE if torch_version == "2.5.1" else "pytorch/pytorch:2.7.1-cuda12.6-cudnn9-devel"
     deadline = time.monotonic() + args.timeout_minutes * 60
     args.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     args.state_dir.chmod(0o700)
@@ -533,14 +535,14 @@ def run(api, args):
     write_state(args.state_dir, state)
     payload = {
         "name": pod_name(owner),
-        "image": IMAGE,
+        "image": image,
         "disk": 40,
         "gpu": {
             "id": GPU_IDS[args.gpu],
             "count": 1,
             "minRamPerGpu": 16,
             "minVcpuCountPerGpu": 4,
-            "minCudaVersion": "12.4",
+            "minCudaVersion": "12.4" if torch_version == "2.5.1" else "12.6",
         },
         "cloud": "SECURE",
         "ports": ["22/tcp"],
@@ -591,7 +593,7 @@ def run(api, args):
         if remaining <= 60:
             raise ControllerError("Insufficient controller time remains for CUDA checks")
         remote = (
-            "cd /workspace/ci/source && timeout --signal=TERM --kill-after=30s "
+            f"cd /workspace/ci/source && CUDA_CHECKS_TORCH_VERSION={torch_version} timeout --signal=TERM --kill-after=30s "
             f"{remaining - 30}s bash scripts/run_cuda_checks.sh {args.sanitizer} /workspace/ci/results"
             + (" benchmark" if args.benchmark else "")
         )
@@ -703,6 +705,7 @@ def parse_args(argv=None):
             "--gpu", choices=list(GPU_IDS) + list(GPU_IDS.values()), default="A5000"
         )
         subparser.add_argument("--max-hourly-usd", type=money, default=Decimal("0.50"))
+    run_parser.add_argument("--torch-version", choices=("2.5.1", "2.7.1"), default="2.5.1")
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
     run_parser.add_argument(

@@ -74,6 +74,25 @@ and Compute Sanitizer memcheck reported zero errors. The same run saved the
 wheel/log artifacts and verified Pod deletion. See
 [the successful run](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/34704425778).
 
+## Run the same checks from a local controller
+
+Set `RUNPOD_API_KEY` in the local controller environment. It is never transferred
+to the GPU. Use a unique numeric run identifier and fresh, separate directories:
+
+```bash
+python scripts/runpod_ci.py run \
+  --repository OWNER/REPO --repository-id NUMERIC_REPOSITORY_ID \
+  --run-id UNIQUE_NUMERIC_ID --attempt 1 --source . \
+  --state-dir /tmp/msda-state-UNIQUE_ID --output-dir /tmp/msda-results-UNIQUE_ID \
+  --gpu L4 --sanitizer memcheck --max-hourly-usd 0.50 --timeout-minutes 60
+```
+
+This uses the same source-archive, installed-wheel tests, artifact collection and
+verified Pod deletion as Actions. Preserve the controller log and final state
+alongside the output artifacts. Do not copy the temporary SSH private keys into
+release evidence. The source SHA is resolved once before archiving, so later
+checkout changes do not change the code being tested.
+
 ## Cleanup and costs
 
 The controller deletes the Pod in a `finally` block, handles cancellation signals,
@@ -121,16 +140,19 @@ Before publishing any release, the maintainer must:
 
 1. Resolve the release tag to a full source SHA and dispatch **CUDA correctness**
    on that commit/branch. Ordinary **CUDA package build** is build-only evidence.
-2. Require a successful `operation=test` run whose Actions `headSha` is that SHA.
-   Check Pod cleanup succeeded. `operation=check` does not run tests.
-3. Download its `cuda-runpod-RUN-ATTEMPT` artifact and run
+2. Require a successful test run. For Actions, its `headSha` must match that SHA.
+   For a local controller, retain the source archive and controller log, require
+   exit status zero and `phase: deleted` in its state file, and verify the SHA in
+   the output JSON. `operation=check` does not run tests.
+3. Download its `cuda-runpod-RUN-ATTEMPT` artifact (or use the local controller's
+   output `artifacts` directory) and run
    `python scripts/verify_cuda_release.py --sha FULL_SHA --evidence PATH/TO/artifacts`.
    Missing evidence, a different SHA, a failed suite or unexpected skips reject
    the release. Only the explicitly named CPU-only-wheel and two-GPU tests may
    skip in this single-GPU CUDA-build configuration.
 4. Attach `cuda-tests.json`, `cuda-completion.json`, `cuda-checks.log` and
    `nvidia-smi.txt` to the GitHub release **before publishing it**, and include
-   the source SHA, Actions run URL, GPU/toolchain, counts and skip reasons in its
+   the source SHA, Actions run URL or local run identifier, GPU/toolchain, counts and skip reasons in its
    release notes. These release assets are the long-term record; the 90-day
    Actions artifact is only temporary storage. Repeat for each claimed CUDA pair.
 
@@ -138,4 +160,5 @@ The JSON records hardware, driver, Python/PyTorch/toolkit and build flags. A
 completion record is written only after the requested sanitizer also succeeds.
 This is a required maintainer release gate: the repository has no automatic
 release publisher. The verifier validates contents, not provenance; download
-only from the trusted successful workflow run and check its SHA and conclusion.
+only from the trusted successful workflow or local controller run and check its
+SHA and completion status.

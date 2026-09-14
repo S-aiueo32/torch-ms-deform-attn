@@ -2,7 +2,7 @@
 
 Tested source: [`c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`](https://github.com/S-aiueo32/torch-ms-deform-attn/tree/c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045).
 This integration revision combines T01–T07 and T09 and the Ninja include-path fix.
-It is retained on `codex/p1-validation`; these results do not certify future
+It is retained by the `validation/p1-2026-09-14` tag; these results do not certify future
 merge commits. Run validation again for the exact release source SHA.
 
 All eight tasks ran together: one installed-wheel build per GPU/toolchain pair,

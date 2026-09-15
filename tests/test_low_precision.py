@@ -39,6 +39,9 @@ class LowPrecisionCases:
             (ms_deform_attn, MSDeformAttnFunction.apply),
             (None, "aot_eager", "inductor"),
         ):
+            # CPU/CUDA, dtype, API, and backend combinations share Dynamo's
+            # per-code cache. Isolate cases, but reuse it across dynamic shapes.
+            torch._dynamo.reset()
             fn = (
                 torch.compile(api, backend=backend, fullgraph=True, dynamic=True)
                 if backend

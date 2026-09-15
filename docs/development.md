@@ -2,6 +2,9 @@
 
 [Back to README](../README.md)
 
+To use the published package, follow [Install from PyPI](installation.md#install-from-pypi).
+The instructions here cover working on the repository and publishing releases.
+
 ## Set up with uv
 
 Install [uv](https://docs.astral.sh/uv/) and a C++17 compiler, then run from the
@@ -169,8 +172,10 @@ to its notes, then publish the release. Missing or mismatched evidence fails the
 workflow before upload. The evidence verifier checks contents; maintainers must
 still ensure the assets came from a trusted validation run.
 
-The current version is `0.1.0rc1`; use tag `v0.1.0rc1` and mark the GitHub release
-as a prerelease. Increment to `0.1.0rc2`, etc. for subsequent candidates; use
+Version `0.1.0rc1` is published on PyPI and TestPyPI, with GitHub prerelease
+[`v0.1.0rc1`](https://github.com/S-aiueo32/torch-ms-deform-attn/releases/tag/v0.1.0rc1).
+Increment to `0.1.0rc2`, etc. for subsequent candidates and mark their GitHub
+releases as prereleases; use
 `0.1.0` only for the final release. Keep `uv.lock` in sync with `uv lock`.
 
 Use **Actions → Publish to PyPI / TestPyPI → Run workflow** with a target:
@@ -200,14 +205,8 @@ After registering the publisher, run:
 gh workflow run publish.yml --ref main --field target=testpypi
 ```
 
-Install prerequisites from PyPI first, then install only this package from
-TestPyPI:
-
-```bash
-python -m pip install 'torch>=2.5,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation --no-deps \
-  --index-url https://test.pypi.org/simple/ torch-ms-deform-attn==0.1.0rc1
-```
+Follow [Install from TestPyPI](installation.md#install-from-testpypi) to test
+the uploaded archive in a fresh environment with your chosen PyTorch build.
 
 Uploaded filenames cannot be reused for changed archives. Increment the RC
 version before uploading another candidate to the same index.
@@ -235,10 +234,7 @@ uv publishes to PyPI by default; no Twine or extra index configuration is needed
 The explicit archive path excludes local wheels and artifacts from older releases.
 PyPI release filenames cannot be replaced with changed contents.
 
-After publishing, install into an environment with the build prerequisites:
-
-```bash
-uv pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc1
-```
+After publishing, follow [Install from PyPI](installation.md#install-from-pypi)
+and [verify the installation](installation.md#verify-the-installation).
 
 For performance measurements, see [benchmarks](benchmarks.md).

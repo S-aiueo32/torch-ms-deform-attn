@@ -8,17 +8,22 @@ outside the package's scope.
 
 ## Install
 
-Requires Python 3.10+, PyTorch >=2.5,<3, and a C++17 compiler.
-From the repository root:
+Install the published release candidate from
+[PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.0rc1/).
+Requires Python 3.10+, PyTorch >=2.5,<3, and a C++17 compiler. The package is
+distributed as source and compiles against the PyTorch in your environment:
 
 ```bash
 python -m pip install 'torch>=2.5,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation .
+python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc1
 ```
 
 CPU builds need neither the CUDA toolkit nor torchvision. CUDA is built
 automatically when CUDA-enabled PyTorch, the CUDA toolkit, and a visible GPU
-are available; CUDA builds also support CPU. Rebuild after changing PyTorch.
+are available; CUDA builds also support CPU. Install your chosen CPU/CUDA PyTorch
+build first. The explicit RC version does not require `--pre`.
+See [installation and backend selection](docs/installation.md) for CPU/CUDA
+examples, verification, and rebuilding after changing PyTorch.
 
 ## Use
 

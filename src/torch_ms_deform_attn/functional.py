@@ -80,7 +80,7 @@ def ms_deform_attn(
     """Multi-scale deformable attention on CPU or CUDA, with first-order autograd.
 
     Args:
-        value: [N, S, M, D], float32/64, or float16/bfloat16 under autocast.
+        value: [N, S, M, D], float16, bfloat16, float32, or float64.
         spatial_shapes: [L, 2] int64, containing (height, width) for each level.
         level_start_index: [L] int64, each level's offset in S.
         sampling_locations: [N, Q, M, L, P, 2], normalized (x, y).
@@ -89,7 +89,9 @@ def ms_deform_attn(
 
     All inputs must be on the same CPU or CUDA device. Samples use bilinear interpolation with zero
     padding and align_corners=False. Weights are used as supplied, without
-    normalization. Returns [N, Q, M * D]. Higher-order gradients are unsupported.
+    normalization. Returns [N, Q, M * D]. Explicit low-precision inputs are computed
+    in float32 and returned in the input dtype; under autocast the output stays float32.
+    Higher-order gradients are unsupported.
     """
     # Keep interpolation and gradient accumulation in float32 under AMP.
     # Casting here (outside the opaque operator) preserves gradients to low-precision inputs.
@@ -108,6 +110,17 @@ def ms_deform_attn(
                 attention_weights,
                 im2col_step,
             )
+    if device_type in ("cpu", "cuda") and value.dtype in (torch.float16, torch.bfloat16):
+        if sampling_locations.dtype != value.dtype or attention_weights.dtype != value.dtype:
+            raise RuntimeError("Floating input dtypes must match outside autocast")
+        return _forward(
+            value.float(),
+            spatial_shapes,
+            level_start_index,
+            sampling_locations.float(),
+            attention_weights.float(),
+            im2col_step,
+        ).to(value.dtype)
     return _forward(
         value, spatial_shapes, level_start_index, sampling_locations, attention_weights, im2col_step
     )

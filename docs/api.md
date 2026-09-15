@@ -43,15 +43,16 @@ annotations are stored as strings at runtime. Calling `typing.get_type_hints()`
 on these functions requires explicitly supplying the jaxtyping names in its
 namespace. Normal imports and execution do not require jaxtyping.
 
-All inputs must be on the same CPU or CUDA device. Floating tensors must share
-float32 or float64 dtype. For CUDA, move every tensor in the example to CUDA,
+All inputs must be on the same CPU or CUDA device. Outside autocast, floating
+tensors must share float16, bfloat16, float32, or float64 dtype.
+For CUDA, move every tensor in the example to CUDA,
 including `shapes` and `starts`.
 Noncontiguous tensors are accepted. Sampling is bilinear, with zero padding and
 `align_corners=False`; finite coordinates outside [0, 1] are allowed.
 Nonfinite coordinates are not part of the supported input contract.
 Gradients are provided for value, locations, and weights. Higher-order gradients
-and native float16/bfloat16 kernel arithmetic are unsupported. AMP accepts
-low-precision inputs by computing this operator in float32; see [AMP and torch.compile](#amp-and-torchcompile).
+and native float16/bfloat16 kernel arithmetic are unsupported. Explicit low-precision
+inputs and AMP use float32 computation; see [AMP and torch.compile](#amp-and-torchcompile).
 
 Each level must have positive height and width and a nonnegative starting offset,
 with `start + height * width <= S`. Levels may overlap.
@@ -77,7 +78,22 @@ The public function and compatibility `.apply` entry point both support autocast
 on CPU and CUDA. Inside autocast, float16/bfloat16 values, locations, and weights
 are promoted to float32. Float32 inputs stay float32; float64 inputs are preserved.
 Output is float32 for the low-precision path, and autograd casts gradients back
-to the original input dtypes. Outside autocast, low-precision inputs are rejected.
+to the original input dtypes.
+
+Outside autocast, explicit `.half()` and `.bfloat16()` inputs are also supported
+on CPU and CUDA. All three floating inputs must have the same dtype. Interpolation
+and gradient accumulation run in float32; the output is cast back to the input
+dtype, and gradients have each input's dtype. The casts are part of the autograd
+graph and work with `torch.compile`. This path allocates float32 copies of the
+inputs; it does not provide native low-precision kernel speed or memory savings.
+
+```python
+output = ms_deform_attn(value.half(), shapes, starts,
+                       locations.half(), weights.half())
+assert output.dtype == torch.float16
+# Use .bfloat16() on all three floating inputs for bfloat16 output.
+output.float().sum().backward()
+```
 
 ```python
 # All input tensors must already be on CUDA.

@@ -43,10 +43,13 @@ output.square().mean().backward()
 ```
 
 All inputs must be on the same CPU or CUDA device, including `shapes` and
-`starts`. Floating inputs must share float32 or float64 dtype.
+`starts`. Outside autocast, floating inputs must share float16, bfloat16,
+float32, or float64 dtype.
 Weights are used directly, without softmax.
 
-AMP computes float16/bfloat16 inputs in float32. Native low-precision kernels,
+Explicit `.half()` / `.bfloat16()` inputs compute in float32 and return the input
+dtype. AMP computes low-precision inputs in float32 and returns float32.
+Native low-precision kernels,
 MPS, and higher-order gradients are unsupported. CUDA backward is
 nondeterministic.
 

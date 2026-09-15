@@ -42,9 +42,20 @@ class InputContractCases:
             bad = list(args)
             bad[index] = bad[index].double()
             cases.append((f"mixed-dtype-{index}", bad, 2, "dtypes must match"))
-        for dtype in (torch.float16, torch.bfloat16, torch.int32):
-            bad = [t.to(dtype) if i in (0, 3, 4) else t for i, t in enumerate(args)]
-            cases.append((f"unsupported-{dtype}", bad, 2, "float32 and float64"))
+        bad = [t.int() if i in (0, 3, 4) else t for i, t in enumerate(args)]
+        cases.append(("unsupported-int32", bad, 2, "float32 and float64"))
+        for dtype in (torch.float16, torch.bfloat16):
+            for index in (0, 3, 4):
+                bad = list(args)
+                bad[index] = bad[index].to(dtype)
+                cases.append(
+                    (
+                        f"mixed-low-dtype-{dtype}-{index}",
+                        bad,
+                        2,
+                        "dtypes must match|float32 and float64",
+                    )
+                )
         cases.extend((f"step-{step}", args, step, "positive") for step in (0, -1))
         if torch.cuda.is_available():
             for index in range(5):

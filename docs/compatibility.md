@@ -23,7 +23,10 @@ full-training reproduction.
 
 Under AMP the operator returns float32; the module's following output projection
 is autocast and therefore returns the selected low-precision dtype. Outside
-AMP, native kernels require matching float32 or float64 inputs. CPU empty-input
+AMP, the public API also accepts matching float16 or bfloat16 inputs, computes in
+float32, and returns the input dtype. Native kernels use float32 or float64.
+Explicit low-precision operator tests are separate from the upstream module's
+float32/AMP validation described above. CPU empty-input
 support does not imply the upstream module handles every empty dimension; CUDA
 still rejects empty dimensions. The upstream module requires contiguous packed
 feature levels even though the standalone operator also accepts arbitrary valid

@@ -184,9 +184,9 @@ print(json.dumps({
                     self.assertEqual(grad.count_nonzero().item(), 0)
 
     def test_reject_unsupported_dtype(self):
-        value, shapes, starts, locations, weights = self.inputs(torch.float16)
+        value, shapes, starts, locations, weights = self.inputs()
         with self.assertRaisesRegex(RuntimeError, "float32 and float64"):
-            ms_deform_attn(value, shapes, starts, locations, weights)
+            ms_deform_attn(value.int(), shapes, starts, locations.int(), weights.int())
 
     def test_reject_invalid_gradient(self):
         value, shapes, starts, locations, weights = self.inputs()

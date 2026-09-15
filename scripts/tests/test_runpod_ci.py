@@ -31,7 +31,7 @@ class FakeAPI:
         self.calls = []
         self.lose_create_response = lose_create_response
 
-    def quote(self, gpu, cap):
+    def quote(self, gpu, cap, count=1):
         return Decimal("0.27")
 
     def list_pods(self):
@@ -294,6 +294,24 @@ class ControllerTest(unittest.TestCase):
                 self.assertFalse(api.pods)
                 self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
 
+    def test_two_gpu_request_and_remote_requirement(self):
+        self.prepare_run()
+        self.args.gpu_count = 2
+        self.args.max_hourly_usd = Decimal("1")
+        api = FakeAPI()
+        with (
+            mock.patch.object(api, "quote", wraps=api.quote) as quote,
+            mock.patch.object(ci, "wait_for_ssh", return_value=["ssh"]),
+            mock.patch.object(ci, "stream_command", return_value=0) as command,
+            mock.patch.object(ci, "collect_artifacts"),
+        ):
+            ci.run(api, self.args)
+        quote.assert_called_once_with("A5000", Decimal("1"), count=2)
+        payload = next(payload for method, _, payload in api.calls if method == "POST")
+        self.assertEqual(payload["gpu"]["count"], 2)
+        self.assertIn("CUDA_CHECKS_GPU_COUNT=2 ", command.call_args.args[0][-1])
+        self.assertFalse(api.pods)
+
     def test_benchmark_collects_results_and_deletes_pod(self):
         self.prepare_run()
         self.args.benchmark = True
@@ -397,6 +415,13 @@ class PriceAndTransportTest(unittest.TestCase):
         self.assertEqual(query["product"], ["POD"])
         self.assertEqual(query["count"], ["1"])
         self.assertEqual(query["minCudaVersion"], ["12.4"])
+
+    def test_two_gpu_quote_checks_total_rate(self):
+        with mock.patch.object(self.api, "request", return_value=self.quote_response()) as request:
+            self.assertEqual(self.api.quote("A5000", Decimal("1"), count=2), Decimal("0.54"))
+            self.assertEqual(parse_qs(urlsplit(request.call_args.args[1]).query)["count"], ["2"])
+            with self.assertRaisesRegex(ci.ControllerError, "exceeds"):
+                self.api.quote("A5000", self.cap, count=2)
 
     def test_quote_rejects_unknown_capacity_wrong_gpu_and_excess_price(self):
         for response in (

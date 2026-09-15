@@ -63,6 +63,7 @@ The declared dependency range is broader than this tested configuration.
 
 - [Installation](docs/installation.md): requirements, backend selection, CPU parallelism.
 - [API](docs/api.md): arguments, reference implementation, AMP, compilation, limitations.
+- [Upstream compatibility](docs/compatibility.md): pinned Deformable-DETR module and training-step checks.
 - [Development and CI](docs/development.md): tests, uv builds and PyPI publishing, workflow coverage.
 - [Benchmarks](docs/benchmarks.md): CPU/CUDA results and measurement commands.
 - [GPU runner](docs/gpu-runner.md): Runpod setup, CUDA checks, cleanup, and costs.

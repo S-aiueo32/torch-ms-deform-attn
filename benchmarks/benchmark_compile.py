@@ -2,10 +2,12 @@
 
 import argparse
 import json
+import math
 import platform
 import sys
 
 import torch
+from environment import environment
 from torch.utils.benchmark import Timer
 
 from torch_ms_deform_attn import ms_deform_attn, ms_deform_attn_core_pytorch
@@ -21,8 +23,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--threads", type=int, default=1)
     parser.add_argument("--min-run-time", type=float, default=1.0)
+    parser.add_argument("--strict", action="store_true", help="Exit nonzero if any row fails")
     args = parser.parse_args()
-    if args.threads < 1 or args.min_run_time <= 0:
+    if args.threads < 1 or not math.isfinite(args.min_run_time) or args.min_run_time <= 0:
         parser.error("threads and min-run-time must be positive")
     torch.set_num_threads(args.threads)
     torch.manual_seed(0)
@@ -89,6 +92,7 @@ def main():
     print(
         json.dumps(
             dict(
+                provenance=environment(0, 2),
                 torch=torch.__version__,
                 python=platform.python_version(),
                 platform=platform.platform(),
@@ -105,6 +109,8 @@ def main():
         )
     )
 
+    return 1 if args.strict and any("error" in row for row in rows) else 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

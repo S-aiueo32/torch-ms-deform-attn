@@ -1,0 +1,9 @@
+{
+  "controller.log": "36c0f6926da648168a8bdc4f167a6aff56ebad81076084fb60dc44b97eb49f6f",
+  "torch_ms_deform_attn-0.1.0rc1-cp311-cp311-linux_x86_64.whl": "4062a21c3cf4decd9d5df1358fc482a54e9c7706659a693d69ae51b860b04583",
+  "nvidia-smi.txt": "ec8513a84df639f1a5d8404c926fba8e8ff8b39f8cf8c537091bd7a39cc4c53c",
+  "cuda-tests.json": "de03252c28ded450ec715fbce614f4a4963ef5235f347fd2ba9691b877032ed0",
+  "cuda-checks.log": "36c0f6926da648168a8bdc4f167a6aff56ebad81076084fb60dc44b97eb49f6f",
+  "benchmark-cuda.json": "1f81d439f32a1e7b85d23bae3e6843e63bd71942ff0a250dd4787230c7583c99",
+  "torch_ms_deform_attn-0.1.0rc1.tar.gz": "76759596226b29f8ba08f3761503607125340e8271a0f9691b82b216e7fa826d"
+}

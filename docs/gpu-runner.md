@@ -191,3 +191,25 @@ Initcheck covers uninitialized device global-memory reads under its default
 scope; it is not a complete memory-safety proof. Memcheck complements these
 checks. Consult the installed Compute Sanitizer version's documentation and do
 not infer guarantees for memory types or execution paths the tool did not check.
+
+
+## P2 GPU configurations
+
+The local controller accepts `--gpu-count 2` for the noncurrent-device test.
+`--max-hourly-usd` is the **total Pod compute rate**; its catalog preflight
+multiplies the per-GPU rate by the requested count and validates the returned
+Pod rate again. The standard workflows still default to one GPU. A two-GPU run
+requires two visible devices and rejects a skipped noncurrent-device test.
+
+After CUDA tests/optional benchmarks, `run_cuda_checks.sh` builds a fresh CPU-only
+wheel from the same sdist on the GPU host, reinstalls it, and runs the CUDA-input
+error test with zero skips. Results are in `cpu-only-gpu-tests.json`; this phase
+does not replace the earlier CUDA-wheel evidence. The final completion marker is
+written only after both phases pass. CUDA tests also print dynamic-compile graph
+counts: metadata-value changes cannot recompile, seen shapes must reuse graphs,
+and the unit-dimension call is explicitly identified.
+
+The benchmark workload includes eager/compiled float32/fp16/bf16 and encoder Q,
+with three repetitions. Use the standalone harness for additional batch/channel/
+step sweeps. See [benchmark metrics](benchmarks.md#p2-measurement-coverage-and-regression-policy)
+and [pinned module compatibility](compatibility.md).

@@ -48,6 +48,12 @@ def main():
     suite = unittest.defaultTestLoader.discover("tests")
     result = unittest.TextTestRunner(verbosity=2, resultclass=RecordingResult).run(suite)
     unexpected = unexpected_skips(result.skipped)
+    if int(os.environ.get("CUDA_CHECKS_GPU_COUNT", "1")) >= 2:
+        unexpected.extend(
+            (test.id(), reason)
+            for test, reason in result.skipped
+            if test.id() == "test_cuda.CUDAAttentionTest.test_noncurrent_device"
+        )
     success = result.wasSuccessful() and not unexpected and bool(result.cuda_passed)
     report = {
         "source_sha": sha,

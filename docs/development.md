@@ -72,6 +72,18 @@ Tests compare outputs and all three gradients against the PyTorch reference,
 run finite-difference gradcheck, and check input validation. Integration tests
 cover AMP, `torch.library.opcheck`, and full-graph compilation.
 
+Pinned upstream module fixtures are included in normal test discovery; see
+[module compatibility](compatibility.md). Build-policy and benchmark failure-path
+tests run separately, from an installed development environment:
+
+```bash
+uv run --locked python -m unittest discover -s build_tests -v
+uv run --locked python scripts/validate_cpu_builds.py --output /tmp/msda-build-results
+```
+
+The second command requires an OpenMP PyTorch build and performs real compiler,
+linker, load, and CPU checks across backend changes in a temporary checkout.
+
 CUDA tests run only when the installed extension has CUDA support and a GPU is
 available. A CPU-only test run does not validate CUDA execution.
 

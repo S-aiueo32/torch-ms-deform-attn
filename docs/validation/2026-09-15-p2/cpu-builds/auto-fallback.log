@@ -1,0 +1,27 @@
+running build_ext
+torch-ms-deform-attn CPU parallel backend: serial (OpenMP unavailable: OMP_PREFIX must contain include/omp.h. Set OMP_PREFIX to its header prefix; FORCE_OPENMP=1 makes this an error)
+building 'torch_ms_deform_attn._C' extension
+c++ -DNDEBUG -g -fwrapv -O3 -Wall -O3 -mmacosx-version-min=11.0 -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-undef-prefix -fPIC -I/private/var/folders/q7/rw9c963x0336cvh7_ssbhxym0000gn/T/msda-build-validation-vb6pwt_b -I/private/var/folders/q7/rw9c963x0336cvh7_ssbhxym0000gn/T/msda-build-validation-vb6pwt_b/csrc -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include/torch/csrc/api/include -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include/TH -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include/THC -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/include -I/Users/s-aiueo32/.local/share/uv/python/cpython-3.11.16-macos-aarch64-none/include/python3.11 -c csrc/ms_deform_attn_cpu.cpp -o build/temp.macosx-11.0-arm64-cpython-311/csrc/ms_deform_attn_cpu.o -O3 -arch arm64 -fno-openmp -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\"_clang\" -DPYBIND11_STDLIB=\"_libcpp\" -DPYBIND11_BUILD_ABI=\"_cxxabi1002\" -DTORCH_EXTENSION_NAME=_C -D_GLIBCXX_USE_CXX11_ABI=0 -std=c++17
+c++ -DNDEBUG -g -fwrapv -O3 -Wall -O3 -mmacosx-version-min=11.0 -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-undef-prefix -fPIC -I/private/var/folders/q7/rw9c963x0336cvh7_ssbhxym0000gn/T/msda-build-validation-vb6pwt_b -I/private/var/folders/q7/rw9c963x0336cvh7_ssbhxym0000gn/T/msda-build-validation-vb6pwt_b/csrc -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include/torch/csrc/api/include -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include/TH -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/include/THC -I/Users/s-aiueo32/torch-ms-deform-attn/.venv/include -I/Users/s-aiueo32/.local/share/uv/python/cpython-3.11.16-macos-aarch64-none/include/python3.11 -c csrc/vision.cpp -o build/temp.macosx-11.0-arm64-cpython-311/csrc/vision.o -O3 -arch arm64 -fno-openmp -DTORCH_API_INCLUDE_EXTENSION_H -DPYBIND11_COMPILER_TYPE=\"_clang\" -DPYBIND11_STDLIB=\"_libcpp\" -DPYBIND11_BUILD_ABI=\"_cxxabi1002\" -DTORCH_EXTENSION_NAME=_C -D_GLIBCXX_USE_CXX11_ABI=0 -std=c++17
+c++ -DNDEBUG -g -fwrapv -O3 -Wall -O3 -mmacosx-version-min=11.0 -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-undef-prefix -fPIC -bundle -undefined dynamic_lookup build/temp.macosx-11.0-arm64-cpython-311/csrc/ms_deform_attn_cpu.o build/temp.macosx-11.0-arm64-cpython-311/csrc/vision.o -L/Users/s-aiueo32/torch-ms-deform-attn/.venv/lib/python3.11/site-packages/torch/lib -L/Users/s-aiueo32/.local/share/uv/python/cpython-3.11.16-macos-aarch64-none/lib -lc10 -ltorch -ltorch_cpu -ltorch_python -o build/lib.macosx-11.0-arm64-cpython-311/torch_ms_deform_attn/_C.cpython-311-darwin.so -arch arm64
+copying build/lib.macosx-11.0-arm64-cpython-311/torch_ms_deform_attn/_C.cpython-311-darwin.so -> src/torch_ms_deform_attn
+/var/folders/q7/rw9c963x0336cvh7_ssbhxym0000gn/T/msda-build-validation-vb6pwt_b/src/torch_ms_deform_attn/_C.cpython-311-darwin.so serial
+test_colliding_samples_and_overlapping_levels (test_cpu.CPUAttentionTest.test_colliding_samples_and_overlapping_levels) ... ok
+test_cpu_parallel_workers_honor_thread_count (test_cpu.CPUAttentionTest.test_cpu_parallel_workers_honor_thread_count) ... skipped 'extension was built without a CPU parallel backend'
+test_empty_batch (test_cpu.CPUAttentionTest.test_empty_batch) ... ok
+test_empty_heads_channels_levels_and_points (test_cpu.CPUAttentionTest.test_empty_heads_channels_levels_and_points) ... ok
+test_empty_queries (test_cpu.CPUAttentionTest.test_empty_queries) ... ok
+test_gradcheck (test_cpu.CPUAttentionTest.test_gradcheck) ... ok
+test_invalid_inputs (test_cpu.CPUAttentionTest.test_invalid_inputs) ... ok
+test_level_start_index (test_cpu.CPUAttentionTest.test_level_start_index) ... ok
+test_offsets_collisions_and_noncontiguous_metadata (test_cpu.CPUAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+test_padding_support_and_channel_sizes (test_cpu.CPUAttentionTest.test_padding_support_and_channel_sizes) ... ok
+test_public_api (test_cpu.CPUAttentionTest.test_public_api) ... ok
+test_reference_forward_and_backward (test_cpu.CPUAttentionTest.test_reference_forward_and_backward) ... ok
+test_reject_invalid_gradient (test_cpu.CPUAttentionTest.test_reject_invalid_gradient) ... ok
+test_reject_unsupported_dtype (test_cpu.CPUAttentionTest.test_reject_unsupported_dtype) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.396s
+
+OK (skipped=1)

@@ -99,3 +99,21 @@ not establish whether an extension was compiled with OpenMP.
 
 Extensions and wheels target the running Python/PyTorch architecture, including
 with a universal2 Python. Cross-architecture `ARCHFLAGS` are rejected.
+
+
+### Build selection validation
+
+`USE_NINJA=0` selects the setuptools compiler path; the default `USE_NINJA=1`
+uses Ninja when available (PyTorch falls back if Ninja is absent). This option
+and `ARCHFLAGS` participate in uv's extension-build cache key.
+An explicit `OMP_PREFIX` without `include/omp.h` makes the OpenMP probe fail:
+auto mode falls back to serial, while `FORCE_OPENMP=1` fails with an explanation.
+
+`python scripts/validate_cpu_builds.py --output /tmp/msda-build-results` builds
+and loads real extensions through auto/Ninja, serial/setuptools, invalid-prefix
+fallback, forced failure, and OpenMP restoration in the same temporary checkout.
+It requires an OpenMP PyTorch build and compiler support. Mocked policy tests in
+`build_tests` also cover native/serial PyTorch backends, absent CUDA toolkit,
+conflicting selection flags, and architecture mismatch. Native thread-pool
+PyTorch remains best effort until a real native-backend build is recorded; mocked
+selection coverage does not establish binary compatibility.

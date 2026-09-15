@@ -86,16 +86,18 @@ Requires a visible CUDA GPU and a [CUDA-enabled extension](installation.md#selec
 python benchmarks/benchmark_cuda.py --min-run-time 1.0 > benchmark-cuda.json
 ```
 
-The harness measures eager float32 forward and forward+backward execution after
-five warmup calls, with CUDA synchronization. Timings include Python dispatch
-and GPU execution. The reference uses static shape tuples to avoid metadata
-transfers. Compilation and mixed precision are not measured.
+By default the harness measures eager float32 forward, backward-only, and
+forward+backward execution, with five warmup calls and three repetitions.
+Use `--execution compiled` and `--dtypes float16 bfloat16` to select Inductor and
+AMP. The reference uses static shape tuples to avoid metadata transfers.
 
-Outputs and gradients are checked before timing, including a separate float64
-comparison. Location-gradient errors are also reported in feature-pixel units
-to account for spatial resolution. The JSON includes median latency, IQR,
-speedup, validation errors, and GPU/software metadata. Exact workloads and
-tolerances are defined in [the script](../benchmarks/benchmark_cuda.py).
+Outputs and all three gradients are checked against the eager reference before
+timing. Location gradients are compared in feature-pixel units to account for
+spatial resolution. JSON records each backend's median latency, IQR, CUDA-event
+intervals, allocated memory, configuration, and provenance. Compute speedups
+from rows with matching configuration and repetition. Float64 algorithm checks
+remain in the CUDA regression suite. Exact workloads and tolerances are defined
+in [the script](../benchmarks/benchmark_cuda.py).
 
 ### Run on Runpod
 
@@ -115,3 +117,50 @@ deletes the Pod. A correctness or benchmark failure fails the job.
 Download `cuda-benchmark-<run-id>-<attempt>` from the workflow run within seven
 days. It contains `artifacts/benchmark-cuda.json`, GPU information, logs, and
 built distributions.
+
+## P2 measurement coverage and regression policy
+
+`benchmark_compile.py --strict` emits diagnostics in JSON and exits nonzero on
+any compile/correctness/timing failure. Failed rows never contain latency values.
+The CUDA harness always exits nonzero on failure and discards partial timings
+for the failed configuration. Its compiled paths use Inductor with fullgraph.
+
+```bash
+python benchmarks/benchmark_cuda.py --cases small decoder encoder \
+  --batch 1 4 --channels 16 32 --steps 2 64 \
+  --dtypes float32 float16 bfloat16 --execution eager compiled \
+  --repeats 3 --warmup 5 --profile-kernels > cuda.json
+python benchmarks/benchmark_compile.py --strict > compile.json
+```
+
+The complete Cartesian benchmark is intentionally opt-in through its dtype and
+execution flags and can be expensive. Narrow dimensions for smoke checks.
+Encoder uses Q=5440. Every timed implementation first passes forward and all
+three gradient comparisons against the eager reference. Location gradients are
+compared in feature-pixel units. AMP comparisons allow low-precision rounding.
+CUDA benchmark coordinates stay
+at least a quarter pixel away from interpolation knots, where a tiny rounding
+change can select a different one-sided coordinate derivative. Dedicated operator
+tests cover boundaries; the timing workload compares smooth sampling points.
+
+Each repetition records synchronized host wall time (including Python dispatch),
+its IQR, CUDA-event stream intervals and their IQR, and peak allocated memory.
+Event intervals can include host-induced GPU idle gaps: they are **not pure kernel
+time**. Optional profiler CUDA activity sums report kernel/copy activity durations
+separately and are excluded from latency measurement; summed durations can exceed
+elapsed time if activities overlap. Backward-only timing retains a graph constructed
+before measurement, and its memory baseline includes that graph. Allocated memory
+excludes allocator reservations, driver memory, and other processes.
+
+Reports include CPU model, GPU/driver, PyTorch/CUDA, source SHA and working-tree
+status when available, runtime build environment, seed, warmup, and repetitions.
+Build environment variables describe the invocation, not reconstructed compiler
+commands; unknown values are labeled unknown. Archive build logs beside results.
+
+Compare only passing rows on identical hardware, software, build flags and case
+configuration. Use at least three independent repetitions. Flag a latency regression
+when the increase in median exceeds **both 5% and twice the larger IQR**; repeat the
+entire comparison in a fresh process to confirm it before treating it as a regression.
+Memory changes require matching baselines and a repeatable increase. This is an
+investigation threshold, not a cross-machine performance guarantee. No operator
+speedup here establishes a whole-model speedup.

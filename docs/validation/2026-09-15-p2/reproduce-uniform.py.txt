@@ -1,0 +1,39 @@
+import itertools, json
+import torch
+from benchmark_cuda import CASES
+from torch_ms_deform_attn import ms_deform_attn, ms_deform_attn_core_pytorch
+
+torch.manual_seed(0)
+for name, dtype_name, execution in itertools.product(CASES, ("float32", "float16", "bfloat16"), ("eager", "compiled")):
+    q, m, sizes = CASES[name]
+    dtype = getattr(torch, dtype_name)
+    shapes = torch.tensor(sizes, device="cuda")
+    starts = torch.cat((shapes.new_zeros(1), shapes.prod(1).cumsum(0)[:-1]))
+    v = torch.randn(1, sum(h*w for h,w in sizes), m, 16, device="cuda", dtype=dtype, requires_grad=True)
+    loc = torch.rand(1, q, m, len(sizes), 4, 2, device="cuda", requires_grad=True)
+    w = torch.rand(1, q, m, len(sizes), 4, device="cuda", dtype=dtype, requires_grad=True)
+    grad = torch.randn(1, q, m*16, device="cuda")
+    if (name, dtype_name, execution) != ("encoder", "float32", "compiled"):
+        continue
+    def reference(v, loc, w):
+        return ms_deform_attn_core_pytorch(v, sizes, loc, w)
+    expected = reference(v, loc, w)
+    expected_grad = torch.autograd.grad(expected, loc, grad)[0]
+    actual = ms_deform_attn(v, shapes, starts, loc, w, 2)
+    extension_grad = torch.autograd.grad(actual, loc, grad)[0]
+    compiled = torch.compile(reference, fullgraph=True)(v, loc, w)
+    compiled_grad = torch.autograd.grad(compiled, loc, grad)[0]
+    delta = (extension_grad - expected_grad).abs()
+    index = tuple(int(i) for i in torch.unravel_index(delta.argmax(), delta.shape))
+    scale = sizes[index[3]][1 - index[-1]]
+    coordinate = loc[index].item()
+    pixel = coordinate * scale - 0.5
+    report = dict(index=index, coordinate=coordinate, pixel_coordinate=pixel,
+                  distance_to_knot=abs(pixel-round(pixel)),
+                  eager_gradient=expected_grad[index].item(),
+                  compiled_reference_gradient=compiled_grad[index].item(),
+                  extension_gradient=extension_grad[index].item(),
+                  extension_eager_max_error=(extension_grad-expected_grad).abs().max().item(),
+                  compiled_reference_max_error=(compiled_grad-expected_grad).abs().max().item())
+    print(json.dumps(report, indent=2))
+    break

@@ -231,7 +231,14 @@ class CUDAAttentionTest(SamplingCases, unittest.TestCase):
             actual = ms_deform_attn(value, shapes, starts, loc, weights)
             expected = ms_deform_attn_core_pytorch(value, shapes, loc, weights)
             torch.testing.assert_close(actual, expected)
-            actual.sum().backward()
+            self.assertEqual(torch.cuda.current_device(), 0)
+            grad = torch.randn_like(actual)
+            differentiable = (value, loc, weights)
+            actual_grads = torch.autograd.grad(actual, differentiable, grad)
+            self.assertEqual(torch.cuda.current_device(), 0)
+            expected_grads = torch.autograd.grad(expected, differentiable, grad)
+            for a, e in zip(actual_grads, expected_grads):
+                torch.testing.assert_close(a, e)
             self.assertEqual(torch.cuda.current_device(), 0)
 
 

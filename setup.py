@@ -141,6 +141,8 @@ class OptionalOpenMPBuildExtension(BuildExtension):
         torch_dir = Path(torch.__file__).resolve().parent
         prefix = os.getenv("OMP_PREFIX")
         explicit_include = Path(prefix).expanduser().resolve() / "include" if prefix else None
+        if explicit_include is not None and not (explicit_include / "omp.h").is_file():
+            raise RuntimeError("OMP_PREFIX must contain include/omp.h")
         if sys.platform == "darwin":
             runtime = macos_openmp_runtime(torch_dir)
             includes = [
@@ -236,6 +238,9 @@ class OptionalOpenMPBuildExtension(BuildExtension):
 
 force_cpu = os.getenv("FORCE_CPU", "0") == "1"
 force_cuda = os.getenv("FORCE_CUDA", "0") == "1"
+use_ninja = os.getenv("USE_NINJA", "1")
+if use_ninja not in ("0", "1"):
+    raise RuntimeError("USE_NINJA must be 0 or 1")
 if force_cpu and force_cuda:
     raise RuntimeError("FORCE_CPU and FORCE_CUDA cannot both be enabled")
 if force_cuda and (CUDA_HOME is None or torch.version.cuda is None):
@@ -266,5 +271,8 @@ setup(
             extra_compile_args=compile_args,
         )
     ],
-    cmdclass={"build_ext": OptionalOpenMPBuildExtension, "bdist_wheel": TorchBdistWheel},
+    cmdclass={
+        "build_ext": OptionalOpenMPBuildExtension.with_options(use_ninja=use_ninja == "1"),
+        "bdist_wheel": TorchBdistWheel,
+    },
 )

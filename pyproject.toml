@@ -60,6 +60,8 @@ cache-keys = [
     { env = "FORCE_CUDA" },
     { env = "FORCE_OPENMP" },
     { env = "OMP_PREFIX" },
+    { env = "USE_NINJA" },
+    { env = "ARCHFLAGS" },
     { env = "TORCH_CUDA_ARCH_LIST" },
 ]
 

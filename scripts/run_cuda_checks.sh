@@ -66,6 +66,7 @@ import torch
 assert torch.__version__.split("+")[0] == os.environ["CUDA_CHECKS_TORCH_VERSION"], torch.__version__
 assert torch.version.cuda == os.environ["CUDA_CHECKS_TOOLKIT"], torch.version.cuda
 assert torch.cuda.is_available(), "CUDA validation requires a visible GPU"
+assert torch.cuda.device_count() >= int(os.environ.get("CUDA_CHECKS_GPU_COUNT", "1"))
 print("PyTorch:", torch.__version__, "CUDA:", torch.version.cuda)
 for device in range(torch.cuda.device_count()):
     print("GPU", device, torch.cuda.get_device_name(device), torch.cuda.get_device_capability(device))
@@ -120,10 +121,42 @@ PY
     fi
     if [[ "$cuda_checks_benchmark" == benchmark ]]; then
         cp -- "$cuda_checks_source/benchmarks/benchmark_cuda.py" "$cuda_checks_temp/benchmark_cuda.py"
+        cp -- "$cuda_checks_source/benchmarks/environment.py" "$cuda_checks_temp/environment.py"
         cd -- "$cuda_checks_temp"
         nvidia-smi > "$cuda_checks_output/nvidia-smi.txt"
-        "$cuda_checks_python" benchmark_cuda.py > "$cuda_checks_output/benchmark-cuda.json"
+        "$cuda_checks_python" benchmark_cuda.py --batch 1 --channels 16 --steps 2 \
+            --dtypes float32 float16 bfloat16 --execution eager compiled \
+            --min-run-time 0.1 > "$cuda_checks_output/benchmark-cuda.json"
+        "$cuda_checks_python" benchmark_cuda.py --cases decoder --batch 1 4 \
+            --channels 16 32 --steps 2 64 --profile-kernels \
+            --min-run-time 0.1 > "$cuda_checks_output/benchmark-cuda-sweep.json"
     fi
+    # T08: build a NEW CPU-only wheel from the same sdist on the GPU host.
+    # A separate wheel directory and --no-cache-dir prevent CUDA-wheel reuse.
+    cd -- "$cuda_checks_temp"
+    FORCE_CPU=1 FORCE_CUDA=0 "$cuda_checks_python" -m pip wheel \
+        --no-cache-dir --no-build-isolation --no-deps "${cuda_checks_sdists[0]}" \
+        -w "$cuda_checks_temp/cpu-dist"
+    "$cuda_checks_python" -m pip install --force-reinstall --no-deps "$cuda_checks_temp"/cpu-dist/*.whl
+    CUDA_VISIBLE_DEVICES=0 "$cuda_checks_python" - "$cuda_checks_output/cpu-only-gpu-tests.json" <<'PY'
+import json, os, sys, unittest
+from pathlib import Path
+import torch
+from torch_ms_deform_attn import _C
+assert torch.cuda.is_available() and not _C.with_cuda
+assert torch.cuda.device_count() == 1
+sys.path.insert(0, "tests")
+suite = unittest.defaultTestLoader.loadTestsFromName("test_cuda.CPUOnlyBuildTest.test_cuda_input_error")
+result = unittest.TextTestRunner(verbosity=2).run(suite)
+success = result.wasSuccessful() and result.testsRun == 1 and not result.skipped
+Path(sys.argv[1]).write_text(json.dumps({
+    "source_sha": os.environ["CUDA_CHECKS_SOURCE_SHA"], "success": success,
+    "tests_run": result.testsRun, "skipped": len(result.skipped),
+    "torch": torch.__version__, "gpu": torch.cuda.get_device_name(),
+    "with_cuda": _C.with_cuda,
+}, indent=2) + "\n")
+assert success, "CPU-only wheel on GPU test must pass without skips"
+PY
     "$cuda_checks_python" - "$cuda_checks_output/cuda-completion.json" <<'PY'
 import json, os, sys
 from pathlib import Path

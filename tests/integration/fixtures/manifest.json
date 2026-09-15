@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/fundamentalvision/Deformable-DETR",
+  "revision": "11169a60c33333af00a4849f1808023eba96a931",
+  "sha256": {
+    "ms_deform_attn.py.txt": "1a093690d4fd1cb50aadba936f3450b54f7919dbed7dc68410a1ee622a40e408",
+    "ms_deform_attn_func.py.txt": "dd9906037ce7dc45b9ef6f39d4934bb4dddefc3e09049024496827714b6738bc"
+  }
+}

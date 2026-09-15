@@ -123,12 +123,12 @@ class RunpodAPI:
             raise ControllerError("Unexpected Runpod Pod format")
         return result
 
-    def quote(self, gpu, cap):
+    def quote(self, gpu, cap, count=1):
         query = urllib.parse.urlencode(
             {
                 "include": "AVAILABILITY",
                 "product": "POD",
-                "count": 1,
+                "count": count,
                 "cloud": "SECURE",
                 "minCudaVersion": "12.4",
             }
@@ -142,9 +142,9 @@ class RunpodAPI:
             raise ControllerError("Requested GPU is unavailable on Runpod Secure Cloud")
         stock = result.get("availability")
         if stock not in ("HIGH", "MEDIUM", "LOW"):
-            raise ControllerError("No matching single-GPU capacity; no Pod was requested")
+            raise ControllerError("No matching GPU capacity; no Pod was requested")
         prices = result.get("price")
-        price = money(prices.get("secure") if isinstance(prices, dict) else None)
+        price = money(prices.get("secure") if isinstance(prices, dict) else None) * count
         if price > cap:
             raise ControllerError(f"GPU quote ${price}/hour exceeds the ${cap}/hour limit")
         print(f"GPU {gpu}: Secure Cloud catalog price ${price}/hour; capacity {stock}", flush=True)
@@ -513,7 +513,11 @@ def run(api, args):
     bootstrap = args.source / "scripts/runpod_bootstrap.sh"
     if not bootstrap.is_file():
         raise ControllerError("Missing scripts/runpod_bootstrap.sh in the source checkout")
-    api.quote(args.gpu, args.max_hourly_usd)
+    count = getattr(args, "gpu_count", 1)
+    if count == 1:
+        api.quote(args.gpu, args.max_hourly_usd)
+    else:
+        api.quote(args.gpu, args.max_hourly_usd, count=count)
     public, host_private = generate_keys(args.state_dir, pod_name(owner))
     source_sha = subprocess.check_output(
         ["git", "-C", str(args.source), "rev-parse", "HEAD"],
@@ -547,7 +551,7 @@ def run(api, args):
         "disk": 40,
         "gpu": {
             "id": GPU_IDS[args.gpu],
-            "count": 1,
+            "count": count,
             "minRamPerGpu": 16,
             "minVcpuCountPerGpu": 4,
             "minCudaVersion": "12.4" if torch_version == "2.5.1" else "12.6",
@@ -568,7 +572,9 @@ def run(api, args):
     ssh = None
     error = None
     try:
-        print(f"Requesting one {args.gpu} Pod (limit ${args.max_hourly_usd}/hour)", flush=True)
+        print(
+            f"Requesting {count} x {args.gpu} Pod (limit ${args.max_hourly_usd}/hour)", flush=True
+        )
         try:
             pod = api.request("POST", "/pods", payload)
         except APIError as failure:
@@ -602,6 +608,7 @@ def run(api, args):
             raise ControllerError("Insufficient controller time remains for CUDA checks")
         remote = (
             f"cd /workspace/ci/source && CUDA_CHECKS_TORCH_VERSION={torch_version} "
+            f"CUDA_CHECKS_GPU_COUNT={count} "
             f"CUDA_CHECKS_SOURCE_SHA={source_sha} timeout --signal=TERM --kill-after=30s "
             f"{remaining - 30}s bash scripts/run_cuda_checks.sh {args.sanitizer} /workspace/ci/results"
             + (" benchmark" if args.benchmark else "")
@@ -715,6 +722,7 @@ def parse_args(argv=None):
         )
         subparser.add_argument("--max-hourly-usd", type=money, default=Decimal("0.50"))
     run_parser.add_argument("--torch-version", choices=("2.5.1", "2.7.1"), default="2.5.1")
+    run_parser.add_argument("--gpu-count", type=int, choices=(1, 2), default=1)
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
     run_parser.add_argument(

@@ -1,0 +1,8 @@
+Test source SHA256: 1b20bf9220304860d5f75701996b858a3bfbec1fe8ffd3eb52257fa14795b55b
+test_near_knot_matches_double_oracle (test_sampling_precision.CPUSamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+test_near_knot_matches_double_oracle (test_sampling_precision.CUDASamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.141s
+
+OK

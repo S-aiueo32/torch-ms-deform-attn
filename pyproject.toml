@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "torch-ms-deform-attn"
-version = "0.1.0rc1"
+version = "0.1.0rc2"
 description = "Standalone CPU/CUDA multi-scale deformable attention with PyTorch autograd"
 readme = "README.md"
 requires-python = ">=3.10"

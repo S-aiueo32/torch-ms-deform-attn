@@ -215,19 +215,19 @@ version before uploading another candidate to the same index.
 
 Before publishing, complete the [required GPU release validation](gpu-runner.md#required-release-validation) for the exact source SHA and archive the evidence with the GitHub release. A CPU or CUDA build-only CI success is insufficient.
 
-The current release version is `0.1.0rc1` in `pyproject.toml`. For later releases,
+The current release version is `0.1.0rc2` in `pyproject.toml`. For later releases,
 update that version before building and use the matching filename below.
 
 Validate the archive without uploading it:
 
 ```bash
-uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.0rc1.tar.gz
+uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.0rc2.tar.gz
 ```
 
 Set your PyPI API token in the `UV_PUBLISH_TOKEN` environment variable, then run:
 
 ```bash
-uv publish dist/pypi/torch_ms_deform_attn-0.1.0rc1.tar.gz
+uv publish dist/pypi/torch_ms_deform_attn-0.1.0rc2.tar.gz
 ```
 
 uv publishes to PyPI by default; no Twine or extra index configuration is needed.

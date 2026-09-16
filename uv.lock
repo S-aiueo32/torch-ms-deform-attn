@@ -675,7 +675,7 @@ lint = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "torch", specifier = ">=2.5,<3" }]
+requires-dist = [{ name = "torch", specifier = ">=2.4.0,<3" }]
 
 [package.metadata.requires-dev]
 dev = [

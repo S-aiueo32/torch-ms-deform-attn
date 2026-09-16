@@ -12,9 +12,29 @@ For repository development, follow the [uv setup](development.md#set-up-with-uv)
 development dependencies. The instructions below cover installation into an
 existing environment with your chosen PyTorch version.
 
+## Current source compatibility
+
+The current checkout permits `torch>=2.4.0,<3` with Python 3.10+. The runtime
+and native code are unchanged. PyTorch 2.4 introduced `torch.library.custom_op`,
+which this package requires; earlier versions cannot import the package.
+Local validation on macOS arm64 / Python 3.11 / PyTorch 2.4.0 passed the CPU
+OpenMP build, all 40 runnable tests (including AMP, FakeTensor, and dynamic
+`torch.compile` forward/backward), and 7 build-policy tests. The 26 GPU-dependent
+tests were skipped; CUDA with PyTorch 2.4.0 remains unverified.
+
+For a source install with PyTorch 2.4.0, run from the repository root:
+
+```bash
+python -m pip install 'torch==2.4.0' 'setuptools>=77' 'packaging>=24.2' wheel ninja
+python -m pip install --no-build-isolation .
+```
+
+The release installation commands and historical validation records below still
+refer to the published releases. The development lock remains on PyTorch 2.5.1.
+
 ## Prerequisites
 
-Requires Python 3.10+, PyTorch >=2.5,<3, and a C++17 compiler. CUDA builds also
+The published `0.1.0rc2` requires Python 3.10+, PyTorch >=2.5,<3, and a C++17 compiler. CUDA builds also
 require CUDA-enabled PyTorch and a matching CUDA toolkit. MPS is unsupported.
 The dependency range permits installation; it is not a tested Cartesian product.
 The maintained support and CI matrix is Linux-only. The validation targets

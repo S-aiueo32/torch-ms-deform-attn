@@ -16,7 +16,7 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y --no-install-recommends openssh-server ca-certificates git build-essential
+apt-get install -y --no-install-recommends openssh-server ca-certificates git build-essential python3-opencv
 useradd --create-home --shell /bin/bash ci
 # A disabled password with public-key login; the SSH server rejects passwords.
 usermod --password '*' ci

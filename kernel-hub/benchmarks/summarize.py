@@ -14,6 +14,7 @@ BACKENDS = (
     "msda-triton-rziga",
     "pytorch-reference",
     "upstream-native-control",
+    "upstream-before-perf",
 )
 
 
@@ -141,7 +142,7 @@ def markdown(summary):
     lines.extend(
         [
             "",
-            "Missing entries are not zero latency. Consult the JSON for incorrect/unsupported cases.",
+            "Missing entries are not zero latency. Consult the JSON for unselected, incorrect or unsupported cases.",
             "The JSON also retains IQRs, event intervals, HF ratios and investigation flags.",
             "",
         ]

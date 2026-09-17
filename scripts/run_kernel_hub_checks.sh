@@ -51,7 +51,8 @@ if [[ "${2:-full}" == benchmark ]]; then
     python -m unittest discover -s tests -p test_cuda_graphs.py -v
     python kernel-hub/benchmarks/benchmark.py \
         --sources "$msda_work/candidate/benchmark-sources" \
-        --native-control --backends torch-ms-deform-attn kernel-hub-adapter hf-native upstream-native-control \
+        --cases decoder encoder --dtypes float32 float16 --modes forward forward_backward \
+        --backends torch-ms-deform-attn kernel-hub-adapter hf-native upstream-before-perf \
         --output "$msda_output/benchmark-kernel-hub.json"
     exit 0
 fi

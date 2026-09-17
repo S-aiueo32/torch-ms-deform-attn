@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 import torch
-from competitors import load_mmcv
+from competitors import load_mmcv, load_previous
 from kernels import get_kernel, get_local_kernel
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -116,6 +116,18 @@ def main():
     parser.add_argument("--profile-kernels", action="store_true")
     parser.add_argument("--native-control", action="store_true")
     parser.add_argument(
+        "--dtypes",
+        nargs="+",
+        choices=("float32", "float16", "bfloat16"),
+        default=["float32", "float16", "bfloat16"],
+    )
+    parser.add_argument(
+        "--modes",
+        nargs="+",
+        choices=("forward", "backward", "forward_backward"),
+        default=["forward", "backward", "forward_backward"],
+    )
+    parser.add_argument(
         "--backends",
         nargs="+",
         choices=(
@@ -126,6 +138,7 @@ def main():
             "msda-triton-rziga",
             "pytorch-reference",
             "upstream-native-control",
+            "upstream-before-perf",
         ),
     )
     args = parser.parse_args()
@@ -146,6 +159,7 @@ def main():
         "config": {**vars(args), "output": str(args.output), "sources": str(args.sources)},
         "cases": CASES,
         "execution": "eager; JIT/warmup excluded",
+        "ordering": "qualified backend/policy order reshuffled for each repetition",
         "timing": "synchronized host wall latency; CUDA event interval includes idle gaps",
         "memory": "allocated bytes, excludes allocator reservations; backward retains graph",
         "results": [],
@@ -171,6 +185,12 @@ def main():
         backends["upstream-native-control"] = extension_function(
             _C.ms_deform_attn_forward, _C.ms_deform_attn_backward
         )
+    if args.backends and "upstream-before-perf" in args.backends:
+        try:
+            backends["upstream-before-perf"] = load_previous(args.sources)
+        except Exception as exc:
+            report["setup_errors"]["upstream-before-perf"] = str(exc)
+            save()
     if selected("mmcv-source"):
         try:
             mmcv = load_mmcv(args.sources)
@@ -195,7 +215,7 @@ def main():
             save()
     required_failed = bool(report["setup_errors"])
     for case in args.cases:
-        for dtype in (torch.float32, torch.float16, torch.bfloat16):
+        for dtype in (getattr(torch, name) for name in args.dtypes):
             data, grad, sizes, scale = inputs(case, dtype)
             tensors = (data[0], data[3], data[4])
 
@@ -214,7 +234,11 @@ def main():
             variants = []
             for backend, fn in implementations.items():
                 # Public upstream/adapter already implement this policy internally.
-                direct = backend in ("torch-ms-deform-attn", "kernel-hub-adapter")
+                direct = backend in (
+                    "torch-ms-deform-attn",
+                    "kernel-hub-adapter",
+                    "upstream-before-perf",
+                )
                 variants.append(
                     (
                         backend,
@@ -225,10 +249,10 @@ def main():
                 if dtype != torch.float32 and not direct and backend != "pytorch-reference":
                     variants.append((backend, "native", fn))
             rng.shuffle(variants)
+            qualified = []
             for backend, policy, fn in variants:
                 label = {"case": case, "dtype": str(dtype), "backend": backend, "policy": policy}
                 print(label, flush=True)
-                start_index = len(report["results"])
                 try:
                     check = validate(fn, data, grad, truth, scale)
                     if not check["passed"]:
@@ -238,9 +262,23 @@ def main():
                         required_failed |= policy == "fp32-compute"
                         save()
                         continue
-                    gc.collect()
-                    for repeat in range(args.repeats):
-                        for mode in ("forward", "backward", "forward_backward"):
+                    qualified.append((label, fn, check))
+                except Exception as exc:
+                    report["results"].append(
+                        {**label, "status": "error", "error": f"{type(exc).__name__}: {exc}"}
+                    )
+                    required_failed |= policy == "fp32-compute"
+                save()
+            failed = set()
+            for repeat in range(args.repeats):
+                rng.shuffle(qualified)
+                for label, fn, check in qualified:
+                    key = (label["backend"], label["policy"])
+                    if key in failed:
+                        continue
+                    try:
+                        gc.collect()
+                        for mode in args.modes:
                             output = fn(*data) if mode == "backward" else None
 
                             def run():
@@ -265,13 +303,20 @@ def main():
                                 }
                             )
                             output = None
-                except Exception as exc:
-                    del report["results"][start_index:]
-                    report["results"].append(
-                        {**label, "status": "error", "error": f"{type(exc).__name__}: {exc}"}
-                    )
-                    required_failed |= policy == "fp32-compute"
-                save()
+                    except Exception as exc:
+                        failed.add(key)
+                        report["results"] = [
+                            row
+                            for row in report["results"]
+                            if not all(row.get(k) == v for k, v in label.items())
+                        ]
+                        report["results"].append(
+                            {**label, "status": "error", "error": f"{type(exc).__name__}: {exc}"}
+                        )
+                        required_failed |= label["policy"] == "fp32-compute"
+                    finally:
+                        output = None
+                    save()
             del truth
             data = grad = tensors = None
     report["status"] = "failed" if required_failed else "passed"

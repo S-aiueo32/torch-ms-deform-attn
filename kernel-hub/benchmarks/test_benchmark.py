@@ -58,7 +58,7 @@ class QualificationTest(unittest.TestCase):
                 "--output",
                 str(root / "result.json"),
                 "--repeats",
-                "1",
+                "2",
                 "--warmup",
                 "1",
                 "--native-control",
@@ -118,7 +118,8 @@ class QualificationTest(unittest.TestCase):
                 )
             report = json.loads((root / "result.json").read_text())
             qualified = [r for r in report["results"] if r["policy"] == "fp32-compute"]
-            self.assertEqual(len(qualified), 7 * 3 * 3)
+            self.assertEqual(len(qualified), 7 * 3 * 3 * 2)
+            self.assertEqual({r["repeat"] for r in qualified}, {0, 1})
             self.assertTrue(all(r["status"] == "passed" for r in qualified))
             self.assertTrue(
                 all("wall_ms" not in r for r in report["results"] if r["status"] != "passed")

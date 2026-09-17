@@ -1,9 +1,11 @@
 """Pinned upstream sources; MMCV builds only its unmodified MSDA CUDA source."""
 
 import hashlib
+import importlib
 import io
 import json
 import sys
+import types
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -11,6 +13,10 @@ from pathlib import Path
 PINS = {
     "mmcv": ("open-mmlab/mmcv", "a8073c74bf83d62ec36a103f835faa4837fb6585"),
     "msda-triton": ("rziga/msda-triton", "90cda22eb5bb17db93ddfcc7feb3903d29acf6da"),
+    "upstream-before-perf": (
+        "S-aiueo32/torch-ms-deform-attn",
+        "e07889a886a9e3052ffc10d019ac5d88ba3f40f6",
+    ),
 }
 
 
@@ -35,6 +41,10 @@ def prepare(destination):
                     or str(relative).startswith("src/msda_triton/")
                     or relative.name in ("LICENSE", "LICENSES", "NOTICE")
                     or (name == "msda-triton" and str(relative) in ("pyproject.toml", "README.md"))
+                    or (
+                        name == "upstream-before-perf"
+                        and str(relative).startswith(("csrc/cuda/", "src/torch_ms_deform_attn/"))
+                    )
                 ):
                     continue
                 content = archive.read(member)
@@ -71,6 +81,48 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         extra_cuda_cflags=["-O3"],
         verbose=True,
     )
+
+
+def load_previous(root, native=None):
+    """Load the pinned original kernels/API under an isolated test namespace."""
+    root = Path(root) / "upstream-before-perf"
+    if native is None:
+        from torch.utils.cpp_extension import load
+
+        binding = root / "binding.cpp"
+        binding.write_text("""#include <torch/extension.h>
+#include "cuda/ms_deform_attn_cuda.h"
+PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+    m.def("ms_deform_attn_forward", &ms_deform_attn_cuda_forward);
+    m.def("ms_deform_attn_backward", &ms_deform_attn_cuda_backward);
+}
+""")
+        native = load(
+            name="msda_before_perf_native",
+            sources=[str(binding), str(root / "csrc/cuda/ms_deform_attn_cuda.cu")],
+            extra_include_paths=[str(root / "csrc")],
+            extra_cflags=["-O3"],
+            extra_cuda_cflags=["-O3"],
+            verbose=True,
+        )
+    namespace = "msda_before_perf"
+    package_path = root / "src/torch_ms_deform_attn"
+    package = types.ModuleType(namespace)
+    package.__path__ = [str(package_path)]
+    package._C = native
+    sys.modules[namespace] = package
+    sys.modules[f"{namespace}._C"] = native
+    source_path = package_path / "_ops.py"
+    source = source_path.read_text()
+    if source.count('"torch_ms_deform_attn::') != 2:
+        raise ValueError("Pinned registration namespace contract changed")
+    source = source.replace('"torch_ms_deform_attn::', f'"{namespace}::')
+    registrations = types.ModuleType(f"{namespace}._ops")
+    registrations.__package__ = namespace
+    registrations.__file__ = str(source_path)
+    sys.modules[registrations.__name__] = registrations
+    exec(compile(source, str(source_path), "exec"), registrations.__dict__)
+    return importlib.import_module(f"{namespace}.functional").ms_deform_attn
 
 
 if __name__ == "__main__":

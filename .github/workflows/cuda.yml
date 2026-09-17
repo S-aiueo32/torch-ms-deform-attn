@@ -63,6 +63,13 @@ jobs:
         run: |
           python3 scripts/runpod_ci.py check \
             --gpu "$GPU" --max-hourly-usd "$MAX_HOURLY_USD"
+      - name: Validate Kernel Builder configuration before renting a GPU
+        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub'
+        run: |
+          rustup toolchain install 1.94.0 --profile minimal
+          cargo +1.94.0 install hf-kernel-builder --version 0.16.0 --locked
+          python3 kernel-hub/export.py "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
+          kernel-builder create-pyproject "$RUNNER_TEMP/kernel-hub-preflight" --unique-id "$GITHUB_SHA"
       - name: Start Runpod GPU, test CUDA, and delete Pod
         if: inputs.operation == 'test'
         env:

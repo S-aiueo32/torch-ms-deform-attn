@@ -38,6 +38,36 @@ def verify(directory, sha):
     for name in ("kernel-hub-checks.log", "python-packages.txt", "nvidia-smi.txt"):
         require(bool((directory / name).read_text().strip()), f"Empty {name}")
     manifests = {name: read(f"{name}-files.json") for name in ("candidate", "baseline")}
+    require(
+        bool(summary.get("nix_build")) == (directory / "NIX_BUILD.json").exists(),
+        "Missing Nix build provenance",
+    )
+    if summary.get("nix_build"):
+        nix_build = read("NIX_BUILD.json")
+        require(summary["nix_build"] == nix_build, "Nix build provenance mismatch")
+        require(re.fullmatch(r"[0-9]+", nix_build["build_run"]), "Invalid Nix build run")
+        record = (
+            Path(__file__).resolve().parents[1]
+            / "docs/validation/kernel-hub-nix"
+            / ("run-" + nix_build["build_run"])
+        )
+        require(
+            nix_build["archive_sha256"] == (record / "distribution.sha256").read_text().split()[0],
+            "Nix archive checksum mismatch",
+        )
+        original = read("nix-UPSTREAM.json")
+        require(
+            original == json.loads((record / "UPSTREAM.json").read_text())
+            and original["revision"] == nix_build["artifact_source_sha"],
+            "Nix artifact source mismatch",
+        )
+        require(original["source_sha256"] == upstream["source_sha256"], "Nix sources changed")
+        files = json.loads((record / "distribution-files.json").read_text())
+        expected = {
+            Path(name).relative_to(nix_build["variant"]).as_posix(): digest
+            for name, digest in files.items()
+        }
+        require(manifests["candidate"] == nix_build["files"] == expected, "Nix binary mismatch")
     for name, manifest in manifests.items():
         require(any(path.endswith(".so") for path in manifest), f"Missing {name} binary hash")
         require(

@@ -28,6 +28,11 @@ def main():
     module = get_local_kernel(candidate)
     if not hasattr(module, "_registrations"):
         raise RuntimeError("Builder output is not the upstream adapter")
+    nix_build = (
+        json.loads((candidate / "NIX_BUILD.json").read_text())
+        if (candidate / "NIX_BUILD.json").exists()
+        else None
+    )
     for name, root in (("candidate", Path(module.__file__).parent), ("baseline", baseline)):
         manifest = {
             path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -35,6 +40,8 @@ def main():
             if path.is_file() and "__pycache__" not in path.parts
         }
         (output / f"{name}-files.json").write_text(json.dumps(manifest, indent=2) + "\n")
+        if name == "candidate" and nix_build and manifest != nix_build["files"]:
+            raise RuntimeError("Loaded candidate differs from the reviewed Nix artifact")
         for metadata in (root / "metadata.json", root.parent / "metadata.json"):
             if metadata.is_file():
                 (output / f"{name}-metadata.json").write_bytes(metadata.read_bytes())
@@ -42,7 +49,12 @@ def main():
     summary = {
         "source_sha": os.environ["CUDA_CHECKS_SOURCE_SHA"],
         "baseline_revision": revision,
-        "builder": "hf-kernel-builder 0.16.1 create-pyproject + CMake local_install",
+        "builder": (
+            "hf-kernel-builder 0.16.1 Nix redistributable"
+            if nix_build
+            else "hf-kernel-builder 0.16.1 create-pyproject + CMake local_install"
+        ),
+        "nix_build": nix_build,
         "torch": torch.__version__,
         "cuda": torch.version.cuda,
         "gpu": torch.cuda.get_device_name(),

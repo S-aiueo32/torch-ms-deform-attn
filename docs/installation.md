@@ -2,10 +2,10 @@
 
 [Back to README](../README.md)
 
-The release candidate `0.1.0rc2` is available on
-[PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.0rc2/).
+The release candidate `0.1.0rc3` is available on
+[PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.0rc3/).
 It is distributed as a source archive (sdist), so installation compiles the
-extension against your environment's PyTorch, with CPU or CPU/CUDA support.
+extension against your environment's PyTorch, with CPU, CUDA, or Apple Silicon MPS support.
 
 For repository development, follow the [uv setup](development.md#set-up-with-uv):
 `uv sync --locked` creates `.venv` and installs an editable build with the locked
@@ -14,10 +14,10 @@ existing environment with your chosen PyTorch version.
 
 ## Prerequisites
 
-| Requirement | Published `0.1.0rc2` | Current checkout |
+| Requirement | Published `0.1.0rc3` | Current checkout |
 | --- | --- | --- |
 | Python | 3.10+ | 3.10+ |
-| PyTorch | >=2.5,<3 | >=2.4.0,<3 |
+| PyTorch | >=2.4.0,<3 | >=2.4.0,<3 |
 | C++ compiler | Compatible with installed PyTorch | Compatible with installed PyTorch |
 | CUDA execution | CUDA-enabled PyTorch, matching CUDA toolkit, NVIDIA GPU | Same |
 
@@ -32,7 +32,7 @@ work, the development lock uses PyTorch 2.5.1.
 
 ## Apple Silicon MPS
 
-MPS support is available from the current checkout, not the published `0.1.0rc2`.
+MPS support is available from the published `0.1.0rc3` and the current checkout.
 Use Apple Silicon, macOS 13.3+, Python 3.10+, PyTorch >=2.4,<3, and Xcode Command
 Line Tools. Install the extension against your chosen PyTorch:
 
@@ -59,18 +59,18 @@ autocast, synchronization, and gradient limitations.
 Run these commands in your target Python environment; no repository checkout
 is needed. Install your chosen PyTorch build first, then the build tools and
 this package. If PyTorch is already installed, keep that build as long as it
-satisfies `>=2.5,<3`.
+satisfies `>=2.4,<3`.
 
 ```bash
-python -m pip install 'torch>=2.5,<3'
+python -m pip install 'torch>=2.4,<3'
 python -m pip install 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 ```
 
 `--no-build-isolation` uses the installed PyTorch and build tools instead of
 creating a separate build environment with a potentially different PyTorch.
 They must be installed before running the last command.
-The exact `==0.1.0rc2` pin selects the prerelease without `--pre`; see
+The exact `==0.1.0rc3` pin selects the prerelease without `--pre`; see
 [pip's prerelease handling](https://pip.pypa.io/en/stable/cli/pip_install/#pre-release-versions).
 
 ### Linux CPU example
@@ -80,7 +80,7 @@ This uses the validated Python 3.11 / PyTorch 2.5.1 combination:
 ```bash
 python -m pip install 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
 python -m pip install 'setuptools>=77' 'packaging>=24.2' wheel ninja
-FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 ```
 
 ### Linux CUDA example
@@ -90,7 +90,7 @@ For Python 3.11 with the CUDA 12.4 toolkit (`nvcc`) installed and a visible GPU:
 ```bash
 python -m pip install 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cu124
 python -m pip install 'setuptools>=77' 'packaging>=24.2' wheel ninja
-FORCE_CUDA=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+FORCE_CUDA=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 ```
 
 The PyTorch wheel alone does not supply the CUDA compiler. `FORCE_CUDA=1` makes
@@ -137,9 +137,9 @@ and a visible GPU are available. Otherwise the extension builds for CPU.
 CUDA builds also support CPU. To select a backend explicitly:
 
 ```bash
-FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 # Requires CUDA-enabled PyTorch and a matching CUDA toolkit:
-FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="8.0;8.6" python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="8.0;8.6" python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 ```
 
 For builds without a visible GPU, set `TORCH_CUDA_ARCH_LIST` to the compute
@@ -157,7 +157,7 @@ After installing your chosen PyTorch version, force a fresh source build:
 
 ```bash
 python -m pip install --no-build-isolation --no-deps --force-reinstall \
-  --no-cache-dir --no-binary=torch-ms-deform-attn torch-ms-deform-attn==0.1.0rc2
+  --no-cache-dir --no-binary=torch-ms-deform-attn torch-ms-deform-attn==0.1.0rc3
 ```
 
 Prefix this command with the desired build variables, such as `FORCE_CUDA=1`.
@@ -177,9 +177,9 @@ PyTorch builds with the native thread pool use that backend directly.
 
 ```bash
 # Require OpenMP; fail if unavailable:
-FORCE_OPENMP=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+FORCE_OPENMP=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 # Disable OpenMP (native stays native):
-FORCE_OPENMP=0 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+FORCE_OPENMP=0 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 python -c 'from torch_ms_deform_attn import _C; print(_C.cpu_parallel_backend)'
 ```
 

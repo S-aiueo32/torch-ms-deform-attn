@@ -8,16 +8,14 @@ outside the package's scope.
 
 ## Install
 
-Install release candidate `0.1.0rc2` from PyPI. It requires Python 3.10+,
-PyTorch >=2.5,<3, and a compatible C++ compiler. Installation builds the extension
+Install release candidate `0.1.0rc3` from PyPI. It requires Python 3.10+,
+PyTorch >=2.4,<3, and a compatible C++ compiler. Installation builds the extension
 from source against your installed PyTorch:
 
 ```bash
-python -m pip install 'torch>=2.5,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
+python -m pip install 'torch>=2.4,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
+python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
 ```
-
-For PyTorch 2.4.x, [install from the current checkout](docs/installation.md#install-from-a-checkout).
 
 CPU builds need neither the CUDA toolkit nor torchvision. CUDA is built
 automatically when CUDA-enabled PyTorch, the CUDA toolkit, and a visible GPU
@@ -53,12 +51,12 @@ dtype. AMP computes low-precision inputs in float32 and returns float32.
 Native low-precision arithmetic and higher-order gradients are unsupported. CUDA backward is
 nondeterministic.
 
-The current checkout also supports Apple Silicon MPS with dedicated Metal forward
+Apple Silicon MPS uses dedicated Metal forward
 and backward kernels (macOS 13.3+, PyTorch 2.4+). Install from source using the
 [MPS installation instructions](docs/installation.md#apple-silicon-mps).
 All five inputs must be on MPS. float32 and float16 inputs are supported; bfloat16
 requires macOS 14+. float64, empty dimensions, and MPS `torch.compile` support are
-excluded. MPS backward is nondeterministic. This backend is not in `0.1.0rc2` on PyPI.
+excluded. MPS backward is nondeterministic.
 
 ## Support matrix
 
@@ -67,7 +65,7 @@ pairs, CUDA toolkits, and known `torch.compile` limitations. The maintained
 CPU/CUDA matrix covers Linux x86_64 with standard CPython. Apple Silicon MPS
 has a separate [validation record](docs/validation/mps/README.md); other macOS
 and Windows configurations are best effort.
-Results are tied to source revisions, including revisions newer than `0.1.0rc2`.
+Results are tied to source revisions, including revisions newer than `0.1.0rc3`.
 
 ## Documentation
 

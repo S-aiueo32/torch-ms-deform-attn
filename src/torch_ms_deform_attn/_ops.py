@@ -1,4 +1,4 @@
-"""Dispatcher, FakeTensor, and first-order autograd registrations."""
+"""FakeTensor registrations for the native dispatcher and autograd operators."""
 
 import torch
 
@@ -64,7 +64,7 @@ def _validate_fake_inputs(value, shapes, starts, locations, weights, step, grad=
 
 
 @torch.library.register_fake(forward)
-def _forward_fake(value, shapes, starts, locations, weights, step):
+def _forward_fake(value, shapes, starts, locations, weights, step, check_cuda_metadata=False):
     _validate_fake_inputs(value, shapes, starts, locations, weights, step)
     return value.new_empty((value.shape[0], locations.shape[1], value.shape[2] * value.shape[3]))
 
@@ -73,32 +73,12 @@ backward = _native_op("torch_ms_deform_attn::backward")
 
 
 @torch.library.register_fake(backward)
-def _backward_fake(value, shapes, starts, locations, weights, grad, step):
+def _backward_fake(
+    value, shapes, starts, locations, weights, grad, step, check_cuda_metadata=False
+):
     _validate_fake_inputs(value, shapes, starts, locations, weights, step, grad)
     return (
         torch.empty_like(value, memory_format=torch.contiguous_format),
         torch.empty_like(locations, memory_format=torch.contiguous_format),
         torch.empty_like(weights, memory_format=torch.contiguous_format),
     )
-
-
-def _setup_context(ctx, inputs, output):
-    value, shapes, starts, locations, weights, step = inputs
-    ctx.save_for_backward(value, shapes, starts, locations, weights)
-    ctx.step = step
-
-
-def _autograd_backward(ctx, grad):
-    value, shapes, starts, locations, weights = ctx.saved_tensors
-    gv, gl, gw = backward(value, shapes, starts, locations, weights, grad, ctx.step)
-    return gv, None, None, gl, gw, None
-
-
-torch.library.register_autograd(forward, _autograd_backward, setup_context=_setup_context)
-
-
-def _reject_higher_order(ctx, *grads):
-    raise RuntimeError("No autograd formula for backward: higher-order gradients are unsupported")
-
-
-torch.library.register_autograd(backward, _reject_higher_order)

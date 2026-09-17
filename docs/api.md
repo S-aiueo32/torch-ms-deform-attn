@@ -9,7 +9,7 @@ gradients for values, sampling locations, and attention weights.
 
 ```python
 ms_deform_attn(value, spatial_shapes, level_start_index, sampling_locations,
-               attention_weights, im2col_step=64)
+               attention_weights, im2col_step=64, *, check_cuda_metadata=False)
 ```
 
 See the [README](../README.md#use) for a complete forward/backward example.
@@ -22,6 +22,7 @@ See the [README](../README.md#use) for a complete forward/backward example.
 | `sampling_locations` | `[N, Q, M, L, P, 2]` | Normalized x/y sampling coordinates |
 | `attention_weights` | `[N, Q, M, L, P]` | Weights used directly, without softmax |
 | `im2col_step` | Integer, default `64` | Positive maximum CUDA batch chunk size; unused for CPU chunking |
+| `check_cuda_metadata` | Keyword-only bool, default `False` | Enable CUDA metadata-content checks in forward and backward; CPU/MPS always validate |
 | output | `[N, Q, M * D]` | Weighted sum of sampled features |
 
 `N` is batch size, `S` is the number of flattened feature positions, `M` is the
@@ -54,10 +55,28 @@ allocation/launch. Reduce `im2col_step` if a batch chunk exceeds the CUDA grid l
 CUDA backward uses atomic additions and is nondeterministic. With
 `torch.use_deterministic_algorithms(True)`, backward raises an error;
 `warn_only=True` emits a warning and permits execution.
-CUDA validates spatial shapes and level offsets on the device before accessing
-features, without a host synchronization. Invalid metadata triggers a device assertion, which may surface
-at the next CUDA synchronization. A device assertion invalidates the CUDA context;
-restart the process after such an error.
+CUDA trusts the contents of `spatial_shapes` and `level_start_index` by default.
+The caller must satisfy the level constraints above; invalid contents can cause
+incorrect results or illegal memory accesses. Tensor dtype, device, rank, shape,
+and indexing/launch-size checks remain enabled in both modes.
+
+Pass `check_cuda_metadata=True` when diagnosing integration errors. This selects
+separately compiled kernels that validate each level before accessing features,
+without a host synchronization. The default kernels contain no metadata-content
+checks. Invalid metadata in checked mode triggers a device assertion, which may
+surface at the next CUDA synchronization. A device assertion invalidates the CUDA
+context; restart the process after such an error.
+
+The choice is saved by autograd for backward and captured by `torch.compile`,
+export, and CUDA Graphs. Choose the flag when calling or capturing the operation;
+there is no global setting that can change an existing graph's behavior.
+This changes the previous always-checked CUDA behavior. To retain it, pass
+`check_cuda_metadata=True`:
+
+```python
+output = ms_deform_attn(value, shapes, starts, locations, weights,
+                        check_cuda_metadata=True)
+```
 
 ### MPS constraints and errors
 

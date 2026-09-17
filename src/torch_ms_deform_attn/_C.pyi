@@ -16,6 +16,7 @@ def ms_deform_attn_forward(
     locations: Float[Tensor, "N Q M L P 2"],
     weights: Float[Tensor, "N Q M L P"],
     step: int,
+    check_cuda_metadata: bool = False,
 ) -> Float[Tensor, "N Q M*D"]: ...
 def ms_deform_attn_backward(
     value: Float[Tensor, "N S M D"],
@@ -25,6 +26,7 @@ def ms_deform_attn_backward(
     weights: Float[Tensor, "N Q M L P"],
     grad: Float[Tensor, "N Q M*D"],
     step: int,
+    check_cuda_metadata: bool = False,
 ) -> list[Float[Tensor, "N S M D"] | Float[Tensor, "N Q M L P 2"] | Float[Tensor, "N Q M L P"]]:
     """Return [grad_value, grad_locations, grad_weights], in that order."""
     ...

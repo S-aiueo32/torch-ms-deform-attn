@@ -12,6 +12,8 @@ from unittest import mock
 import torch
 
 from torch_ms_deform_attn import _C, ms_deform_attn
+from torch_ms_deform_attn._ops import backward as native_backward
+from torch_ms_deform_attn._ops import forward as native_forward
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("msda_export", ROOT / "kernel-hub/export.py")
@@ -30,19 +32,25 @@ class ExportTest(unittest.TestCase):
             for name in ("msda_hf_test_a", "msda_hf_test_b"):
                 with self.subTest(namespace=name):
                     # Emulate the native namespace and builder-generated _ops on CPU.
-                    # Loader, C++ binding and CUDA validation live in kernel-hub/tests.
+                    # Autograd delegates to the canonical native registration;
+                    # loader, C++ binding and CUDA validation live in kernel-hub/tests.
                     signature = "Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights"
-                    torch.library.define(f"{name}::forward", f"({signature}, int step) -> Tensor")
+                    torch.library.define(
+                        f"{name}::forward",
+                        f"({signature}, int step, bool check_cuda_metadata=False) -> Tensor",
+                    )
                     torch.library.impl(f"{name}::forward", "CPU", _C.ms_deform_attn_forward)
+                    torch.library.impl(f"{name}::forward", "Autograd", native_forward)
                     torch.library.define(
                         f"{name}::backward",
-                        f"({signature}, Tensor grad, int step) -> (Tensor, Tensor, Tensor)",
+                        f"({signature}, Tensor grad, int step, bool check_cuda_metadata=False) -> (Tensor, Tensor, Tensor)",
                     )
                     torch.library.impl(
                         f"{name}::backward",
                         "CPU",
                         lambda *args: tuple(_C.ms_deform_attn_backward(*args)),
                     )
+                    torch.library.impl(f"{name}::backward", "Autograd", native_backward)
                     ops = types.ModuleType(f"{name}._ops")
                     ops.ops = _C
                     ops.add_op_namespace_prefix = lambda op, ns=name: f"{ns}::{op}"
@@ -70,16 +78,24 @@ class ExportTest(unittest.TestCase):
                             expected = torch.autograd.grad(reference.sum(), args, retain_graph=True)
                             for a, b in zip(actual, expected):
                                 torch.testing.assert_close(a, b)
-                        explicit = module.ms_deform_attn_forward(
-                            value, shapes, starts, loc, weights, 64
-                        )
-                        torch.testing.assert_close(explicit, reference)
-                        gradients = module.ms_deform_attn_backward(
-                            value, shapes, starts, loc, weights, torch.ones_like(explicit), 64
-                        )
-                        self.assertIsInstance(gradients, list)
-                        for actual_grad, expected_grad in zip(gradients, expected):
-                            torch.testing.assert_close(actual_grad, expected_grad)
+                        for check in (False, True):
+                            explicit = module.ms_deform_attn_forward(
+                                value, shapes, starts, loc, weights, 64, check_cuda_metadata=check
+                            )
+                            torch.testing.assert_close(explicit, reference)
+                            gradients = module.ms_deform_attn_backward(
+                                value,
+                                shapes,
+                                starts,
+                                loc,
+                                weights,
+                                torch.ones_like(explicit),
+                                64,
+                                check_cuda_metadata=check,
+                            )
+                            self.assertIsInstance(gradients, list)
+                            for actual_grad, expected_grad in zip(gradients, expected):
+                                torch.testing.assert_close(actual_grad, expected_grad)
 
     def test_refuse_overwrite_and_changed_contract(self):
         with tempfile.TemporaryDirectory() as tmp:

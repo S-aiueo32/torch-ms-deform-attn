@@ -18,8 +18,8 @@
 
 namespace ms_deform_attn {
 
-// The CUDA kernels keep individual dimensions as int but use int64_t for
-// tensor offsets. Leave headroom for one out-of-image interpolation neighbor.
+// Validate the full tensors before choosing a narrower per-chunk index type.
+// Leave headroom for one out-of-image interpolation neighbor.
 inline int64_t checked_index_product(std::initializer_list<int64_t> factors) {
   constexpr int64_t limit = std::numeric_limits<int64_t>::max() / 2;
   int64_t result = 1;
@@ -46,7 +46,7 @@ inline int cuda_blocks(int64_t work, int threads) {
 // Shared by the native CUDA entry points and CPU-only regression tests.
 // dims = [batch, spatial_size, heads, channels, levels, queries, points].
 // result = [chunk, value/sample/weight elements per batch, chunk output,
-// blocks].
+// blocks, use_int32].
 inline std::vector<int64_t>
 check_cuda_indexing(const std::vector<int64_t> &dims, int64_t step) {
   TORCH_CHECK(dims.size() == 7, "CUDA indexing expects seven dimensions");
@@ -68,7 +68,19 @@ check_cuda_indexing(const std::vector<int64_t> &dims, int64_t step) {
   const int64_t work = checked_index_product({chunk, Q, M, D});
   const int blocks = cuda_blocks(
       work, static_cast<int>(std::min(D, static_cast<int64_t>(1024))));
-  return {chunk, per_value, per_locations, per_weights, work, blocks};
+  // All device offsets are relative to a chunk; the host retains 64-bit
+  // offsets between chunks. Checking output work alone misses value and
+  // sampling tensors that are much larger than the output. The locations
+  // span also bounds weights and the 2 * L spatial-shapes metadata extent.
+  constexpr int64_t index_limit = std::numeric_limits<int>::max() / 2;
+  constexpr int64_t max_threads = 1024;
+  const bool use_int32 =
+      chunk * per_value <= index_limit &&
+      chunk * per_locations <= index_limit &&
+      // CUDA_KERNEL_LOOP increments even after the last live thread. Reserve
+      // rounding headroom so both the padded launch and that increment fit.
+      work <= index_limit - (max_threads - 1);
+  return {chunk, per_value, per_locations, per_weights, work, blocks, use_int32};
 }
 
 }  // namespace ms_deform_attn

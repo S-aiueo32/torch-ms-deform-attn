@@ -11,7 +11,7 @@ on:
         description: Full Kernel Hub matrix, compiled AMP training, or operator checks
         type: choice
         default: full
-        options: [full, compile-amp, phase1]
+        options: [full, compile-amp, phase1, benchmark]
       torch_version:
         description: PyTorch version (2.4/2.5 use CUDA 12.4; newer versions use CUDA 12.6)
         type: choice
@@ -84,6 +84,9 @@ jobs:
           fi
           python3 kernel-hub/export.py "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
           kernel-builder create-pyproject "$RUNNER_TEMP/kernel-hub-preflight" --unique-id "$GITHUB_SHA"
+          if [ "$KERNEL_HUB_SUITE" = benchmark ]; then
+            python3 kernel-hub/benchmarks/competitors.py "$RUNNER_TEMP/kernel-hub-preflight/benchmark-sources"
+          fi
       - uses: actions/cache/save@v4
         if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && steps.builder-cache.outputs.cache-hit != 'true'
         with:

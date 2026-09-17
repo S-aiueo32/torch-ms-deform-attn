@@ -1,27 +1,54 @@
 name: CPU package
-on: [push, pull_request, workflow_dispatch]
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'csrc/**'
+      - 'tests/**'
+      - 'build_tests/**'
+      - 'benchmarks/**'
+      - 'setup.py'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'MANIFEST.in'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+    inputs:
+      full_matrix:
+        description: Run every supported CPU version and rebuild checks
+        type: boolean
+        default: false
 permissions:
   contents: read
+concurrency:
+  group: cpu-package-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - {os: ubuntu-latest, python: '3.10', torch: '2.4.0', openmp: '0', backend: serial}
-          - {os: ubuntu-latest, python: '3.11', torch: '2.4.0', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.10', torch: '2.5.0', openmp: '0', backend: serial}
-          - {os: ubuntu-latest, python: '3.11', torch: '2.5.1', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.7.1', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.8.0', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.9.1', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.10.0', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.11.0', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.12.1', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.13.0', openmp: '1', backend: openmp}
-          - {os: ubuntu-latest, python: '3.12', torch: '2.14.0', openmp: '1', backend: openmp}
-    name: ${{ matrix.os }} / Python ${{ matrix.python }} / torch ${{ matrix.torch }} / ${{ matrix.backend }}
-    runs-on: ${{ matrix.os }}
+        include: >-
+          ${{ fromJSON(inputs.full_matrix && '[
+            {"python":"3.10","torch":"2.4.0","openmp":"0","backend":"serial"},
+            {"python":"3.11","torch":"2.4.0","openmp":"1","backend":"openmp"},
+            {"python":"3.10","torch":"2.5.0","openmp":"0","backend":"serial"},
+            {"python":"3.11","torch":"2.5.1","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.7.1","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.8.0","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.9.1","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.10.0","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.11.0","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.12.1","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.13.0","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.14.0","openmp":"1","backend":"openmp"}
+          ]' || '[
+            {"python":"3.10","torch":"2.4.0","openmp":"0","backend":"serial"},
+            {"python":"3.11","torch":"2.4.0","openmp":"1","backend":"openmp"},
+            {"python":"3.12","torch":"2.14.0","openmp":"1","backend":"openmp"}
+          ]') }}
+    name: Python ${{ matrix.python }} / torch ${{ matrix.torch }} / ${{ matrix.backend }}
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       FORCE_CPU: "1"
@@ -54,6 +81,7 @@ jobs:
           PYTHON_VERSION: ${{ matrix.python }}
         run: echo "$GITHUB_SHA | $RUNNER_OS | Python $PYTHON_VERSION | torch $TORCH_VERSION | $EXPECTED_CPU_BACKEND | $RESULT" >> "$GITHUB_STEP_SUMMARY"
   rebuild:
+    if: github.event_name == 'workflow_dispatch' && inputs.full_matrix
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:

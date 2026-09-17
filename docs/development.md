@@ -96,8 +96,8 @@ available. A CPU-only test run does not validate CUDA execution.
 | --- | --- |
 | [Lint](../.github/workflows/lint.yml) | Ruff lint/format across Python files; ty checks for `src/` |
 | [Publish to PyPI / TestPyPI](../.github/workflows/publish.yml) | Release tag and GPU evidence checks; sdist build and Trusted Publishing; manual build-only validation or TestPyPI upload |
-| [CPU package](../.github/workflows/ci.yml) | Linux serial/OpenMP; explicit Python/PyTorch pairs in the [support matrix](installation.md#prerequisites) |
-| [CUDA package build](../.github/workflows/cuda-build.yml) | PyTorch 2.4/2.5 with CUDA 12.4 and 2.7/2.8/2.14 with CUDA 12.6; compilation and host-side tests without a GPU |
+| [CPU package](../.github/workflows/ci.yml) | PRs: three minimum/latest CPU configurations; manual `full_matrix=true`: all 12 configurations and rebuild checks |
+| [CUDA package build](../.github/workflows/cuda-build.yml) | Manual only: 2.4/12.4 and 2.14/12.6 by default; `full_matrix=true` adds 2.5/12.4, 2.7/12.6 and 2.8/12.6 |
 | [CUDA correctness](../.github/workflows/cuda.yml) | Manual Runpod GPU run; installed-wheel tests and optional Compute Sanitizer |
 | [CUDA benchmark](../.github/workflows/cuda-benchmark.yml) | Manual Runpod GPU run; installed-wheel tests and eager CUDA latency measurements |
 | [Runpod controller checks](../.github/workflows/runpod-checks.yml) | Controller unit tests, shell syntax, and bootstrap checks in a CPU container |
@@ -105,6 +105,30 @@ available. A CPU-only test run does not validate CUDA execution.
 
 Package workflows build an sdist, build a wheel from it, and test the installed
 wheel outside the checkout.
+
+### Actions usage
+
+Automatic validation runs on relevant pull requests, with no duplicate push
+run. CPU PR checks cover Python/PyTorch 3.10/2.4.0 (serial), 3.11/2.4.0
+(OpenMP), and 3.12/2.14.0 (OpenMP). Lint and controller checks also use path
+filters. New commits cancel obsolete runs of these workflows.
+
+Documentation-only PRs do not trigger these checks. GitHub evaluates PR path
+filters against the full PR diff, so a documentation update within an existing
+code PR can still trigger the reduced checks.
+
+Run the broader compatibility and rebuild checks when preparing a release or
+changing supported versions:
+
+```bash
+gh workflow run ci.yml --ref BRANCH --field full_matrix=true
+gh workflow run cuda-build.yml --ref BRANCH --field full_matrix=true
+```
+
+Without `full_matrix=true`, a manual CPU run uses the three PR configurations,
+and a manual CUDA build uses the minimum and latest configurations only.
+CUDA runtime and benchmark runs are also manual. GPU cleanup retains its
+completion-triggered and hourly recovery schedule.
 
 See [GPU runner setup and the recorded L4 validation](gpu-runner.md) for manual
 dispatch, sanitizer options, artifacts, and cleanup configuration. GPU runtime

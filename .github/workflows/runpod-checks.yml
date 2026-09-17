@@ -1,12 +1,5 @@
 name: Runpod controller checks
 on:
-  push:
-    paths:
-      - 'scripts/**'
-      - '.github/workflows/cuda.yml'
-      - '.github/workflows/cuda-benchmark.yml'
-      - 'benchmarks/benchmark_cuda.py'
-      - '.github/workflows/runpod-*.yml'
   pull_request:
     paths:
       - 'scripts/**'
@@ -17,6 +10,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: runpod-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest

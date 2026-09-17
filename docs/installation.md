@@ -49,8 +49,10 @@ The maintained support and CI matrix is Linux-only. The validation targets
 below use published wheels from the
 [official PyTorch version table](https://pytorch.org/get-started/previous-versions/).
 Other Python/PyTorch versions in the dependency range, macOS, Windows, and other CUDA
-pairs are best effort. The CPU matrix includes each minor series from 2.7 to
-2.14, selecting one patch release per series; it does not test every patch.
+pairs are best effort. The full, manually dispatched CPU matrix includes each
+minor series from 2.7 to 2.14, selecting one patch release per series; it does
+not test every patch. Normal PR checks use three minimum/latest configurations;
+see [Actions usage](development.md#actions-usage).
 
 | Platform | Python | PyTorch | Backend/toolkit | Build / test evidence |
 | --- | --- | --- | --- | --- |
@@ -84,7 +86,7 @@ The CUDA 12.6 local result above refers only to source
 Historical macOS runs remain in the evidence archive as supplemental results;
 they do not add macOS to the support matrix. The RC results are linked below.
 
-Each CPU job writes its SHA and result to the Actions summary. The `rebuild` job
+Each CPU job writes its SHA and result to the Actions summary. The manual full-matrix `rebuild` job
 builds and tests 2.5.0 then 2.7.1 in the same checkout and Python 3.11 environment.
 A build-only CUDA success does not establish GPU runtime support. Dispatch CUDA
 correctness once per pair using `torch_version`; actual Python/toolkit versions

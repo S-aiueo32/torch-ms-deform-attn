@@ -1,4 +1,6 @@
-# PyTorch 2.4.0 validation — 2026-09-17
+# Minimum PyTorch compatibility
+
+## Objective and conditions
 
 The declared minimum is tested on Linux CPU and CUDA 12.4. The CUDA development
 image is pinned to
@@ -6,9 +8,8 @@ image is pinned to
 
 ## Results
 
-Tested source: `4863ba7ffa23af96766541ea8d780db3e9db7ac1`. This includes the
-PyTorch 2.4 CUDA assertion fix. Evidence was archived after this tested source
-commit; a future release SHA needs its own checks.
+Tested source: `4863ba7ffa23af96766541ea8d780db3e9db7ac1`.
+Execution date: 2026-09-17.
 
 | Environment | Result |
 | --- | --- |
@@ -53,21 +54,14 @@ The Actions artifact retains the sdist and wheel; binaries are not committed.
 Downloaded CUDA artifacts are preserved verbatim and checksummed. Actions job
 logs have ANSI escape sequences and trailing whitespace removed for readability.
 
-## Initial failure and correction
+## Evidence boundaries
 
-Source `1107b8a054ecf3aa8ab08403909a39c0ab21c903` passed CPU tests, but
-both the GPU-free CUDA build and the initial L4 run failed to compile:
-PyTorch 2.4 does not define `CUDA_KERNEL_ASSERT_MSG`. The fix uses
-`CUDA_KERNEL_ASSERT(valid && "Spatial level exceeds the value tensor")`, retaining
-the device assertion, diagnostic text and existing return guard. Existing
-negative tests check device assertions and the diagnostic in subprocesses for
-forward and backward metadata failures.
+The results above apply to the stated source SHA. The
+[compile diagnostic archive](initial-cuda-failure.log) belongs to source
+`1107b8a054ecf3aa8ab08403909a39c0ab21c903` and supplies no runtime or sanitizer
+evidence. PyTorch 2.4 device checks use `CUDA_KERNEL_ASSERT`; subprocess tests
+verify forward/backward metadata assertions and their diagnostic text.
 
-The [initial GPU run](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35167955788)
-and its [failure log](initial-cuda-failure.log) record the failure and verified
-Pod deletion. No runtime or sanitizer success is claimed for that revision.
-
-Both rented L4 Pods were verified deleted. Each was quoted at $0.49/hour with a
-60-minute controller deadline; even allocating the full deadline to both runs
-totals $0.98 in quoted compute charges. This is a conservative compute estimate,
-not a provider spending cap or billing statement, and excludes disk charges.
+Both allocated L4 Pods were verified deleted. Each was quoted at $0.49/hour
+with a 60-minute deadline, for a $0.98 combined full-deadline compute estimate
+excluding disk charges. This is not a billing statement.

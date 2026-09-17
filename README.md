@@ -110,7 +110,7 @@ are recorded in the [detailed matrix](docs/installation.md#prerequisites).
 
 PyTorch 2.5.0/2.5.1 on Python 3.13 and 2.9.1 on Python 3.14 reject
 `torch.compile` upstream. Their full suites fail; build and test results are in the
-[Python-version validation](docs/validation/2026-09-17-support-matrix/README.md).
+[Python-version validation](docs/validation/python-matrix/README.md).
 
 ### Scope
 
@@ -122,9 +122,9 @@ MPS is unsupported.
 
 The tables combine current-source validation and historical release records.
 The published `0.1.0rc2` requires PyTorch >=2.5. Results are tied to source revisions:
-see the [Python-matrix evidence](docs/validation/2026-09-17-support-matrix/README.md),
-[2.4.0 evidence](docs/validation/2026-09-17-pytorch240/README.md),
-[2.8–2.14 evidence](docs/validation/2026-09-17-newer-pytorch/README.md), and
+see the [Python-matrix evidence](docs/validation/python-matrix/README.md),
+[2.4.0 evidence](docs/validation/minimum-pytorch/README.md),
+[2.8–2.14 evidence](docs/validation/pytorch-versions/README.md), and
 [earlier validation records](docs/installation.md#prerequisites).
 
 ## Validation and documentation
@@ -141,6 +141,7 @@ uv run --locked python -m unittest discover -s tests -v
 - [API](docs/api.md): arguments, reference implementation, AMP, compilation, limitations.
 - [Upstream compatibility](docs/compatibility.md): pinned Deformable-DETR module and training-step checks.
 - [Development and CI](docs/development.md): tests, uv builds and PyPI publishing, workflow coverage.
+- [Validation records](docs/validation/README.md): verification targets, environments, results, and evidence.
 - [Benchmarks](docs/benchmarks.md): CPU/CUDA results and measurement commands.
 - [GPU runner](docs/gpu-runner.md): Runpod setup, CUDA checks, cleanup, and costs.
 

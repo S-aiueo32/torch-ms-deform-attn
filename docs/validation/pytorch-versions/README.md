@@ -1,4 +1,11 @@
-# PyTorch 2.8–2.14 validation — 2026-09-17
+# PyTorch version compatibility
+
+## Objective and conditions
+
+Validate Linux installed-wheel compatibility across the listed PyTorch 2.8–2.14
+patches, with GPU-free CUDA builds and sanitizer checks on 2.8.0 and 2.14.0.
+Execution date: 2026-09-17. Python-version coverage is recorded separately in
+the [Python/PyTorch matrix](../python-matrix/README.md).
 
 ## Linux CPU
 
@@ -26,9 +33,9 @@ parity. CPU success does not establish CUDA runtime support.
 
 ## CUDA
 
-GPU validation source: `18cda9b34c2e498e142b08d8e961e5cfda8a040d`. The later
-CPU test correction changes only the Ninja fallback unit test. The package's
-Python/C++/CUDA operator code is identical between the CPU and GPU runs.
+GPU validation source: `18cda9b34c2e498e142b08d8e961e5cfda8a040d`. The CPU and GPU
+sources have identical Python/C++/CUDA operator code; their Ninja fallback unit
+tests differ.
 
 PyTorch 2.8.0 / CUDA 12.6 passed on L4 with Python 3.11.13 and driver 595.91.07:
 64 tests passed and 2 expected tests skipped. The skipped CPU-only-wheel test
@@ -65,46 +72,29 @@ and were both deleted. $0.98 is a conservative combined compute estimate if
 both consumed their full deadline, excluding disk charges; it is not a billing
 statement or provider-enforced spending cap.
 
-GPU execution in this update covers 2.8.0 and 2.14.0 with CUDA 12.6. The
-intermediate 2.9–2.13 rows have CPU evidence only; other CUDA versions and
-two-GPU execution remain unverified for these new rows. This is source
-validation, not a new package release or validation of a future release SHA.
-
 The [GPU-free CUDA build workflow](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35170050511)
 passed for 2.4.0/12.4, 2.5.1/12.4, 2.7.1/12.6, 2.8.0/12.6 and 2.14.0/12.6.
-The new [2.8.0 build log](cuda-build-2.8.0.log) and
+The [2.8.0 build log](cuda-build-2.8.0.log) and
 [2.14.0 build log](cuda-build-2.14.0.log) each record 40 passing installed-wheel
 tests and 26 expected GPU skips. That run tested PR head
 `e27705320290ade4df26495da89c6dba40a6b995`; its package and GPU harness sources
 are unchanged from the GPU validation SHA above. CPU CI, controller checks and
 Lint also passed at that PR head.
 
-## Compatibility findings
+## Build requirements and scope
 
-PyTorch 2.8 changed the missing-Ninja fallback diagnostic from `UserWarning` to
-logging. The initial CPU run failed only at the test asserting the notification
-mechanism, after successfully building each wheel. The test now checks that
-`use_ninja` becomes false, preserving the fallback behavior check across versions.
-See the [initial CPU run](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35169503730).
+PyTorch 2.13 and 2.14 require C++20; older listed releases use C++17.
+`BuildExtension` supplies the language standard. Missing-Ninja fallback is
+checked by asserting `use_ninja` is false, independently of whether PyTorch
+uses warnings or logging for its diagnostic.
 
-PyTorch 2.13 and 2.14 require C++20. No explicit language-standard flag is added
-by this package; PyTorch's `BuildExtension` supplies the required standard.
-Older supported releases continue to select C++17. Compiler requirements are
-documented in [installation](../../installation.md).
+The GPU harness uses an isolated environment from the image's `python3`;
+system-Python images need `python3-venv`. The GPU-free build job installs into
+disposable container Python with `PIP_BREAK_SYSTEM_PACKAGES=1`.
+See [installation requirements](../../installation.md).
 
-The recent official CUDA image uses system Python rather than the earlier
-Conda environment. The GPU harness now uses the image's `python3` by default,
-and the bootstrap installs `python3-venv` so a fresh isolated environment can
-be created with system Python too.
-
-The GPU-free build job intentionally installs into the disposable container's
-Python. New system-Python images enforce PEP 668, so that job explicitly sets
-`PIP_BREAK_SYSTEM_PACKAGES=1` inside the container. The Runpod suite continues
-to use its separate venv.
-
-The version selection is based on [official releases](https://github.com/pytorch/pytorch/releases)
-and [installation pairs](https://pytorch.org/get-started/previous-versions/)
-available on 2026-09-17; 2.14.0 was the latest stable release on that date.
-These results cover the listed patches and environments, not future releases
-or every patch/Python/toolkit combination. Job logs are normalized by removing
-ANSI escapes and trailing whitespace.
+The reports certify only their source revisions and listed environments.
+Sanitizer coverage here is limited to 2.8.0 and 2.14.0 on one L4 with CUDA 12.6;
+the [Python matrix](../python-matrix/README.md) supplies runtime evidence for
+other Python/PyTorch pairs. Job logs have ANSI escapes and trailing whitespace
+removed.

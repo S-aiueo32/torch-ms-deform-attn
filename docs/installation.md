@@ -25,7 +25,7 @@ also passed the installed-wheel suite and build-policy tests. CUDA builds
 require the current source's assertion compatibility fix for PyTorch 2.4.
 With that fix, the full CUDA 12.4 suite and all four Compute Sanitizer tools
 passed on an NVIDIA L4; see the
-[2.4.0 validation record](validation/2026-09-17-pytorch240/README.md).
+[2.4.0 validation record](validation/minimum-pytorch/README.md).
 
 For a source install with PyTorch 2.4.0, run from the repository root:
 
@@ -56,31 +56,31 @@ see [Actions usage](development.md#actions-usage).
 
 | Platform | Python | PyTorch | Backend/toolkit | Build / test evidence |
 | --- | --- | --- | --- | --- |
-| Linux | 3.10 | 2.4.0 | CPU serial (current source lower bounds) | [Installed-wheel tests passed](validation/2026-09-17-pytorch240/README.md) |
-| Linux | 3.11 | 2.4.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-pytorch240/README.md) |
-| Linux | 3.11 | 2.4.0 | CUDA 12.4 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-pytorch240/README.md) |
+| Linux | 3.10 | 2.4.0 | CPU serial (current source lower bounds) | [Installed-wheel tests passed](validation/minimum-pytorch/README.md) |
+| Linux | 3.11 | 2.4.0 | CPU OpenMP | [Installed-wheel tests passed](validation/minimum-pytorch/README.md) |
+| Linux | 3.11 | 2.4.0 | CUDA 12.4 | [L4 full suite and all four sanitizers passed](validation/minimum-pytorch/README.md) |
 | Linux | 3.10 | 2.5.0 | CPU serial (published RC lower bounds) | RC CPU package job passed |
 | Linux | 3.11 | 2.5.1 | CPU OpenMP | RC CPU package job passed |
 | Linux | 3.12 | 2.7.1 | CPU OpenMP | RC CPU package job passed |
-| Linux | 3.12 | 2.8.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
-| Linux | 3.12 | 2.9.1 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
-| Linux | 3.12 | 2.10.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
-| Linux | 3.12 | 2.11.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
-| Linux | 3.12 | 2.12.1 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
-| Linux | 3.12 | 2.13.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
-| Linux | 3.12 | 2.14.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.8.0 | CPU OpenMP | [Installed-wheel tests passed](validation/pytorch-versions/README.md) |
+| Linux | 3.12 | 2.9.1 | CPU OpenMP | [Installed-wheel tests passed](validation/pytorch-versions/README.md) |
+| Linux | 3.12 | 2.10.0 | CPU OpenMP | [Installed-wheel tests passed](validation/pytorch-versions/README.md) |
+| Linux | 3.12 | 2.11.0 | CPU OpenMP | [Installed-wheel tests passed](validation/pytorch-versions/README.md) |
+| Linux | 3.12 | 2.12.1 | CPU OpenMP | [Installed-wheel tests passed](validation/pytorch-versions/README.md) |
+| Linux | 3.12 | 2.13.0 | CPU OpenMP | [Installed-wheel tests passed](validation/pytorch-versions/README.md) |
+| Linux | 3.12 | 2.14.0 | CPU OpenMP | [Installed-wheel tests passed](validation/pytorch-versions/README.md) |
 | Linux | 3.11 | 2.5.1 | CUDA 12.4 | RC L4 full suite and all four sanitizers passed |
 | Linux | 3.11 | 2.7.1 | CUDA 12.6 | Local L4 sdist-to-wheel build, full suite and all four sanitizers passed |
-| Linux | 3.11 | 2.8.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-newer-pytorch/README.md) |
-| Linux | 3.12 | 2.14.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.11 | 2.8.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/pytorch-versions/README.md) |
+| Linux | 3.12 | 2.14.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/pytorch-versions/README.md) |
 
 The rows above preserve the earlier per-version validation records. The initial
 2.8–2.14 validation selected 2.8.0 and 2.14.0 for CUDA runtime checks; its exact
 source identities and sanitizer reports remain in the
-[newer-PyTorch validation record](validation/2026-09-17-newer-pytorch/README.md).
+[newer-PyTorch validation record](validation/pytorch-versions/README.md).
 
 The [Python-by-PyTorch tables](../README.md#support-matrix) also include the
-[expanded Python matrix](validation/2026-09-17-support-matrix/README.md), which
+[expanded Python matrix](validation/python-matrix/README.md), which
 tests the intermediate releases on CUDA and adds separate CPU-only wheel runs.
 Those runs use CUDA 12.4 for 2.4.0/2.5.0/2.5.1 and CUDA 12.6 for the listed
 2.7–2.14 releases. Each record identifies its Python version and source SHA.

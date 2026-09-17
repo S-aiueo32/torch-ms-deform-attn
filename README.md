@@ -29,6 +29,34 @@ build first. The explicit RC version does not require `--pre`.
 See [installation and backend selection](docs/installation.md) for CPU/CUDA
 examples, verification, and rebuilding after changing PyTorch.
 
+## Use
+
+```python
+import torch
+from torch_ms_deform_attn import ms_deform_attn
+
+# Two feature levels: 4×4 and 2×2, flattened into 20 positions.
+shapes = torch.tensor([[4, 4], [2, 2]], dtype=torch.long)
+starts = torch.tensor([0, 16], dtype=torch.long)
+value = torch.randn(1, 20, 2, 8, requires_grad=True)  # 2 heads, 8 channels each
+locations = torch.rand(1, 3, 2, 2, 4, 2, requires_grad=True)
+weights = torch.full((1, 3, 2, 2, 4), 1 / 8, requires_grad=True)
+output = ms_deform_attn(value, shapes, starts, locations, weights)
+assert output.shape == (1, 3, 16)
+output.square().mean().backward()
+```
+
+All inputs must be on the same CPU or CUDA device, including `shapes` and
+`starts`. Outside autocast, floating inputs must share float16, bfloat16,
+float32, or float64 dtype.
+Weights are used directly, without softmax.
+
+Explicit `.half()` / `.bfloat16()` inputs compute in float32 and return the input
+dtype. AMP computes low-precision inputs in float32 and returns float32.
+Native low-precision kernels,
+MPS, and higher-order gradients are unsupported. CUDA backward is
+nondeterministic.
+
 ## Support matrix
 
 Compatibility on Linux x86_64 with standard CPython (GIL enabled).
@@ -92,34 +120,6 @@ The 2.4.0 and 2.8–2.14 entries describe current-source validation; the publish
 see the [2.4.0 evidence](docs/validation/2026-09-17-pytorch240/README.md),
 [2.8–2.14 evidence](docs/validation/2026-09-17-newer-pytorch/README.md), and
 [earlier validation records](docs/installation.md#prerequisites).
-
-## Use
-
-```python
-import torch
-from torch_ms_deform_attn import ms_deform_attn
-
-# Two feature levels: 4×4 and 2×2, flattened into 20 positions.
-shapes = torch.tensor([[4, 4], [2, 2]], dtype=torch.long)
-starts = torch.tensor([0, 16], dtype=torch.long)
-value = torch.randn(1, 20, 2, 8, requires_grad=True)  # 2 heads, 8 channels each
-locations = torch.rand(1, 3, 2, 2, 4, 2, requires_grad=True)
-weights = torch.full((1, 3, 2, 2, 4), 1 / 8, requires_grad=True)
-output = ms_deform_attn(value, shapes, starts, locations, weights)
-assert output.shape == (1, 3, 16)
-output.square().mean().backward()
-```
-
-All inputs must be on the same CPU or CUDA device, including `shapes` and
-`starts`. Outside autocast, floating inputs must share float16, bfloat16,
-float32, or float64 dtype.
-Weights are used directly, without softmax.
-
-Explicit `.half()` / `.bfloat16()` inputs compute in float32 and return the input
-dtype. AMP computes low-precision inputs in float32 and returns float32.
-Native low-precision kernels,
-MPS, and higher-order gradients are unsupported. CUDA backward is
-nondeterministic.
 
 ## Validation and documentation
 

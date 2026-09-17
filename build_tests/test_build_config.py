@@ -29,8 +29,8 @@ class BuildConfigTest(unittest.TestCase):
     def test_missing_ninja_falls_back(self):
         ns = load(FORCE_CPU="1")
         with patch("torch.utils.cpp_extension.is_ninja_available", return_value=False):
-            with self.assertWarnsRegex(UserWarning, "could not find ninja"):
-                command = ns["OptionalOpenMPBuildExtension"](Distribution(), use_ninja=True)
+            # PyTorch 2.8+ logs this fallback; earlier versions emit UserWarning.
+            command = ns["OptionalOpenMPBuildExtension"](Distribution(), use_ninja=True)
         self.assertFalse(command.use_ninja)
 
     def test_invalid_selection(self):

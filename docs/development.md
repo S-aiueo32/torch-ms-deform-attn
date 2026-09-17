@@ -188,7 +188,7 @@ uv build --sdist --no-sources --no-config --out-dir dist/pypi
 installs the build dependencies declared in `pyproject.toml` in an isolated
 environment. The CI publisher instead installs CPU PyTorch and the build tools
 explicitly and builds with `--no-build-isolation`.
-The archive includes the CPU/CUDA sources, tests, documentation,
+The archive includes the CPU/CUDA/Metal sources, tests, documentation,
 and license files.
 
 For a local wheel, use the development environment's PyTorch:

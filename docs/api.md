@@ -30,7 +30,7 @@ and `P` is sampling points per query/head/level.
 
 ### Input constraints and gradients
 
-All inputs must be on the same CPU or CUDA device. Outside autocast, floating
+All inputs must be on the same CPU, CUDA, or MPS device. Outside autocast, floating
 tensors must share float16, bfloat16, float32, or float64 dtype.
 For CUDA, move every tensor in the example to CUDA,
 including `shapes` and `starts`.
@@ -59,10 +59,28 @@ features, without a host synchronization. Invalid metadata triggers a device ass
 at the next CUDA synchronization. A device assertion invalidates the CUDA context;
 restart the process after such an error.
 
+### MPS constraints and errors
+
+The current checkout provides dedicated Metal forward/backward kernels on Apple
+Silicon, macOS 13.3+, and PyTorch 2.4+. float32 and float16 inputs are supported;
+bfloat16 requires macOS 14+ and a PyTorch build supporting that dtype. float64 and
+empty dimensions are rejected. `im2col_step` must be positive but does not control
+MPS dispatch sizes. Noncontiguous tensors, storage offsets, and overlapping levels
+are supported.
+
+Both kernels compute in float32. Shape/offset metadata is copied to the host for
+range validation, which synchronizes pending GPU work. Feature tensors remain on
+the GPU. Invalid metadata raises a regular error before kernel execution. The
+backend never silently falls back to the CPU or the reference implementation.
+
+Backward uses atomic additions and is nondeterministic. The deterministic-algorithm
+error/warning policy matches CUDA. Metal source is compiled lazily on first use;
+subsequent calls reuse the pipeline. MPS `torch.compile` support is not claimed.
+
 ## AMP and torch.compile
 
 The public function and `MSDeformAttnFunction.apply` use the same dtype rules
-on CPU and CUDA:
+on CPU, CUDA, and MPS (except that MPS cannot represent float64):
 
 | Floating input dtype | Context | Computation | Output |
 | --- | --- | --- | --- |
@@ -104,6 +122,10 @@ output = compiled_attention(value.float(), shapes, starts,
 Compilation treats the attention operator as opaque; it does not fuse the kernel
 internals. Export/ONNX support is not claimed. See [development and CI](development.md)
 for integration test coverage.
+
+MPS autocast dtype availability varies with PyTorch/macOS. The float32 autocast
+output rule applies when `torch.is_autocast_enabled("mps")` is true; older PyTorch
+versions may disable unsupported autocast dtypes with a warning.
 
 ## `MSDeformAttnFunction.apply`
 

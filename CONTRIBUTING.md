@@ -29,7 +29,7 @@ Run the additional checks relevant to the change:
 
 | Changed area | Checks |
 | --- | --- |
-| C++/CUDA sources | [Native formatting and static checks](docs/native-checks.md), plus the relevant CPU/CUDA tests |
+| C++/CUDA/Metal sources | [Native formatting and static checks](docs/native-checks.md), plus the relevant backend tests |
 | Build policy or benchmark harness | `uv run --locked python -m unittest discover -s build_tests -v` |
 | Runpod controller or evidence handling | `uv run --locked python -m unittest discover -s scripts/tests -v` |
 | CPU backend selection | [Real build validation](docs/development.md#run-tests) |
@@ -37,6 +37,12 @@ Run the additional checks relevant to the change:
 
 A CPU-only run skips GPU tests and does not validate CUDA execution. See
 [workflow coverage](docs/development.md#workflow-coverage) for CI behavior.
+
+For Metal changes, build on Apple Silicon with `FORCE_MPS=1` and run
+`python -m unittest discover -s tests -p test_mps.py -v` with an accessible GPU.
+Also run the full suite to cover CPU and FakeTensor regressions. A build-only
+result or skipped MPS tests do not validate Metal execution. Record PyTorch/macOS
+versions and benchmark results using `benchmarks/benchmark_mps.py`.
 
 ## Open a pull request
 

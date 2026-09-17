@@ -1,6 +1,6 @@
 include LICENSE NOTICE README.md
 recursive-include docs *.md
-recursive-include csrc *.cpp *.h *.cu *.cuh
+recursive-include csrc *.cpp *.h *.cu *.cuh *.mm
 recursive-include tests *.py
 recursive-include tests/integration/fixtures *.txt *.json
 recursive-include benchmarks *.py

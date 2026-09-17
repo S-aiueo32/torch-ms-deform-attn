@@ -233,11 +233,29 @@ class OptionalOpenMPBuildExtension(BuildExtension):
         # Distutils does not track changed compiler flags. Rebuild when switching
         # auto/on/off so an existing serial object cannot survive an OpenMP build.
         self.force = True
+        # PyTorch 2.4/2.5 register .mm only for their internal MPS builds.
+        # Clang selects Objective-C++ from the suffix in both Ninja and distutils.
+        if with_mps and ".mm" not in self.compiler.src_extensions:
+            self.compiler.src_extensions.append(".mm")
         super().build_extensions()
 
 
 force_cpu = os.getenv("FORCE_CPU", "0") == "1"
 force_cuda = os.getenv("FORCE_CUDA", "0") == "1"
+force_mps = os.getenv("FORCE_MPS")
+if force_mps not in (None, "0", "1"):
+    raise RuntimeError("FORCE_MPS must be 0 (disabled) or 1 (required); unset means auto")
+if force_mps == "1" and (force_cpu or force_cuda):
+    raise RuntimeError("FORCE_MPS=1 cannot be combined with FORCE_CPU=1 or FORCE_CUDA=1")
+mps_build_supported = (
+    sys.platform == "darwin"
+    and platform.machine() == "arm64"
+    and tuple(map(int, platform.mac_ver()[0].split(".")[:2])) >= (13, 3)
+    and torch.backends.mps.is_built()
+)
+if force_mps == "1" and not mps_build_supported:
+    raise RuntimeError("FORCE_MPS requires Apple Silicon, macOS 13.3+, and MPS-enabled PyTorch")
+with_mps = mps_build_supported and not force_cpu and not force_cuda and force_mps != "0"
 use_ninja = os.getenv("USE_NINJA", "1")
 if use_ninja not in ("0", "1"):
     raise RuntimeError("USE_NINJA must be 0 or 1")
@@ -253,9 +271,18 @@ with_cuda = (
 )
 sources = ["csrc/vision.cpp", "csrc/ms_deform_attn_cpu.cpp"]
 compile_args = {"cxx": ["-O3"]}
+macros = []
+link_args = []
+if with_mps:
+    sources.append("csrc/mps/ms_deform_attn_mps.mm")
+    macros.append(("WITH_MPS", None))
+    compile_args["cxx"].append("-mmacosx-version-min=13.3")
+    link_args.append("-mmacosx-version-min=13.3")
+    link_args.extend(["-framework", "Metal", "-framework", "Foundation"])
 if with_cuda:
     sources.append("csrc/cuda/ms_deform_attn_cuda.cu")
     compile_args["nvcc"] = ["-O3"]
+    macros.append(("WITH_CUDA", None))
 
 setup(
     ext_modules=[
@@ -267,8 +294,9 @@ setup(
                 str(Path(__file__).resolve().parent),
                 str(Path(__file__).resolve().parent / "csrc"),
             ],
-            define_macros=[("WITH_CUDA", None)] if with_cuda else [],
+            define_macros=macros,
             extra_compile_args=compile_args,
+            extra_link_args=link_args,
         )
     ],
     cmdclass={

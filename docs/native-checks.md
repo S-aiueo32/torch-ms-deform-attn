@@ -2,6 +2,13 @@
 
 [Contributing](../CONTRIBUTING.md) · [Development](development.md)
 
+The Metal backend also contains Objective-C++ (`csrc/mps/ms_deform_attn_mps.mm`)
+and embedded shader source (`csrc/mps/kernels.h`). Include them and the MPS header
+in formatting checks. For cpplint, add `--extensions=h,cpp,mm` to include the bridge.
+The shader source inside the raw string is checked by actual Metal compilation.
+Use `--header-filter` to restrict clang-tidy diagnostics to this repository's
+`csrc/` headers; PyTorch/system headers otherwise produce unrelated warnings.
+
 Use these checks when changing `csrc/`. First complete the
 [development setup](development.md#set-up-with-uv) and rebuild the extension.
 The clang-tidy recipe below is specific to macOS; Python checks and runtime tests

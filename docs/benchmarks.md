@@ -2,12 +2,14 @@
 
 [Back to README](../README.md)
 
-Compare the installed extension with the PyTorch reference on synthetic CPU or
-CUDA workloads. Timings are median milliseconds; speedup is reference latency
+Compare the installed extension with the PyTorch reference on synthetic CPU,
+CUDA, or MPS workloads. Timings are median milliseconds; speedup is reference latency
 divided by extension latency. These measurements do not predict whole-model
 latency or peak memory usage.
 
 ## CPU benchmarks
+
+For Apple Silicon, see [MPS benchmarks](#mps-benchmarks) below.
 
 ### Run CPU benchmarks
 
@@ -164,3 +166,24 @@ entire comparison in a fresh process to confirm it before treating it as a regre
 Memory changes require matching baselines and a repeatable increase. This is an
 investigation threshold, not a cross-machine performance guarantee. No operator
 speedup here establishes a whole-model speedup.
+
+## MPS benchmarks
+
+With an MPS-enabled build and an accessible Apple GPU:
+
+```bash
+python benchmarks/benchmark_mps.py --iterations 20 --warmup 5 --output benchmark-mps.json
+```
+
+The harness compares dedicated Metal kernels with MPS `grid_sample` on four-level
+encoder/decoder shapes, batches 1/2, and feature maps corresponding to 800×800 and
+800×1344 inputs. It synchronizes before and after each timed call, includes
+metadata transfer, and reports the first forward call separately from warmed
+medians. It records unsupported reference backward operations instead of enabling
+CPU fallback. Correctness is covered separately by the operator tests.
+
+Memory is measured separately from timing: live MPS tensor bytes are sampled at
+PyTorch operator boundaries. This excludes cached allocator memory and may miss
+internal workspace peaks; it is an observed lower bound, not an exact peak.
+See the [MPS evidence](validation/mps/README.md) for hardware, software versions,
+raw measurements, and limitations.

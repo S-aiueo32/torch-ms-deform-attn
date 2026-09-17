@@ -74,11 +74,24 @@ see [Actions usage](development.md#actions-usage).
 | Linux | 3.11 | 2.8.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-newer-pytorch/README.md) |
 | Linux | 3.12 | 2.14.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-newer-pytorch/README.md) |
 
-The 2.8–2.14 rows refer to current-source validation, not the published RC.
-Intermediate 2.9–2.13 releases have CPU evidence only; the new CUDA runtime
-checks select 2.8.0 and 2.14.0 with CUDA 12.6. Exact source identities, Python
-versions, skips and sanitizer reports are in the
+The rows above preserve the earlier per-version validation records. The initial
+2.8–2.14 validation selected 2.8.0 and 2.14.0 for CUDA runtime checks; its exact
+source identities and sanitizer reports remain in the
 [newer-PyTorch validation record](validation/2026-09-17-newer-pytorch/README.md).
+
+The [Python-by-PyTorch tables](../README.md#support-matrix) also include the
+[expanded Python matrix](validation/2026-09-17-support-matrix/README.md), which
+tests the intermediate releases on CUDA and adds separate CPU-only wheel runs.
+Those runs use CUDA 12.4 for 2.4.0/2.5.0/2.5.1 and CUDA 12.6 for the listed
+2.7–2.14 releases. Each record identifies its Python version and source SHA.
+The local Docker records use CPU PyTorch wheels; the GPU-host CPU-only extension
+records use the matching CUDA-enabled PyTorch installation. Both execute the
+CPU suite, and neither CPU result alone establishes CUDA support.
+
+PyTorch 2.5.0/2.5.1 with Python 3.13 and 2.9.1 with Python 3.14 reject
+`torch.compile` upstream. Their builds and eager tests do not establish full
+feature support; the matrices mark the failed full suites with ⚠️. These results
+describe current-source validation, not a new package release.
 
 The CUDA 12.6 local result above refers only to source
 `c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`; see the

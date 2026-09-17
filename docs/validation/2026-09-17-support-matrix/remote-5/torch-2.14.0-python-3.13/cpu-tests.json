@@ -1,0 +1,116 @@
+{
+  "source_sha": "12cd60774870b2849628cd24e9705ef68348d91f",
+  "success": true,
+  "python": "3.13.15",
+  "platform": "Linux-6.14.0-33-generic-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "torch": "2.14.0+cu126",
+  "with_cuda": false,
+  "cpu_backend": "openmp",
+  "tests_run": 66,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    [
+      "integration.test_upstream.CUDAUpstreamTest.test_module_optimizer_parity",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_amp_training.CUDAAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_amp_training.CUDAAMPTrainingTest.test_double_and_inference",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_amp_training.CUDAAMPTrainingTest.test_scaled_training_and_accumulation",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_amp_and_compile",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_compile_dynamic",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_deterministic_algorithms",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_gradcheck",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_invalid_inputs",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_invalid_metadata_device_assert",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_noncontiguous_and_stream",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_noncurrent_device",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_partial_batch_chunk",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_reference_forward_backward",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda_graphs.CUDAGraphTest.test_dynamic_shapes_and_metadata",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_cuda_graphs.CUDAGraphTest.test_opcheck",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_input_contract.CUDAInputContractTest.test_backward_contract",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_input_contract.CUDAInputContractTest.test_empty_dimension_policy",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_input_contract.CUDAInputContractTest.test_forward_contract",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_low_precision.CUDALowPrecisionTest.test_forward_backward_and_dynamic_compile",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_low_precision.CUDALowPrecisionTest.test_inference_and_empty_queries",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_low_precision.CUDALowPrecisionTest.test_optimizer_steps",
+      "Requires CUDA extension and GPU"
+    ],
+    [
+      "test_sampling_precision.CUDASamplingPrecisionTest.test_near_knot_matches_double_oracle",
+      "Requires CUDA extension and GPU"
+    ]
+  ],
+  "unexpected_skips": []
+}

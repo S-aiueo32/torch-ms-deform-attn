@@ -1,0 +1,433 @@
+Using CPython 3.11.16
+Creating virtual environment with seed packages at: /tmp/msda-matrix-zpnpz8fg/base
+ + packaging==26.3
+ + pip==26.2.1
+ + setuptools==84.0.0
+ + wheel==0.48.0
+Activate with: source /tmp/msda-matrix-zpnpz8fg/base/bin/activate
+Python 3.11.16
+Source SHA: 12cd60774870b2849628cd24e9705ef68348d91f
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Tue_Oct_29_23:50:19_PDT_2024
+Cuda compilation tools, release 12.6, V12.6.85
+Build cuda_12.6.r12.6/compiler.35059454_0
+Collecting numpy
+  Downloading numpy-2.4.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Requirement already satisfied: setuptools>=77 in /tmp/torch-ms-deform-attn-cuda.Uxf2Ve4z/venv/lib/python3.11/site-packages (79.0.1)
+Collecting packaging>=24.2
+  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting wheel
+  Downloading wheel-0.48.0-py3-none-any.whl.metadata (2.3 kB)
+Collecting ninja
+  Downloading ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.4 kB)
+Collecting build
+  Downloading build-1.6.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting pyproject_hooks (from build)
+  Downloading pyproject_hooks-1.3.3-py3-none-any.whl.metadata (1.3 kB)
+Downloading numpy-2.4.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.9/16.9 MB 264.2 MB/s eta 0:00:00
+Downloading packaging-26.3-py3-none-any.whl (129 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 kB 292.8 MB/s eta 0:00:00
+Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+Downloading ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (183 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 183.4/183.4 kB 324.4 MB/s eta 0:00:00
+Downloading build-1.6.1-py3-none-any.whl (31 kB)
+Downloading pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+Installing collected packages: pyproject_hooks, packaging, numpy, ninja, wheel, build
+Successfully installed build-1.6.1 ninja-1.13.2 numpy-2.4.6 packaging-26.3 pyproject_hooks-1.3.3 wheel-0.48.0
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Looking in indexes: https://download.pytorch.org/whl/cu126
+Collecting torch==2.14.0
+  Downloading https://download-r2.pytorch.org/whl/cu126/torch-2.14.0%2Bcu126-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (37 kB)
+Collecting filelock (from torch==2.14.0)
+  Downloading filelock-3.32.3-py3-none-any.whl.metadata (2.0 kB)
+Collecting typing-extensions>=4.10.0 (from torch==2.14.0)
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Requirement already satisfied: setuptools>=77.0.3 in /tmp/torch-ms-deform-attn-cuda.Uxf2Ve4z/venv/lib/python3.11/site-packages (from torch==2.14.0) (79.0.1)
+Collecting sympy>=1.13.3 (from torch==2.14.0)
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx>=2.5.1 (from torch==2.14.0)
+  Downloading networkx-3.6.1-py3-none-any.whl.metadata (6.8 kB)
+Collecting jinja2 (from torch==2.14.0)
+  Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec>=0.8.5 (from torch==2.14.0)
+  Downloading fsspec-2026.7.0-py3-none-any.whl.metadata (10 kB)
+Collecting cuda-toolkit==12.6.3 (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/cuda-toolkit/cuda_toolkit-12.6.3-py2.py3-none-any.whl (2.3 kB)
+Collecting cuda-bindings<13,>=12.9.4 (from torch==2.14.0)
+  Downloading cuda_bindings-12.9.7-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (2.6 kB)
+Collecting nvidia-cudnn-cu12==9.10.2.21 (from torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cudnn-cu12/nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 706.8/706.8 MB 196.0 MB/s eta 0:00:00
+Collecting nvidia-cusparselt-cu12==0.7.1 (from torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cusparselt-cu12/nvidia_cusparselt_cu12-0.7.1-py3-none-manylinux2014_x86_64.whl (287.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 287.2/287.2 MB 200.5 MB/s eta 0:00:00
+Collecting nvidia-nccl-cu12==2.29.3 (from torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-nccl-cu12/nvidia_nccl_cu12-2.29.3-py3-none-manylinux_2_18_x86_64.whl (289.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 289.8/289.8 MB 160.4 MB/s eta 0:00:00
+Collecting nvidia-nvshmem-cu12==3.4.5 (from torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-nvshmem-cu12/nvidia_nvshmem_cu12-3.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (139.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 139.1/139.1 MB 189.8 MB/s eta 0:00:00
+Collecting nvidia-nvjitlink-cu12<13,>=12.6.85 (from torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-nvjitlink-cu12/nvidia_nvjitlink_cu12-12.9.86-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (39.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 39.7/39.7 MB 162.6 MB/s eta 0:00:00
+Collecting triton~=3.8.0 (from torch==2.14.0)
+  Downloading https://download-r2.pytorch.org/whl/triton-3.8.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (978 bytes)
+Collecting nvidia-cublas-cu12==12.6.4.1.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cublas-cu12/nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (393.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 393.1/393.1 MB 188.1 MB/s eta 0:00:00
+Collecting nvidia-cuda-runtime-cu12==12.6.77.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cuda-runtime-cu12/nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (897 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 897.7/897.7 kB 271.3 MB/s eta 0:00:00
+Collecting nvidia-cufft-cu12==11.3.0.4.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cufft-cu12/nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (200.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 200.2/200.2 MB 179.9 MB/s eta 0:00:00
+Collecting nvidia-cufile-cu12==1.11.1.6.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cufile-cu12/nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 267.5 MB/s eta 0:00:00
+Collecting nvidia-cuda-cupti-cu12==12.6.80.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cuda-cupti-cu12/nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.9/8.9 MB 213.7 MB/s eta 0:00:00
+Collecting nvidia-curand-cu12==10.3.7.77.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-curand-cu12/nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (56.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 56.3/56.3 MB 199.7 MB/s eta 0:00:00
+Collecting nvidia-cusolver-cu12==11.7.1.2.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cusolver-cu12/nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (158.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 158.2/158.2 MB 199.3 MB/s eta 0:00:00
+Collecting nvidia-cusparse-cu12==12.5.4.2.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cusparse-cu12/nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (216.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 216.6/216.6 MB 188.6 MB/s eta 0:00:00
+Collecting nvidia-cuda-nvrtc-cu12==12.6.85.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-cuda-nvrtc-cu12/nvidia_cuda_nvrtc_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (23.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.6/23.6 MB 180.8 MB/s eta 0:00:00
+Collecting nvidia-nvtx-cu12==12.6.77.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvrtc,nvtx]==12.6.3; platform_system == "Linux"->torch==2.14.0)
+  Downloading https://pypi.nvidia.com/nvidia-nvtx-cu12/nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (89 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 89.3/89.3 kB 262.6 MB/s eta 0:00:00
+Collecting cuda-pathfinder~=1.1 (from cuda-bindings<13,>=12.9.4->torch==2.14.0)
+  Downloading cuda_pathfinder-1.6.0-py3-none-any.whl.metadata (1.9 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.14.0)
+  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->torch==2.14.0)
+  Downloading https://download.pytorch.org/whl/markupsafe-3.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+Downloading https://download-r2.pytorch.org/whl/cu126/torch-2.14.0%2Bcu126-cp311-cp311-manylinux_2_28_x86_64.whl (869.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 869.1/869.1 MB 292.9 MB/s eta 0:00:00
+Downloading cuda_bindings-12.9.7-cp311-cp311-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (7.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.6/7.6 MB 108.4 MB/s eta 0:00:00
+Downloading fsspec-2026.7.0-py3-none-any.whl (206 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 206.6/206.6 kB 236.6 MB/s eta 0:00:00
+Downloading networkx-3.6.1-py3-none-any.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 262.1 MB/s eta 0:00:00
+Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 311.0 MB/s eta 0:00:00
+Downloading https://download-r2.pytorch.org/whl/triton-3.8.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (246.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 246.8/246.8 MB 216.6 MB/s eta 0:00:00
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 272.8 MB/s eta 0:00:00
+Downloading filelock-3.32.3-py3-none-any.whl (98 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 98.9/98.9 kB 301.2 MB/s eta 0:00:00
+Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl (134 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 134.9/134.9 kB 292.6 MB/s eta 0:00:00
+Downloading cuda_pathfinder-1.6.0-py3-none-any.whl (54 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.6/54.6 kB 279.5 MB/s eta 0:00:00
+Downloading https://download.pytorch.org/whl/markupsafe-3.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 349.2 MB/s eta 0:00:00
+Installing collected packages: nvidia-cusparselt-cu12, mpmath, cuda-toolkit, typing-extensions, triton, sympy, nvidia-nvtx-cu12, nvidia-nvshmem-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufile-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, MarkupSafe, fsspec, filelock, cuda-pathfinder, nvidia-cusparse-cu12, nvidia-cufft-cu12, nvidia-cudnn-cu12, jinja2, cuda-bindings, nvidia-cusolver-cu12, torch
+Successfully installed MarkupSafe-3.0.3 cuda-bindings-12.9.7 cuda-pathfinder-1.6.0 cuda-toolkit-12.6.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 nvidia-cublas-cu12-12.6.4.1 nvidia-cuda-cupti-cu12-12.6.80 nvidia-cuda-nvrtc-cu12-12.6.85 nvidia-cuda-runtime-cu12-12.6.77 nvidia-cudnn-cu12-9.10.2.21 nvidia-cufft-cu12-11.3.0.4 nvidia-cufile-cu12-1.11.1.6 nvidia-curand-cu12-10.3.7.77 nvidia-cusolver-cu12-11.7.1.2 nvidia-cusparse-cu12-12.5.4.2 nvidia-cusparselt-cu12-0.7.1 nvidia-nccl-cu12-2.29.3 nvidia-nvjitlink-cu12-12.9.86 nvidia-nvshmem-cu12-3.4.5 nvidia-nvtx-cu12-12.6.77 sympy-1.14.0 torch-2.14.0+cu126 triton-3.8.0 typing-extensions-4.16.0
+PyTorch: 2.14.0+cu126 CUDA: 12.6
+GPU 0 NVIDIA L4 (8, 9)
+* Getting build dependencies for sdist...
+running egg_info
+writing src/torch_ms_deform_attn.egg-info/PKG-INFO
+writing dependency_links to src/torch_ms_deform_attn.egg-info/dependency_links.txt
+writing requirements to src/torch_ms_deform_attn.egg-info/requires.txt
+writing top-level names to src/torch_ms_deform_attn.egg-info/top_level.txt
+reading manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+adding license file 'NOTICE'
+writing manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing src/torch_ms_deform_attn.egg-info/PKG-INFO
+writing dependency_links to src/torch_ms_deform_attn.egg-info/dependency_links.txt
+writing requirements to src/torch_ms_deform_attn.egg-info/requires.txt
+writing top-level names to src/torch_ms_deform_attn.egg-info/top_level.txt
+reading manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+adding license file 'NOTICE'
+writing manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+running check
+creating torch_ms_deform_attn-0.1.0rc2
+creating torch_ms_deform_attn-0.1.0rc2/benchmarks
+creating torch_ms_deform_attn-0.1.0rc2/csrc
+creating torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+creating torch_ms_deform_attn-0.1.0rc2/docs
+creating torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-14-p1
+creating torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-15-p2
+creating torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-17-newer-pytorch
+creating torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-17-pytorch240
+creating torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+creating torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+creating torch_ms_deform_attn-0.1.0rc2/tests
+creating torch_ms_deform_attn-0.1.0rc2/tests/integration
+creating torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+copying files to torch_ms_deform_attn-0.1.0rc2...
+copying LICENSE -> torch_ms_deform_attn-0.1.0rc2
+copying MANIFEST.in -> torch_ms_deform_attn-0.1.0rc2
+copying NOTICE -> torch_ms_deform_attn-0.1.0rc2
+copying README.md -> torch_ms_deform_attn-0.1.0rc2
+copying pyproject.toml -> torch_ms_deform_attn-0.1.0rc2
+copying setup.py -> torch_ms_deform_attn-0.1.0rc2
+copying benchmarks/benchmark_compile.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+copying benchmarks/benchmark_cpu.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+copying benchmarks/benchmark_cuda.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+copying benchmarks/environment.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+copying csrc/ms_deform_attn_cpu.cpp -> torch_ms_deform_attn-0.1.0rc2/csrc
+copying csrc/ms_deform_attn_cpu.h -> torch_ms_deform_attn-0.1.0rc2/csrc
+copying csrc/vision.cpp -> torch_ms_deform_attn-0.1.0rc2/csrc
+copying csrc/cuda/index_utils.h -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+copying csrc/cuda/ms_deform_attn_cuda.cu -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+copying csrc/cuda/ms_deform_attn_cuda.h -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+copying csrc/cuda/ms_deform_im2col_cuda.cuh -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+copying docs/api.md -> torch_ms_deform_attn-0.1.0rc2/docs
+copying docs/benchmarks.md -> torch_ms_deform_attn-0.1.0rc2/docs
+copying docs/compatibility.md -> torch_ms_deform_attn-0.1.0rc2/docs
+copying docs/development.md -> torch_ms_deform_attn-0.1.0rc2/docs
+copying docs/gpu-runner.md -> torch_ms_deform_attn-0.1.0rc2/docs
+copying docs/installation.md -> torch_ms_deform_attn-0.1.0rc2/docs
+copying docs/validation/2026-09-14-p1/README.md -> torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-14-p1
+copying docs/validation/2026-09-15-p2/README.md -> torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-15-p2
+copying docs/validation/2026-09-17-newer-pytorch/README.md -> torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-17-newer-pytorch
+copying docs/validation/2026-09-17-pytorch240/README.md -> torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-17-pytorch240
+copying src/torch_ms_deform_attn/_C.pyi -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+copying src/torch_ms_deform_attn/__init__.py -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+copying src/torch_ms_deform_attn/_ops.py -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+copying src/torch_ms_deform_attn/functional.py -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+copying src/torch_ms_deform_attn/py.typed -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+copying src/torch_ms_deform_attn.egg-info/PKG-INFO -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+copying src/torch_ms_deform_attn.egg-info/SOURCES.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+copying src/torch_ms_deform_attn.egg-info/dependency_links.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+copying src/torch_ms_deform_attn.egg-info/requires.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+copying src/torch_ms_deform_attn.egg-info/top_level.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+copying tests/sampling_cases.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_amp_training.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_cpu.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_cuda.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_cuda_graphs.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_fake_contract.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_indexing.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_input_contract.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_integration.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_low_precision.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/test_sampling_precision.py -> torch_ms_deform_attn-0.1.0rc2/tests
+copying tests/integration/__init__.py -> torch_ms_deform_attn-0.1.0rc2/tests/integration
+copying tests/integration/test_upstream.py -> torch_ms_deform_attn-0.1.0rc2/tests/integration
+copying tests/integration/fixtures/manifest.json -> torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+copying tests/integration/fixtures/ms_deform_attn.py.txt -> torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+copying tests/integration/fixtures/ms_deform_attn_func.py.txt -> torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+copying src/torch_ms_deform_attn.egg-info/SOURCES.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+Writing torch_ms_deform_attn-0.1.0rc2/setup.cfg
+Creating tar archive
+removing 'torch_ms_deform_attn-0.1.0rc2' (and everything under it)
+Successfully built torch_ms_deform_attn-0.1.0rc2.tar.gz
+Processing /tmp/torch-ms-deform-attn-cuda.Uxf2Ve4z/dist/torch_ms_deform_attn-0.1.0rc2.tar.gz
+  File was already downloaded /tmp/torch-ms-deform-attn-cuda.Uxf2Ve4z/dist/torch_ms_deform_attn-0.1.0rc2.tar.gz
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: torch-ms-deform-attn
+  Building wheel for torch-ms-deform-attn (pyproject.toml): started
+  Building wheel for torch-ms-deform-attn (pyproject.toml): finished with status 'done'
+  Created wheel for torch-ms-deform-attn: filename=torch_ms_deform_attn-0.1.0rc2-cp311-cp311-linux_x86_64.whl size=2238798 sha256=59d6ae7ac2783a0cbb091f75321b7f3cec304f7b401c8b0ac6bb4d08738af94c
+  Stored in directory: /home/ci/.cache/pip/wheels/b0/74/e5/86900102bc346625dd407b2c92a3bbe337627b6c4a038b74d5
+Successfully built torch-ms-deform-attn
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Processing /tmp/torch-ms-deform-attn-cuda.Uxf2Ve4z/dist/torch_ms_deform_attn-0.1.0rc2-cp311-cp311-linux_x86_64.whl
+Installing collected packages: torch-ms-deform-attn
+Successfully installed torch-ms-deform-attn-0.1.0rc2
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Installed extension: /tmp/torch-ms-deform-attn-cuda.Uxf2Ve4z/venv/lib/python3.11/site-packages/torch_ms_deform_attn/_C.cpython-311-x86_64-linux-gnu.so
+test_module_optimizer_parity (integration.test_upstream.CPUUpstreamTest.test_module_optimizer_parity) ... ok
+test_module_optimizer_parity (integration.test_upstream.CUDAUpstreamTest.test_module_optimizer_parity) ... ok
+test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CPUAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... ok
+test_double_and_inference (test_amp_training.CPUAMPTrainingTest.test_double_and_inference) ... ok
+test_scaled_training_and_accumulation (test_amp_training.CPUAMPTrainingTest.test_scaled_training_and_accumulation) ... ok
+test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CUDAAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... ok
+test_double_and_inference (test_amp_training.CUDAAMPTrainingTest.test_double_and_inference) ... ok
+test_scaled_training_and_accumulation (test_amp_training.CUDAAMPTrainingTest.test_scaled_training_and_accumulation) ... W0917 02:31:19.519000 12602 venv/lib/python3.11/site-packages/torch/_inductor/utils.py:1806] [0/4] Not enough SMs to use max_autotune_gemm mode
+ok
+test_colliding_samples_and_overlapping_levels (test_cpu.CPUAttentionTest.test_colliding_samples_and_overlapping_levels) ... ok
+test_cpu_parallel_workers_honor_thread_count (test_cpu.CPUAttentionTest.test_cpu_parallel_workers_honor_thread_count) ... ok
+test_empty_batch (test_cpu.CPUAttentionTest.test_empty_batch) ... ok
+test_empty_heads_channels_levels_and_points (test_cpu.CPUAttentionTest.test_empty_heads_channels_levels_and_points) ... ok
+test_empty_queries (test_cpu.CPUAttentionTest.test_empty_queries) ... ok
+test_gradcheck (test_cpu.CPUAttentionTest.test_gradcheck) ... ok
+test_invalid_inputs (test_cpu.CPUAttentionTest.test_invalid_inputs) ... ok
+test_level_start_index (test_cpu.CPUAttentionTest.test_level_start_index) ... ok
+test_offsets_collisions_and_noncontiguous_metadata (test_cpu.CPUAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+test_padding_support_and_channel_sizes (test_cpu.CPUAttentionTest.test_padding_support_and_channel_sizes) ... ok
+test_public_api (test_cpu.CPUAttentionTest.test_public_api) ... ok
+test_reference_forward_and_backward (test_cpu.CPUAttentionTest.test_reference_forward_and_backward) ... ok
+test_reject_invalid_gradient (test_cpu.CPUAttentionTest.test_reject_invalid_gradient) ... ok
+test_reject_unsupported_dtype (test_cpu.CPUAttentionTest.test_reject_unsupported_dtype) ... ok
+test_cuda_input_error (test_cuda.CPUOnlyBuildTest.test_cuda_input_error) ... skipped 'Requires GPU and CPU-only build'
+test_amp_and_compile (test_cuda.CUDAAttentionTest.test_amp_and_compile) ... ok
+test_compile_dynamic (test_cuda.CUDAAttentionTest.test_compile_dynamic) ... ok
+test_deterministic_algorithms (test_cuda.CUDAAttentionTest.test_deterministic_algorithms) ... ok
+test_gradcheck (test_cuda.CUDAAttentionTest.test_gradcheck) ... ok
+test_invalid_inputs (test_cuda.CUDAAttentionTest.test_invalid_inputs) ... ok
+test_invalid_metadata_device_assert (test_cuda.CUDAAttentionTest.test_invalid_metadata_device_assert) ... ok
+test_noncontiguous_and_stream (test_cuda.CUDAAttentionTest.test_noncontiguous_and_stream) ... ok
+test_noncurrent_device (test_cuda.CUDAAttentionTest.test_noncurrent_device) ... skipped 'Requires two GPUs'
+test_offsets_collisions_and_noncontiguous_metadata (test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+test_padding_support_and_channel_sizes (test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes) ... ok
+test_partial_batch_chunk (test_cuda.CUDAAttentionTest.test_partial_batch_chunk) ... ok
+test_reference_forward_backward (test_cuda.CUDAAttentionTest.test_reference_forward_backward) ... ok
+test_dynamic_shapes_and_metadata (test_cuda_graphs.CUDAGraphTest.test_dynamic_shapes_and_metadata) ... {"dtype": "torch.float32", "graphs_after_calls": [1, 2, 2, 3], "unit_dimension_call": 3, "repeat_graphs": 3}
+{"dtype": "torch.float16", "graphs_after_calls": [1, 2, 2, 3], "unit_dimension_call": 3, "repeat_graphs": 3}
+{"dtype": "torch.bfloat16", "graphs_after_calls": [1, 2, 2, 3], "unit_dimension_call": 3, "repeat_graphs": 3}
+ok
+test_opcheck (test_cuda_graphs.CUDAGraphTest.test_opcheck) ... ok
+test_backward_metadata (test_fake_contract.FakeContractTest.test_backward_metadata) ... ok
+test_fake_devices_and_empty_dimensions (test_fake_contract.FakeContractTest.test_fake_devices_and_empty_dimensions) ... ok
+test_invalid_forward_metadata (test_fake_contract.FakeContractTest.test_invalid_forward_metadata) ... ok
+test_grid_limit_can_be_resolved_by_chunking (test_indexing.CUDAIndexingTest.test_grid_limit_can_be_resolved_by_chunking) ... ok
+test_invalid_dimensions_and_overflow (test_indexing.CUDAIndexingTest.test_invalid_dimensions_and_overflow) ... ok
+test_location_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_location_offsets_exceed_int32) ... ok
+test_partial_chunk_plan (test_indexing.CUDAIndexingTest.test_partial_chunk_plan) ... ok
+test_value_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_value_offsets_exceed_int32) ... ok
+test_work_exceeds_int32 (test_indexing.CUDAIndexingTest.test_work_exceeds_int32) ... ok
+test_backward_contract (test_input_contract.CPUInputContractTest.test_backward_contract) ... ok
+test_empty_dimension_policy (test_input_contract.CPUInputContractTest.test_empty_dimension_policy) ... ok
+test_forward_contract (test_input_contract.CPUInputContractTest.test_forward_contract) ... ok
+test_backward_contract (test_input_contract.CUDAInputContractTest.test_backward_contract) ... ok
+test_empty_dimension_policy (test_input_contract.CUDAInputContractTest.test_empty_dimension_policy) ... ok
+test_forward_contract (test_input_contract.CUDAInputContractTest.test_forward_contract) ... ok
+test_amp_and_compiled_amp (test_integration.IntegrationTest.test_amp_and_compiled_amp) ... ok
+test_compile_dynamic_forward_backward (test_integration.IntegrationTest.test_compile_dynamic_forward_backward) ... ok
+test_double_preserved_under_autocast (test_integration.IntegrationTest.test_double_preserved_under_autocast) ... ok
+test_higher_order_gradients_rejected (test_integration.IntegrationTest.test_higher_order_gradients_rejected) ... ok
+test_legacy_apply_compile (test_integration.IntegrationTest.test_legacy_apply_compile) ... ok
+test_opcheck (test_integration.IntegrationTest.test_opcheck) ... ok
+test_forward_backward_and_dynamic_compile (test_low_precision.CPULowPrecisionTest.test_forward_backward_and_dynamic_compile) ... ok
+test_inference_and_empty_queries (test_low_precision.CPULowPrecisionTest.test_inference_and_empty_queries) ... ok
+test_optimizer_steps (test_low_precision.CPULowPrecisionTest.test_optimizer_steps) ... ok
+test_forward_backward_and_dynamic_compile (test_low_precision.CUDALowPrecisionTest.test_forward_backward_and_dynamic_compile) ... ok
+test_inference_and_empty_queries (test_low_precision.CUDALowPrecisionTest.test_inference_and_empty_queries) ... ok
+test_optimizer_steps (test_low_precision.CUDALowPrecisionTest.test_optimizer_steps) ... ok
+test_near_knot_matches_double_oracle (test_sampling_precision.CPUSamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+test_near_knot_matches_double_oracle (test_sampling_precision.CUDASamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+
+----------------------------------------------------------------------
+Ran 66 tests in 90.540s
+
+OK (skipped=2)
+Processing ./dist/torch_ms_deform_attn-0.1.0rc2.tar.gz
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: torch-ms-deform-attn
+  Building wheel for torch-ms-deform-attn (pyproject.toml): started
+  Building wheel for torch-ms-deform-attn (pyproject.toml): finished with status 'done'
+  Created wheel for torch-ms-deform-attn: filename=torch_ms_deform_attn-0.1.0rc2-cp311-cp311-linux_x86_64.whl size=2064736 sha256=dd3ff516e5db98176b71d061e80502a78c34d8e68bef75556f60d7a26b0dd3cb
+  Stored in directory: /tmp/pip-ephem-wheel-cache-hfo4_e1l/wheels/b0/74/e5/86900102bc346625dd407b2c92a3bbe337627b6c4a038b74d5
+Successfully built torch-ms-deform-attn
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Processing ./cpu-dist/torch_ms_deform_attn-0.1.0rc2-cp311-cp311-linux_x86_64.whl
+Installing collected packages: torch-ms-deform-attn
+  Attempting uninstall: torch-ms-deform-attn
+    Found existing installation: torch-ms-deform-attn 0.1.0rc2
+    Uninstalling torch-ms-deform-attn-0.1.0rc2:
+      Successfully uninstalled torch-ms-deform-attn-0.1.0rc2
+Successfully installed torch-ms-deform-attn-0.1.0rc2
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+test_cuda_input_error (test_cuda.CPUOnlyBuildTest.test_cuda_input_error) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.352s
+
+OK
+test_module_optimizer_parity (integration.test_upstream.CPUUpstreamTest.test_module_optimizer_parity) ... ok
+test_module_optimizer_parity (integration.test_upstream.CUDAUpstreamTest.test_module_optimizer_parity) ... skipped 'Requires CUDA extension and GPU'
+test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CPUAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... ok
+test_double_and_inference (test_amp_training.CPUAMPTrainingTest.test_double_and_inference) ... ok
+test_scaled_training_and_accumulation (test_amp_training.CPUAMPTrainingTest.test_scaled_training_and_accumulation) ... ok
+test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CUDAAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... skipped 'Requires CUDA extension and GPU'
+test_double_and_inference (test_amp_training.CUDAAMPTrainingTest.test_double_and_inference) ... skipped 'Requires CUDA extension and GPU'
+test_scaled_training_and_accumulation (test_amp_training.CUDAAMPTrainingTest.test_scaled_training_and_accumulation) ... skipped 'Requires CUDA extension and GPU'
+test_colliding_samples_and_overlapping_levels (test_cpu.CPUAttentionTest.test_colliding_samples_and_overlapping_levels) ... ok
+test_cpu_parallel_workers_honor_thread_count (test_cpu.CPUAttentionTest.test_cpu_parallel_workers_honor_thread_count) ... ok
+test_empty_batch (test_cpu.CPUAttentionTest.test_empty_batch) ... ok
+test_empty_heads_channels_levels_and_points (test_cpu.CPUAttentionTest.test_empty_heads_channels_levels_and_points) ... ok
+test_empty_queries (test_cpu.CPUAttentionTest.test_empty_queries) ... ok
+test_gradcheck (test_cpu.CPUAttentionTest.test_gradcheck) ... ok
+test_invalid_inputs (test_cpu.CPUAttentionTest.test_invalid_inputs) ... ok
+test_level_start_index (test_cpu.CPUAttentionTest.test_level_start_index) ... ok
+test_offsets_collisions_and_noncontiguous_metadata (test_cpu.CPUAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+test_padding_support_and_channel_sizes (test_cpu.CPUAttentionTest.test_padding_support_and_channel_sizes) ... ok
+test_public_api (test_cpu.CPUAttentionTest.test_public_api) ... ok
+test_reference_forward_and_backward (test_cpu.CPUAttentionTest.test_reference_forward_and_backward) ... ok
+test_reject_invalid_gradient (test_cpu.CPUAttentionTest.test_reject_invalid_gradient) ... ok
+test_reject_unsupported_dtype (test_cpu.CPUAttentionTest.test_reject_unsupported_dtype) ... ok
+test_cuda_input_error (test_cuda.CPUOnlyBuildTest.test_cuda_input_error) ... ok
+test_amp_and_compile (test_cuda.CUDAAttentionTest.test_amp_and_compile) ... skipped 'Requires CUDA extension and GPU'
+test_compile_dynamic (test_cuda.CUDAAttentionTest.test_compile_dynamic) ... skipped 'Requires CUDA extension and GPU'
+test_deterministic_algorithms (test_cuda.CUDAAttentionTest.test_deterministic_algorithms) ... skipped 'Requires CUDA extension and GPU'
+test_gradcheck (test_cuda.CUDAAttentionTest.test_gradcheck) ... skipped 'Requires CUDA extension and GPU'
+test_invalid_inputs (test_cuda.CUDAAttentionTest.test_invalid_inputs) ... skipped 'Requires CUDA extension and GPU'
+test_invalid_metadata_device_assert (test_cuda.CUDAAttentionTest.test_invalid_metadata_device_assert) ... skipped 'Requires CUDA extension and GPU'
+test_noncontiguous_and_stream (test_cuda.CUDAAttentionTest.test_noncontiguous_and_stream) ... skipped 'Requires CUDA extension and GPU'
+test_noncurrent_device (test_cuda.CUDAAttentionTest.test_noncurrent_device) ... skipped 'Requires CUDA extension and GPU'
+test_offsets_collisions_and_noncontiguous_metadata (test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... skipped 'Requires CUDA extension and GPU'
+test_padding_support_and_channel_sizes (test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes) ... skipped 'Requires CUDA extension and GPU'
+test_partial_batch_chunk (test_cuda.CUDAAttentionTest.test_partial_batch_chunk) ... skipped 'Requires CUDA extension and GPU'
+test_reference_forward_backward (test_cuda.CUDAAttentionTest.test_reference_forward_backward) ... skipped 'Requires CUDA extension and GPU'
+test_dynamic_shapes_and_metadata (test_cuda_graphs.CUDAGraphTest.test_dynamic_shapes_and_metadata) ... skipped 'Requires CUDA extension and GPU'
+test_opcheck (test_cuda_graphs.CUDAGraphTest.test_opcheck) ... skipped 'Requires CUDA extension and GPU'
+test_backward_metadata (test_fake_contract.FakeContractTest.test_backward_metadata) ... ok
+test_fake_devices_and_empty_dimensions (test_fake_contract.FakeContractTest.test_fake_devices_and_empty_dimensions) ... ok
+test_invalid_forward_metadata (test_fake_contract.FakeContractTest.test_invalid_forward_metadata) ... ok
+test_grid_limit_can_be_resolved_by_chunking (test_indexing.CUDAIndexingTest.test_grid_limit_can_be_resolved_by_chunking) ... ok
+test_invalid_dimensions_and_overflow (test_indexing.CUDAIndexingTest.test_invalid_dimensions_and_overflow) ... ok
+test_location_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_location_offsets_exceed_int32) ... ok
+test_partial_chunk_plan (test_indexing.CUDAIndexingTest.test_partial_chunk_plan) ... ok
+test_value_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_value_offsets_exceed_int32) ... ok
+test_work_exceeds_int32 (test_indexing.CUDAIndexingTest.test_work_exceeds_int32) ... ok
+test_backward_contract (test_input_contract.CPUInputContractTest.test_backward_contract) ... ok
+test_empty_dimension_policy (test_input_contract.CPUInputContractTest.test_empty_dimension_policy) ... ok
+test_forward_contract (test_input_contract.CPUInputContractTest.test_forward_contract) ... ok
+test_backward_contract (test_input_contract.CUDAInputContractTest.test_backward_contract) ... skipped 'Requires CUDA extension and GPU'
+test_empty_dimension_policy (test_input_contract.CUDAInputContractTest.test_empty_dimension_policy) ... skipped 'Requires CUDA extension and GPU'
+test_forward_contract (test_input_contract.CUDAInputContractTest.test_forward_contract) ... skipped 'Requires CUDA extension and GPU'
+test_amp_and_compiled_amp (test_integration.IntegrationTest.test_amp_and_compiled_amp) ... ok
+test_compile_dynamic_forward_backward (test_integration.IntegrationTest.test_compile_dynamic_forward_backward) ... ok
+test_double_preserved_under_autocast (test_integration.IntegrationTest.test_double_preserved_under_autocast) ... ok
+test_higher_order_gradients_rejected (test_integration.IntegrationTest.test_higher_order_gradients_rejected) ... ok
+test_legacy_apply_compile (test_integration.IntegrationTest.test_legacy_apply_compile) ... ok
+test_opcheck (test_integration.IntegrationTest.test_opcheck) ... ok
+test_forward_backward_and_dynamic_compile (test_low_precision.CPULowPrecisionTest.test_forward_backward_and_dynamic_compile) ... ok
+test_inference_and_empty_queries (test_low_precision.CPULowPrecisionTest.test_inference_and_empty_queries) ... ok
+test_optimizer_steps (test_low_precision.CPULowPrecisionTest.test_optimizer_steps) ... ok
+test_forward_backward_and_dynamic_compile (test_low_precision.CUDALowPrecisionTest.test_forward_backward_and_dynamic_compile) ... skipped 'Requires CUDA extension and GPU'
+test_inference_and_empty_queries (test_low_precision.CUDALowPrecisionTest.test_inference_and_empty_queries) ... skipped 'Requires CUDA extension and GPU'
+test_optimizer_steps (test_low_precision.CUDALowPrecisionTest.test_optimizer_steps) ... skipped 'Requires CUDA extension and GPU'
+test_near_knot_matches_double_oracle (test_sampling_precision.CPUSamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+test_near_knot_matches_double_oracle (test_sampling_precision.CUDASamplingPrecisionTest.test_near_knot_matches_double_oracle) ... skipped 'Requires CUDA extension and GPU'
+
+----------------------------------------------------------------------
+Ran 66 tests in 16.185s
+
+OK (skipped=25)
+CUDA validation completed successfully.

@@ -1,0 +1,6 @@
+{
+  "cuda-checks.log": "41244f1e44ca97764d6668841eb4f5b451001037927159545596b3f7ee806f16",
+  "cuda-tests.json": "26754a7187ebcc0cfbda17edbba6cee5589c298ccd05ff156320d1b993d39f9f",
+  "driver.log": "1484a9c88f2ed80287a4e5397d29044a35a09cdefc9e2264f46c19f772f719ea",
+  "nvidia-smi.txt": "52c19f77413a424fef2cf0924e951a9ea7abce5bdfa461299144caa54c9e97e4"
+}

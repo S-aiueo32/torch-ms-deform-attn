@@ -308,6 +308,7 @@ class ControllerTest(unittest.TestCase):
         self.prepare_run()
         self.args.torch_version = "2.14.0"
         self.args.workload = "kernel-hub"
+        self.args.kernel_hub_suite = "compile-amp"
         self.args.prepared_kernel = self.args.source / "prepared"
         self.args.prepared_kernel.mkdir()
         (self.args.prepared_kernel / "UPSTREAM.json").write_text(json.dumps({"revision": "a" * 40}))
@@ -321,6 +322,7 @@ class ControllerTest(unittest.TestCase):
                 ci.run(api, self.args)
         remote = command.call_args.args[0][-1]
         self.assertIn("run_kernel_hub_checks.sh", remote)
+        self.assertTrue(remote.endswith("/workspace/ci/results compile-amp"))
         self.assertIn(f"CUDA_CHECKS_SOURCE_SHA={'a' * 40}", remote)
         self.assertIn("timeout --signal=TERM --kill-after=30s", remote)
         collect.assert_called_once()

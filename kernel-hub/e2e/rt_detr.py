@@ -181,6 +181,24 @@ def align_proposals(actual, expected, *, atol, rtol):
     return aligned, indices.tolist()
 
 
+def baseline_fake_registration(module):
+    """Enable tracing the historical HF ops without changing their CUDA math."""
+    forward = module._ops.ops.ms_deform_attn_forward.default
+    backward = module._ops.ops.ms_deform_attn_backward.default
+
+    def fake_forward(value, shapes, starts, locations, weights, step):
+        return value.new_empty(
+            (value.shape[0], locations.shape[1], value.shape[2] * value.shape[3])
+        )
+
+    def fake_backward(value, shapes, starts, locations, weights, grad, step):
+        return [torch.empty_like(value), torch.empty_like(locations), torch.empty_like(weights)]
+
+    for op, fake in ((forward, fake_forward), (backward, fake_backward)):
+        if not torch._C._dispatch_has_kernel_for_dispatch_key(op.name(), "Meta"):
+            torch.library.register_fake(op, fake)
+
+
 def reference_precision(model):
     """Evaluate reference interpolation in FP32 within the same precision model.
 
@@ -217,6 +235,7 @@ def run_case(
     baseline_kernel_dir=None,
     numerics="default",
     diagnostics=None,
+    compile_reference=False,
 ):
     torch.manual_seed(123)
     torch.set_num_threads(1)
@@ -373,6 +392,39 @@ def run_case(
         if eager_candidate is not None:
             diagnostics["candidate_compiled_vs_eager"] = comparison(actual, eager_candidate)
             diagnostics["candidate_eager_vs_hf"] = comparison(eager_candidate, expected)
+    if compile_reference and backend:
+        if baseline_module is None:
+            raise ValueError("Compiling the reference requires a pinned HF artifact")
+        baseline_fake_registration(baseline_module)
+        from torch._functorch import config as autograd_config
+
+        def reference_backend(graph, inputs):
+            with autograd_config.patch(backward_pass_autocast="off"):
+                return compiler(
+                    graph,
+                    inputs,
+                    config_patches={
+                        "emulate_precision_casts": numerics != "default",
+                        "emulate_divison_rounding": numerics != "default",
+                        "pattern_matcher": numerics != "controlled",
+                    },
+                )
+
+        compiled_reference = torch.compile(
+            reference.model, backend=reference_backend, fullgraph=not training
+        )
+        reference_eager = expected
+        expected = run_model(
+            reference,
+            candidate_pixels,
+            labels,
+            training=training,
+            amp_dtype=scalar_type if amp else None,
+            execute=compiled_reference,
+        )
+        if diagnostics is not None:
+            diagnostics["hf_compiled_vs_eager"] = comparison(expected, reference_eager)
+            diagnostics["candidate_vs_compiled_hf"] = comparison(actual, expected)
     actual, query_permutation = align_proposals(actual, expected, atol=atol, rtol=rtol)
     if diagnostics is not None:
         diagnostics["query_permutation"] = query_permutation
@@ -389,6 +441,8 @@ def run_case(
         "numerics": numerics,
         "backward_pass_autocast": "off",
         "query_permutation": query_permutation,
+        "reference_compiled": compile_reference and backend is not None,
+        "baseline_fake_registration": compile_reference and backend is not None,
         "dtype": dtype,
         "autocast": amp,
         "replaced_layers": replaced,
@@ -421,6 +475,7 @@ def main():
     parser.add_argument("--numerics", choices=["default", "eager", "controlled"], default="default")
     parser.add_argument("--compiled-training-only", action="store_true")
     parser.add_argument("--compiled-only", action="store_true")
+    parser.add_argument("--compile-reference", action="store_true")
     args = parser.parse_args()
     report = {
         "status": "failed",
@@ -469,6 +524,7 @@ def main():
                         baseline_kernel_dir=args.baseline_kernel_dir,
                         numerics=args.numerics,
                         diagnostics=diagnostics,
+                        compile_reference=args.compile_reference,
                     )
                 except Exception:
                     case = {

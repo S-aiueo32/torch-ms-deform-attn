@@ -7,6 +7,11 @@ on:
         type: choice
         default: core
         options: [core, kernel-hub]
+      kernel_hub_suite:
+        description: Full Kernel Hub matrix or focused compiled AMP training
+        type: choice
+        default: full
+        options: [full, compile-amp]
       torch_version:
         description: PyTorch version (2.4/2.5 use CUDA 12.4; newer versions use CUDA 12.6)
         type: choice
@@ -47,6 +52,7 @@ jobs:
     timeout-minutes: 70
     env:
       WORKLOAD: ${{ inputs.workload }}
+      KERNEL_HUB_SUITE: ${{ inputs.kernel_hub_suite }}
       TORCH_VERSION: ${{ inputs.torch_version }}
       GPU: ${{ inputs.gpu }}
       SANITIZER: ${{ inputs.sanitizer }}
@@ -98,7 +104,7 @@ jobs:
             --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
             --output-dir "$RUNNER_TEMP/runpod-results" \
             --gpu "$GPU" --sanitizer "$SANITIZER" --torch-version "$TORCH_VERSION" \
-            --workload "$WORKLOAD" "${prepared[@]}" \
+            --workload "$WORKLOAD" --kernel-hub-suite "$KERNEL_HUB_SUITE" "${prepared[@]}" \
             --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES"
       - name: Retry cleanup after failure or cancellation
         if: always() && inputs.operation == 'test'

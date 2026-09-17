@@ -15,6 +15,7 @@ from kernels import get_kernel, get_local_kernel
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--focus-compile", action="store_true")
+    parser.add_argument("--diagnostic-controls", action="store_true")
     args = parser.parse_args()
     output = Path(os.environ["MSDA_OUTPUT_DIR"])
     candidate = Path(os.environ["MSDA_KERNEL_DIR"])
@@ -75,7 +76,7 @@ def main():
             ("fp16", True),
             ("bf16", True),
         ):
-            if args.focus_compile and not amp:
+            if args.focus_compile and not (amp and dtype == "bf16"):
                 continue
             name = f"e2e-{dtype}" + ("-amp" if amp else "")
             command = [
@@ -88,7 +89,7 @@ def main():
                 "--dtype",
                 dtype,
                 "--numerics",
-                "controlled" if args.focus_compile else "eager",
+                "controlled" if dtype == "fp32" or amp else "eager",
                 "--report",
                 str(output / f"{name}.json"),
             ]
@@ -96,8 +97,9 @@ def main():
                 command.append("--autocast")
             if args.focus_compile:
                 command.append("--compiled-training-only" if amp else "--compiled-only")
+                command.append("--compile-reference")
             runs.append((name, command))
-            if not amp and not args.focus_compile:
+            if args.diagnostic_controls and not amp and not args.focus_compile:
                 diagnostic = command.copy()
                 diagnostic[diagnostic.index("--numerics") + 1] = "default"
                 diagnostic[diagnostic.index("--report") + 1] = str(

@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # Disposable CUDA 12.6 host workload, run by the ownership-aware Runpod controller.
 set -euo pipefail
-[[ $# -eq 1 && -n "${CUDA_CHECKS_SOURCE_SHA:-}" ]]
+[[ $# -ge 1 && $# -le 2 && -n "${CUDA_CHECKS_SOURCE_SHA:-}" ]]
+msda_suite_args=()
+case "${2:-full}" in
+    full) ;;
+    compile-amp) msda_suite_args=(--focus-compile) ;;
+    *) echo 'Unknown Kernel Hub suite' >&2; exit 2 ;;
+esac
 msda_source=$(pwd -P)
 mkdir -p "$1"
 msda_output=$(cd "$1" && pwd -P)
@@ -33,4 +39,4 @@ cmake --build "$msda_work/cmake" --target local_install
 python -m pip freeze > "$msda_output/python-packages.txt"
 export MSDA_KERNEL_DIR="$msda_work/candidate"
 export MSDA_OUTPUT_DIR="$msda_output"
-python "$msda_source/kernel-hub/e2e/gpu_suite.py" --focus-compile
+python "$msda_source/kernel-hub/e2e/gpu_suite.py" "${msda_suite_args[@]}"

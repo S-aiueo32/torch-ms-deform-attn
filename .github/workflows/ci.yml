@@ -8,6 +8,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - {os: ubuntu-latest, python: '3.10', torch: '2.4.0', openmp: '0', backend: serial}
+          - {os: ubuntu-latest, python: '3.11', torch: '2.4.0', openmp: '1', backend: openmp}
           - {os: ubuntu-latest, python: '3.10', torch: '2.5.0', openmp: '0', backend: serial}
           - {os: ubuntu-latest, python: '3.11', torch: '2.5.1', openmp: '1', backend: openmp}
           - {os: ubuntu-latest, python: '3.12', torch: '2.7.1', openmp: '1', backend: openmp}

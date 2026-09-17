@@ -58,12 +58,12 @@ jobs:
           export PIP_BREAK_SYSTEM_PACKAGES=1
           nvcc --version
           python -c 'import os, torch; assert torch.__version__.split("+")[0] == os.environ["EXPECTED_TORCH"]; assert torch.version.cuda == os.environ["EXPECTED_CUDA"]; assert not torch.cuda.is_available()'
-          python -m pip install --no-cache-dir numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
+          python -m pip install --no-cache-dir numpy 'pytest>=8,<10' 'setuptools>=77' 'packaging>=24.2' wheel ninja build
           python -m build --sdist --no-isolation
           python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
           python -m pip install --no-deps dist/*.whl
           cp -R tests /tmp/msda-tests
           cd /tmp
           python -c 'from torch_ms_deform_attn import _C; assert _C.with_cuda; assert _C.cpu_parallel_backend == "openmp", _C.cpu_parallel_backend'
-          python -m unittest discover -s msda-tests -v
+          python -m pytest msda-tests -v
           BASH

@@ -63,17 +63,17 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install Linux CPU PyTorch
         run: python -m pip install "torch==$TORCH_VERSION" --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
+      - run: python -m pip install numpy 'pytest>=8,<10' 'setuptools>=77' 'packaging>=24.2' wheel ninja build
       - run: python -m build --sdist --no-isolation
       - run: python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
       - run: python -m pip install --no-deps dist/*.whl
-      - run: python -m unittest discover -s build_tests -v
+      - run: python -m pytest build_tests -v
       - name: Test installed wheel outside checkout
         run: |
           cp -R tests "$RUNNER_TEMP/msda-tests"
           cd "$RUNNER_TEMP"
           python -c 'import os; from torch_ms_deform_attn import _C; assert not _C.with_cuda; assert _C.cpu_parallel_backend == os.environ["EXPECTED_CPU_BACKEND"], _C.cpu_parallel_backend'
-          python -m unittest discover -s msda-tests -v
+          python -m pytest msda-tests -v
       - name: Record matrix result
         if: always()
         env:
@@ -93,13 +93,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python -m pip install numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja
+      - run: python -m pip install numpy 'pytest>=8,<10' 'setuptools>=77' 'packaging>=24.2' wheel ninja
       - name: Rebuild the same checkout after upgrading PyTorch
         run: |
           for version in 2.5.0 2.7.1; do
             python -m pip install "torch==$version" --index-url https://download.pytorch.org/whl/cpu
             python setup.py build_ext --inplace --force
-            PYTHONPATH=src python -m unittest discover -s tests -v
+            PYTHONPATH=src python -m pytest tests -v
           done
       - name: Rebuild after backend and Ninja changes
         run: |
@@ -109,8 +109,8 @@ jobs:
           FORCE_OPENMP=0 USE_NINJA=0 python setup.py build_ext --inplace
           PYTHONPATH=src python -c 'from torch_ms_deform_attn import _C; assert _C.cpu_parallel_backend == "serial"'
           OMP_PREFIX=/nonexistent USE_NINJA=0 python setup.py build_ext --inplace
-          PYTHONPATH=src python -m unittest discover -s tests -p test_cpu.py -v
+          PYTHONPATH=src python -m pytest tests/test_cpu.py -v
           PYTHONPATH=src python -c 'from torch_ms_deform_attn import _C; assert _C.cpu_parallel_backend == "serial"'
           FORCE_OPENMP=1 USE_NINJA=1 python setup.py build_ext --inplace
-          PYTHONPATH=src python -m unittest discover -s tests -p test_cpu.py -v
+          PYTHONPATH=src python -m pytest tests/test_cpu.py -v
           PYTHONPATH=src python -c 'from torch_ms_deform_attn import _C; assert _C.cpu_parallel_backend == "openmp"'

@@ -27,6 +27,7 @@ dev = [
     { include-group = "lint" },
     "torch==2.5.1",
     "numpy",
+    "pytest>=8,<10",
     "setuptools>=77",
     "packaging>=24.2",
     "wheel",
@@ -48,6 +49,10 @@ select = ["E4", "E7", "E9", "F", "I"]
 # jaxtyping shape strings are not Python forward-reference expressions.
 "src/torch_ms_deform_attn/functional.py" = ["F722"]
 "src/torch_ms_deform_attn/_C.pyi" = ["F722"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
 
 [tool.uv]
 # Install PyTorch and build tools before compiling the editable extension.

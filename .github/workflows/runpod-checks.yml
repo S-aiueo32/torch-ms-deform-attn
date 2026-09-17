@@ -21,8 +21,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - run: python3 -m pip install 'pytest>=8,<10'
       - name: Test price checks and Pod lifecycle failures without renting a GPU
-        run: python3 -m unittest discover -s scripts/tests -v
+        run: python3 -m pytest scripts/tests -v
       - name: Check shell syntax
         run: bash -n scripts/runpod_bootstrap.sh scripts/run_cuda_checks.sh scripts/test_runpod_bootstrap.sh
       - name: Verify temporary SSH credentials in a CPU container

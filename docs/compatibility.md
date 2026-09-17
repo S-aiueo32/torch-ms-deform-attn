@@ -46,4 +46,4 @@ still rejects empty dimensions. The upstream module requires contiguous packed
 feature levels even though the standalone operator also accepts arbitrary valid
 offsets. See [API contracts](api.md) for the remaining constraints.
 
-Run with `python -m unittest discover -s tests -v`; GPU skips are not GPU evidence.
+Run with `pytest -v`; GPU skips are not GPU evidence.

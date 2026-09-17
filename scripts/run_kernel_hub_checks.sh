@@ -33,4 +33,4 @@ cmake --build "$msda_work/cmake" --target local_install
 python -m pip freeze > "$msda_output/python-packages.txt"
 export MSDA_KERNEL_DIR="$msda_work/candidate"
 export MSDA_OUTPUT_DIR="$msda_output"
-python "$msda_source/kernel-hub/e2e/gpu_suite.py"
+python "$msda_source/kernel-hub/e2e/gpu_suite.py" --focus-compile

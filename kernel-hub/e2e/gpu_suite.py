@@ -1,5 +1,6 @@
 """Execute Phase 1 and Phase 2 against real local and pinned Hub CUDA artifacts."""
 
+import argparse
 import hashlib
 import json
 import os
@@ -12,6 +13,9 @@ from kernels import get_kernel, get_local_kernel
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--focus-compile", action="store_true")
+    args = parser.parse_args()
     output = Path(os.environ["MSDA_OUTPUT_DIR"])
     candidate = Path(os.environ["MSDA_KERNEL_DIR"])
     revision = os.environ["MSDA_HF_BASELINE_REVISION"]
@@ -41,6 +45,7 @@ def main():
         "cuda": torch.version.cuda,
         "gpu": torch.cuda.get_device_name(),
         "status": "failed",
+        "focus_compile": args.focus_compile,
         "runs": [],
     }
     os.environ["LOCAL_KERNELS"] = f"kernels-community/deformable-detr={candidate}"
@@ -61,6 +66,8 @@ def main():
                 ],
             )
         ]
+        if args.focus_compile:
+            runs = []
         for dtype, amp in (
             ("fp32", False),
             ("fp16", False),
@@ -68,6 +75,8 @@ def main():
             ("fp16", True),
             ("bf16", True),
         ):
+            if args.focus_compile and dtype != "fp32" and not amp:
+                continue
             name = f"e2e-{dtype}" + ("-amp" if amp else "")
             command = [
                 sys.executable,
@@ -79,14 +88,16 @@ def main():
                 "--dtype",
                 dtype,
                 "--numerics",
-                "eager",
+                "controlled" if args.focus_compile else "eager",
                 "--report",
                 str(output / f"{name}.json"),
             ]
             if amp:
                 command.append("--autocast")
+            if args.focus_compile:
+                command.append("--compiled-training-only" if amp else "--compiled-only")
             runs.append((name, command))
-            if not amp:
+            if not amp and not args.focus_compile:
                 diagnostic = command.copy()
                 diagnostic[diagnostic.index("--numerics") + 1] = "default"
                 diagnostic[diagnostic.index("--report") + 1] = str(

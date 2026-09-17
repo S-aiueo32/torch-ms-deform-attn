@@ -87,6 +87,25 @@ finite-value check uses data-dependent branching, so training permits model
 graph breaks and records every compiled graph. The criterion is outside the
 compiled region. This is not a claim of full-graph compiled training.
 
+### Isolating compiler numerics
+
+`--numerics default` preserves Inductor's normal optimizations. `--numerics eager`
+uses PyTorch 2.10's `emulate_precision_casts=True` and
+`emulate_divison_rounding=True` settings (the latter spelling is upstream's).
+The first preserves intermediate low-precision rounding and disables Triton
+floating-point fusion; the second matches eager division rounding. These are
+explicit validation settings, not changes to the distributed kernel or to error
+tolerances. They may affect performance and should not be used silently in a
+benchmark.
+
+Compiled reports additionally compare the candidate against its own eager
+execution and compare that eager result against HF. The `proposals` tensor
+records initial decoder reference points, upstream of MSDA, to reveal changes
+in proposal selection/order. All per-tensor differences survive failed cases.
+Use `--compiled-training-only` to reproduce training failures without rerunning
+the entire matrix. The Runpod workload runs the eager-numerics matrix plus
+default-numerics FP32/FP16/BF16 training controls on the same GPU.
+
 ## Local CPU fixture tests
 
 Run these separately from the core suite with the E2E dependencies and a CPU

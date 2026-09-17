@@ -278,13 +278,14 @@ def run_case(
                     ),
                 }
             )
-            if backend == "inductor" and numerics == "eager":
+            if backend == "inductor" and numerics != "default":
                 return compiler(
                     graph,
                     inputs,
                     config_patches={
                         "emulate_precision_casts": True,
                         "emulate_divison_rounding": True,
+                        **({"pattern_matcher": False} if numerics == "controlled" else {}),
                     },
                 )
             return compiler(graph, inputs)
@@ -382,8 +383,9 @@ def main():
     )
     parser.add_argument("--dtype", choices=["fp32", "fp16", "bf16"], default="fp32")
     parser.add_argument("--autocast", action="store_true")
-    parser.add_argument("--numerics", choices=["default", "eager"], default="default")
+    parser.add_argument("--numerics", choices=["default", "eager", "controlled"], default="default")
     parser.add_argument("--compiled-training-only", action="store_true")
+    parser.add_argument("--compiled-only", action="store_true")
     args = parser.parse_args()
     report = {
         "status": "failed",
@@ -405,9 +407,22 @@ def main():
             raise RuntimeError("Phase 2 GPU validation requires CUDA")
         if args.autocast and args.dtype == "fp32":
             raise ValueError("Autocast requires fp16 or bf16")
+        if args.numerics == "controlled":
+            # Only this standalone validation process changes hardware math.
+            torch.backends.cudnn.allow_tf32 = False
+            torch.backends.cuda.matmul.allow_tf32 = False
+            torch.backends.cuda.enable_flash_sdp(False)
+            torch.backends.cuda.enable_mem_efficient_sdp(False)
+            torch.backends.cuda.enable_cudnn_sdp(False)
+            torch.backends.cuda.enable_math_sdp(True)
+            report["math_policy"] = {"tf32": False, "sdpa": "math", "pattern_matcher": False}
         report["gpu"] = torch.cuda.get_device_name()
         for training in (True,) if args.compiled_training_only else (False, True):
-            for backend in ("inductor",) if args.compiled_training_only else (None, "inductor"):
+            for backend in (
+                ("inductor",)
+                if args.compiled_training_only or args.compiled_only
+                else (None, "inductor")
+            ):
                 diagnostics = {}
                 try:
                     case = run_case(

@@ -50,7 +50,8 @@ __device__ inline bool valid_spatial_level(int64_t height, int64_t width,
                      width <= spatial_size && start >= 0 &&
                      start <= spatial_size &&
                      height * width <= spatial_size - start;
-  CUDA_KERNEL_ASSERT_MSG(valid, "Spatial level exceeds the value tensor");
+  // PyTorch 2.4 has CUDA_KERNEL_ASSERT but not CUDA_KERNEL_ASSERT_MSG.
+  CUDA_KERNEL_ASSERT(valid && "Spatial level exceeds the value tensor");
   return valid;
 }
 

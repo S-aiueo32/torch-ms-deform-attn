@@ -34,19 +34,19 @@ examples, verification, and rebuilding after changing PyTorch.
 Validated Linux x86_64 combinations are listed below. Python versions are shown
 separately for CPU and CUDA because the tested environments differ.
 
-| PyTorch | CPU: Python / backend | CUDA runtime: Python / toolkit | CPU CI |
-| --- | --- | --- | --- |
-| 2.4.0 | 3.10 / serial; 3.11 / OpenMP | 3.11 / CUDA 12.4 | PR + manual |
-| 2.5.0 | 3.10 / serial | — | Manual |
-| 2.5.1 | 3.11 / OpenMP | 3.11 / CUDA 12.4 | Manual |
-| 2.7.1 | 3.12 / OpenMP | 3.11 / CUDA 12.6 | Manual |
-| 2.8.0 | 3.12 / OpenMP | 3.11 / CUDA 12.6 | Manual |
-| 2.9.1 | 3.12 / OpenMP | — | Manual |
-| 2.10.0 | 3.12 / OpenMP | — | Manual |
-| 2.11.0 | 3.12 / OpenMP | — | Manual |
-| 2.12.1 | 3.12 / OpenMP | — | Manual |
-| 2.13.0 | 3.12 / OpenMP | — | Manual |
-| 2.14.0 | 3.12 / OpenMP | 3.12 / CUDA 12.6 | PR + manual |
+| PyTorch | CPU: Python / backend | CUDA runtime: Python / toolkit |
+| --- | --- | --- |
+| 2.4.0 | 3.10 / serial; 3.11 / OpenMP | 3.11 / CUDA 12.4 |
+| 2.5.0 | 3.10 / serial | — |
+| 2.5.1 | 3.11 / OpenMP | 3.11 / CUDA 12.4 |
+| 2.7.1 | 3.12 / OpenMP | 3.11 / CUDA 12.6 |
+| 2.8.0 | 3.12 / OpenMP | 3.11 / CUDA 12.6 |
+| 2.9.1 | 3.12 / OpenMP | — |
+| 2.10.0 | 3.12 / OpenMP | — |
+| 2.11.0 | 3.12 / OpenMP | — |
+| 2.12.1 | 3.12 / OpenMP | — |
+| 2.13.0 | 3.12 / OpenMP | — |
+| 2.14.0 | 3.12 / OpenMP | 3.12 / CUDA 12.6 |
 
 **— means unverified.** Other Python/PyTorch combinations, CUDA toolkits,
 macOS and Windows are best effort. The dependency range permits more versions
@@ -57,10 +57,6 @@ The 2.4.0 and 2.8–2.14 rows describe current-source validation; the published
 see the [2.4.0 evidence](docs/validation/2026-09-17-pytorch240/README.md),
 [2.8–2.14 evidence](docs/validation/2026-09-17-newer-pytorch/README.md), and
 [earlier validation records](docs/installation.md#prerequisites).
-
-Normal PRs run the three minimum/latest CPU configurations. The full CPU
-matrix, CUDA builds, and GPU runtime checks are manual; see
-[CI execution policy](docs/development.md#actions-usage).
 
 ## Use
 

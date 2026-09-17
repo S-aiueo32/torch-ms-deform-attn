@@ -1,0 +1,74 @@
+[
+  {
+    "time": "2026-09-17T09:23:00.580037+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:23:10.963121+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:23:21.382696+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:23:31.814881+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:23:42.283574+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:23:52.742728+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:24:03.222878+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:24:13.660883+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:24:24.173468+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:24:34.603529+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:24:44.995809+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:24:55.425862+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:25:05.995574+00:00",
+    "status": "RUNNING",
+    "stage": "ssh_command_failed",
+    "returncode": 255,
+    "error": "ssh: connect to host 157.157.221.29 port 45643: Connection refused\n"
+  },
+  {
+    "time": "2026-09-17T09:25:18.380733+00:00",
+    "status": "RUNNING",
+    "stage": "ready"
+  }
+]

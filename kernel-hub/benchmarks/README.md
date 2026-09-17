@@ -1,7 +1,8 @@
 # Phase 3: MSDA comparison
 
-Status: [GPU provisioning blocked the first measurement](../../docs/validation/kernel-hub-benchmarks/README.md).
-The harness has CPU qualification coverage, but no CUDA benchmark results yet.
+Status: [L4 measurement in progress](../../docs/validation/kernel-hub-benchmarks/README.md).
+Five implementations have initial CUDA results; Triton setup and a fresh-process
+repeat remain in progress. See the evidence above before interpreting timings.
 
 This harness compares the installed canonical package, its Kernel Hub adapter,
 the pinned published HF artifact, MMCV's MSDA CUDA source, PyTorch `grid_sample`,

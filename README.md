@@ -8,19 +8,16 @@ outside the package's scope.
 
 ## Install
 
-Install the published release candidate from
-[PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.0rc2/).
-The current source requires Python 3.10+, PyTorch >=2.4.0,<3, and a C++ compiler
-compatible with PyTorch (C++17 through 2.12; C++20 from 2.13). The package is
-distributed as source and compiles against the PyTorch in your environment:
+Install release candidate `0.1.0rc2` from PyPI. It requires Python 3.10+,
+PyTorch >=2.5,<3, and a compatible C++ compiler. Installation builds the extension
+from source against your installed PyTorch:
 
 ```bash
 python -m pip install 'torch>=2.5,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc2
 ```
 
-The published `0.1.0rc2` still requires PyTorch >=2.5,<3. To use 2.4.x,
-install from the current source as described in [installation](docs/installation.md).
+For PyTorch 2.4.x, [install from the current checkout](docs/installation.md#install-from-a-checkout).
 
 CPU builds need neither the CUDA toolkit nor torchvision. CUDA is built
 automatically when CUDA-enabled PyTorch, the CUDA toolkit, and a visible GPU
@@ -59,91 +56,24 @@ nondeterministic.
 
 ## Support matrix
 
-Compatibility on Linux x86_64 with standard CPython (GIL enabled).
+See the [CPU and CUDA support matrix](docs/support.md) for tested Python/PyTorch
+pairs, CUDA toolkits, and known `torch.compile` limitations. The maintained
+matrix covers Linux x86_64 with standard CPython; macOS and Windows are best effort.
+Results are tied to source revisions, including revisions newer than `0.1.0rc2`.
 
-- ✅ Verified with this library.
-- ⚠️ Tested, but the full suite failed; see the validation record for limitations.
-- ➖ Within PyTorch's Python compatibility range, but unverified with this library.
-- ❌ Outside PyTorch's Python compatibility range.
+## Documentation
 
-An asterisk (*) marks experimental Python support in PyTorch. The icon records
-this library's validation status independently. Upstream compatibility follows
-[PyTorch's release matrix](https://github.com/pytorch/pytorch/blob/v2.14.0/RELEASE.md#release-compatibility-matrix)
-and [2.14.0 package metadata](https://pypi.org/project/torch/2.14.0/).
-
-### CPU
-
-| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
-| --- | :---: | :---: | :---: | :---: | :---: |
-| 2.4.0 | ✅ | ✅ | ✅ | ❌ | ❌ |
-| 2.5.0 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
-| 2.5.1 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
-| 2.7.1 | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 2.8.0 | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 2.9.1 | ✅ | ✅ | ✅ | ✅ | ⚠️* |
-| 2.10.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
-| 2.11.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
-| 2.12.1 | ✅ | ✅ | ✅ | ✅ | ✅* |
-| 2.13.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 2.14.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-### GPU (CUDA)
-
-| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
-| --- | :---: | :---: | :---: | :---: | :---: |
-| 2.4.0 | ✅ | ✅ | ✅ | ❌ | ❌ |
-| 2.5.0 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
-| 2.5.1 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
-| 2.7.1 | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 2.8.0 | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 2.9.1 | ✅ | ✅ | ✅ | ✅ | ⚠️* |
-| 2.10.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
-| 2.11.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
-| 2.12.1 | ✅ | ✅ | ✅ | ✅ | ✅* |
-| 2.13.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 2.14.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-CUDA validation selects a CUDA build from
-[PyTorch's official version-specific builds](https://pytorch.org/get-started/previous-versions/)
-and uses a matching toolkit. Each ✅ covers that tested pair; exact CUDA versions
-are recorded in the [detailed matrix](docs/installation.md#prerequisites).
-
-PyTorch 2.5.0/2.5.1 on Python 3.13 and 2.9.1 on Python 3.14 reject
-`torch.compile` upstream. Their full suites fail; build and test results are in the
-[Python-version validation](docs/validation/python-matrix/README.md).
-
-### Scope
-
-Unverified combinations within PyTorch's compatibility range, other CUDA
-toolkits, macOS and Windows are best effort. Combinations marked ❌ are excluded.
-This library requires Python >=3.10 even where PyTorch supports older Python.
-The dependency range permits more versions than this tested matrix.
-MPS is unsupported.
-
-The tables combine current-source validation and historical release records.
-The published `0.1.0rc2` requires PyTorch >=2.5. Results are tied to source revisions:
-see the [Python-matrix evidence](docs/validation/python-matrix/README.md),
-[2.4.0 evidence](docs/validation/minimum-pytorch/README.md),
-[2.8–2.14 evidence](docs/validation/pytorch-versions/README.md), and
-[earlier validation records](docs/installation.md#prerequisites).
-
-## Validation and documentation
-
-For development, use uv to create `.venv`, install locked dependencies, and build
-the editable extension:
-
-```bash
-uv sync --locked
-uv run --locked python -m unittest discover -s tests -v
-```
-
-- [Installation](docs/installation.md): requirements, backend selection, CPU parallelism.
-- [API](docs/api.md): arguments, reference implementation, AMP, compilation, limitations.
-- [Upstream compatibility](docs/compatibility.md): pinned Deformable-DETR module and training-step checks.
-- [Development and CI](docs/development.md): tests, uv builds and PyPI publishing, workflow coverage.
-- [Validation records](docs/validation/README.md): verification targets, environments, results, and evidence.
-- [Benchmarks](docs/benchmarks.md): CPU/CUDA results and measurement commands.
-- [GPU runner](docs/gpu-runner.md): Runpod setup, CUDA checks, cleanup, and costs.
+| Task | Guide |
+| --- | --- |
+| Install, choose a backend, or rebuild | [Installation](docs/installation.md) |
+| Look up tensor shapes, dtypes, and errors | [API reference](docs/api.md) |
+| Replace the upstream operator | [Deformable-DETR integration](docs/compatibility.md) |
+| Choose a validated environment | [Support matrix](docs/support.md) |
+| Make a change and run checks | [Contributing](CONTRIBUTING.md) |
+| Build packages or publish a release | [Development and CI](docs/development.md) |
+| Measure operator performance | [Benchmarks](docs/benchmarks.md) |
+| Run GPU validation on Runpod | [GPU runner](docs/gpu-runner.md) |
+| Inspect recorded test results | [Validation evidence](docs/validation/README.md) |
 
 ## Attribution
 

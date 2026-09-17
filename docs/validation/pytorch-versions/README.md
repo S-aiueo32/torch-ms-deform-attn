@@ -1,5 +1,7 @@
 # PyTorch version compatibility
 
+[Validation index](../README.md) · [Support matrix](../../support.md)
+
 ## Objective and conditions
 
 Validate Linux installed-wheel compatibility across the listed PyTorch 2.8–2.14

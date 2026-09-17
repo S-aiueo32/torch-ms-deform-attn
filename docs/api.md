@@ -1,4 +1,4 @@
-# API and integration
+# API reference
 
 [Back to README](../README.md)
 
@@ -29,19 +29,6 @@ number of heads, `D` is channels per head, `L` is feature levels, `Q` is queries
 and `P` is sampling points per query/head/level.
 
 ### Input constraints and gradients
-
-The public functions use [jaxtyping](https://docs.kidger.site/jaxtyping/api/array/)
-annotations such as `Float[torch.Tensor, "N S M D"]` and
-`Int64[torch.Tensor, "L 2"]`; the output is `Float[torch.Tensor, "N Q M*D"]`.
-The reference also accepts Python sequences of height/width pairs.
-These annotations describe dtype families and shared dimensions. ty checks the
-underlying Tensor types; it does not prove shape or dtype compatibility.
-No runtime type-checking decorator is installed. Kernel validation and AMP
-handling enforce the constraints below, and `torch.compile` behavior is retained.
-jaxtyping is a development dependency, imported only during type checking;
-annotations are stored as strings at runtime. Calling `typing.get_type_hints()`
-on these functions requires explicitly supplying the jaxtyping names in its
-namespace. Normal imports and execution do not require jaxtyping.
 
 All inputs must be on the same CPU or CUDA device. Outside autocast, floating
 tensors must share float16, bfloat16, float32, or float64 dtype.
@@ -74,18 +61,23 @@ restart the process after such an error.
 
 ## AMP and torch.compile
 
-The public function and compatibility `.apply` entry point both support autocast
-on CPU and CUDA. Inside autocast, float16/bfloat16 values, locations, and weights
-are promoted to float32. Float32 inputs stay float32; float64 inputs are preserved.
-Output is float32 for the low-precision path, and autograd casts gradients back
-to the original input dtypes.
+The public function and `MSDeformAttnFunction.apply` use the same dtype rules
+on CPU and CUDA:
 
-Outside autocast, explicit `.half()` and `.bfloat16()` inputs are also supported
-on CPU and CUDA. All three floating inputs must have the same dtype. Interpolation
-and gradient accumulation run in float32; the output is cast back to the input
-dtype, and gradients have each input's dtype. The casts are part of the autograd
-graph and work with `torch.compile`. This path allocates float32 copies of the
-inputs; it does not provide native low-precision kernel speed or memory savings.
+| Floating input dtype | Context | Computation | Output |
+| --- | --- | --- | --- |
+| float32 | With or without autocast | float32 | float32 |
+| float64 | With or without autocast | float64 | float64 |
+| float16 or bfloat16 | Outside autocast; all three dtypes must match | float32 | Input dtype |
+| float16 or bfloat16 | Inside autocast | float32 | float32 |
+
+Autograd returns gradients in each original input's dtype. Under autocast,
+low-precision tensors are individually promoted to float32; float64 is preserved,
+so mixing float64 with other floating dtypes still fails validation. Explicit
+low-precision inputs allocate float32 copies and do not provide native
+low-precision kernel speed or memory savings.
+
+The examples below use the tensors from the [README example](../README.md#use).
 
 ```python
 output = ms_deform_attn(value.half(), shapes, starts,
@@ -96,7 +88,9 @@ output.float().sum().backward()
 ```
 
 ```python
-# All input tensors must already be on CUDA.
+value, shapes, starts, locations, weights = (
+    t.to("cuda") for t in (value, shapes, starts, locations, weights)
+)
 with torch.autocast("cuda", dtype=torch.float16):
     output = ms_deform_attn(value, shapes, starts, locations, weights)
 # Backward can run outside the autocast context, including with GradScaler.
@@ -131,3 +125,10 @@ Unlike the extension, the reference has no `level_start_index` argument: it
 splits `value` into consecutive levels whose areas must sum to `S`. It does not
 represent overlapping or arbitrarily offset levels. Use the extension's public
 function for the AMP and compilation behavior documented above.
+
+## Type annotations
+
+Shape annotations use jaxtyping names imported only during type checking. Normal
+execution does not require jaxtyping; validation comes from the operator, not a
+runtime typing decorator. ty checks Tensor types, not shape or dtype compatibility.
+If you call `typing.get_type_hints()`, supply the jaxtyping names in its namespace.

@@ -1,170 +1,46 @@
-# Contributing to torch-ms-deform-attn
+# Contributing
 
-This repository accepts changes to both Python and C++/CUDA code. Before opening a PR, please run the checks below so issues are fixed early.
+Use this checklist to prepare changes to Python or C++/CUDA code for review.
+Run commands from the repository root. You need uv, Python 3.10–3.12, and a C++17
+compiler for the locked PyTorch 2.5.1 environment. CUDA checks also need a matching
+toolkit and an NVIDIA GPU.
 
-## 1. Development setup
-
-- Python 3.10+ (`.python-version` is 3.11 in CI)
-- PyTorch 2.5.1 (`uv sync` keeps it consistent)
-- A C++17 compiler (Xcode Command Line Tools + `xcrun`)
-- Optional: CUDA, when validating CUDA build/runtime paths
+## Set up and build
 
 ```bash
-uv sync
+uv sync --locked
 ```
 
-## 2. Build
+This creates `.venv` and builds the editable extension. After C++/CUDA edits,
+run the command again to rebuild. See [development setup](docs/development.md#set-up-with-uv)
+for forced rebuilds and [backend selection](docs/installation.md#select-cpu-or-cuda)
+for CPU/CUDA options.
 
-Build the extension in CPU/CUDA mode for your environment (CUDA is included automatically if it is available):
+## Check your change
 
 ```bash
-.venv/bin/python setup.py build_ext --inplace --force
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked ty check
+uv run --locked python -m unittest discover -s tests -v
 ```
 
-- Use `FORCE_CPU=1` or `FORCE_CUDA=1` to force a specific build target.
-- When generating `compile_commands.json` (clang-tidy flow below), use the same environment settings as your normal build.
+Run the additional checks relevant to the change:
 
-## 3. Python lint / format / type checks
+| Changed area | Checks |
+| --- | --- |
+| C++/CUDA sources | [Native formatting and static checks](docs/native-checks.md), plus the relevant CPU/CUDA tests |
+| Build policy or benchmark harness | `uv run --locked python -m unittest discover -s build_tests -v` |
+| Runpod controller or evidence handling | `uv run --locked python -m unittest discover -s scripts/tests -v` |
+| CPU backend selection | [Real build validation](docs/development.md#run-tests) |
+| CUDA behavior | [Installed-wheel GPU checks](docs/gpu-runner.md) |
 
-These are the same as in `README.md` / `docs/development.md`:
+A CPU-only run skips GPU tests and does not validate CUDA execution. See
+[workflow coverage](docs/development.md#workflow-coverage) for CI behavior.
 
-```bash
-uv run ruff check .
-uv run ruff format --check .
-uv run ty check
-```
+## Open a pull request
 
-Auto-fixes:
-
-```bash
-uv run ruff check --fix .
-uv run ruff format .
-```
-
-## 4. C++ / CUDA formatting and static checks
-
-### 4-1. clang-format
-
-On macOS, `clang-format` is usually available via `xcrun`. Reformat the C++/CUDA sources listed below as needed:
-
-```bash
-xcrun clang-format -i csrc/cuda/index_utils.h \
-  csrc/cuda/ms_deform_attn_cuda.cu \
-  csrc/cuda/ms_deform_attn_cuda.h \
-  csrc/cuda/ms_deform_im2col_cuda.cuh \
-  csrc/ms_deform_attn_cpu.cpp \
-  csrc/ms_deform_attn_cpu.h \
-  csrc/vision.cpp
-```
-
-### 4-2. cpplint
-
-Run with `runtime/references` filtered out, which is our current noise-reduction setup:
-
-```bash
-uvx --from cpplint cpplint --filter=-runtime/references --quiet \
-  csrc/cuda/index_utils.h \
-  csrc/cuda/ms_deform_attn_cuda.cu \
-  csrc/cuda/ms_deform_attn_cuda.h \
-  csrc/cuda/ms_deform_im2col_cuda.cuh \
-  csrc/ms_deform_attn_cpu.cpp \
-  csrc/ms_deform_attn_cpu.h \
-  csrc/vision.cpp
-```
-
-### 4-3. clang-tidy
-
-`clang-tidy` needs `compile_commands.json`. Generate it first in a CPU environment:
-
-1) Create a compile wrapper once:
-
-```bash
-cat >/tmp/ccxx_capture.py <<'PY'
-#!/usr/bin/env python3
-import json, os, subprocess, shlex, sys
-from pathlib import Path
-
-real_cc = os.environ.get("CC_REAL", os.environ.get("CXX_REAL", "c++"))
-log_path = Path(os.environ.get("CC_LOG", "/tmp/compile_commands_capture.jsonl"))
-repo = Path(os.environ.get("REPO_ROOT", os.getcwd())).resolve()
-
-args = list(sys.argv[1:])
-if "-c" in args:
-    source = None
-    for arg in reversed(args):
-        if arg.startswith("-"):
-            continue
-        if arg.lower().endswith((".cpp", ".cu", ".cxx", ".cc")):
-            source = arg
-            break
-    if source:
-        if "-I." not in args and "-I" + str(repo) not in args:
-            args.extend(["-I", str(repo)])
-        cmd = [real_cc] + args
-        with log_path.open("a") as f:
-            json.dump({
-                "directory": str(Path.cwd()),
-                "command": " ".join(shlex.quote(x) for x in cmd),
-                "file": source,
-            }, f)
-            f.write("\n")
-        ret = subprocess.run(cmd).returncode
-    else:
-        ret = subprocess.run([real_cc] + args).returncode
-else:
-    ret = subprocess.run([real_cc] + args).returncode
-raise SystemExit(ret)
-PY
-chmod +x /tmp/ccxx_capture.py
-```
-
-2) Build through the wrapper and create `compile_commands.json`:
-
-```bash
-CC_REAL=$(which c++) \
-CC=/tmp/ccxx_capture.py \
-CXX=/tmp/ccxx_capture.py \
-REPO_ROOT=$(pwd) \
-.venv/bin/python setup.py build_ext --inplace --force
-
-.venv/bin/python - <<'PY'
-import json, pathlib
-src = pathlib.Path('/tmp/compile_commands_capture.jsonl')
-out = pathlib.Path('compile_commands.json')
-cmds = [json.loads(l) for l in src.read_text().splitlines() if l.strip()]
-commands = [
-    c for c in cmds
-    if c["file"].endswith(".cpp") and (c["file"].startswith("csrc/") or "/csrc/" in c["file"])
-]
-out.write_text(json.dumps(commands, indent=2))
-PY
-```
-
-3) Run clang-tidy (narrow checks as needed):
-
-```bash
-uvx --from clang-tidy clang-tidy -p . \
-  --checks='-*,bugprone-easily-swappable-parameters,readability-avoid-const-params-in-decls' \
-  --header-filter="^$(pwd)/csrc/.*" \
-  --extra-arg=-isysroot \
-  --extra-arg=$(xcrun --show-sdk-path) \
-  --extra-arg=-stdlib=libc++ \
-  --extra-arg=-I$(xcrun --show-sdk-path)/usr/include/c++/v1 \
-  csrc/ms_deform_attn_cpu.cpp csrc/vision.cpp
-```
-
-`-checks` should be adjusted for the repository policy so we keep only actionable warnings.
-
-## 5. PR pre-checklist
-
-- Run Python checks: `ruff`, `ty`
-- Run C++/CUDA checks: `clang-format`, `cpplint`, `clang-tidy`
-- Ensure `setup.py build_ext --inplace --force` succeeds
-- Run relevant tests (for example, `unittest`)
-- Review diffs if `compile_commands.json` changed
-
-## 6. Notes
-
-- `clang-tidy` can emit many environment-dependent warnings, especially from system headers; narrowing with `-checks` and `-header-filter` is recommended.
-- On macOS, Xcode / Command Line Tools differences often require `-isysroot` and `-stdlib=libc++`.
-- CPU-only environments may produce only `.cpp` entries under `csrc/` in `compile_commands.json`.
+Describe the problem, resulting behavior, and checks you ran. State any untested
+platform or skipped GPU checks that affect the change. Update the API documentation
+and `src/torch_ms_deform_attn/_C.pyi` when changing native bindings; commit `uv.lock`
+when changing dependencies.

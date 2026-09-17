@@ -1,9 +1,12 @@
-# Upstream module compatibility
+# Integrate with Deformable-DETR
 
-The test fixture pins [Deformable-DETR revision 11169a60c33333af00a4849f1808023eba96a931](https://github.com/fundamentalvision/Deformable-DETR/tree/11169a60c33333af00a4849f1808023eba96a931).
-`tests/integration/fixtures` preserves the original module and reference source,
-including copyright notices, and checks their SHA-256 hashes before execution.
-These are test assets, not installed model implementations.
+[Back to README](../README.md) · [API reference](api.md)
+
+Use `MSDeformAttnFunction` to replace the operator dependency in an existing
+Deformable-DETR attention module. Install this package in the module's environment
+first; projection layers and the detector remain part of the upstream model.
+
+## Replace the import
 
 Replace the upstream module's relative function import with:
 
@@ -11,8 +14,17 @@ Replace the upstream module's relative function import with:
 from torch_ms_deform_attn import MSDeformAttnFunction
 ```
 
-`MSDeformAttnFunction.apply` accepts the same six positional arguments. Tests run
-the unchanged upstream module body, swapping only that dependency. The comparison
+The `.apply` entry point accepts the same six positional arguments, including
+`im2col_step`. Keep the module body unchanged.
+
+## Validation scope
+
+The test fixture pins [Deformable-DETR revision 11169a60c33333af00a4849f1808023eba96a931](https://github.com/fundamentalvision/Deformable-DETR/tree/11169a60c33333af00a4849f1808023eba96a931).
+`tests/integration/fixtures` preserves the original module and reference source,
+including copyright notices, and checks their SHA-256 hashes before execution.
+These are test assets, not installed model implementations.
+
+Tests run the unchanged upstream module body, swapping only that dependency. The comparison
 uses the pinned upstream **PyTorch reference**, not the original CUDA extension.
 Both 2-coordinate reference points and 4-coordinate boxes, padding masks, all
 three operator-input gradients, module-input/parameter gradients, and two SGD
@@ -20,6 +32,8 @@ steps are compared on CPU and available CUDA, in float32 and fp16/bf16 autocast.
 AMP reference inputs are explicitly promoted to float32 to match this package's
 operator contract. This is module-level equivalence, not detector accuracy or
 full-training reproduction.
+
+## Integration constraints
 
 Under AMP the operator returns float32; the module's following output projection
 is autocast and therefore returns the selected low-precision dtype. Outside

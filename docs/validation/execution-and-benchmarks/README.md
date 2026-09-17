@@ -1,5 +1,7 @@
 # Execution semantics, CPU builds and benchmarks
 
+[Validation index](../README.md) · [Support matrix](../../support.md)
+
 ## Objective and conditions
 
 Validate noncurrent-device execution on two GPUs, dynamic compilation,
@@ -61,7 +63,7 @@ one-GPU reports above.
 
 These short measurements establish benchmark coverage, not a stable performance
 baseline. Performance comparisons require an idle GPU and the
-[noise policy](../../benchmarks.md#p2-measurement-coverage-and-regression-policy).
+[noise policy](../../benchmarks.md#measurement-and-regression-policy).
 
 ## Source identity and evidence
 

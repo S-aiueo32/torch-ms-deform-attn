@@ -1,5 +1,7 @@
 # Kernel correctness and sanitizers
 
+[Validation index](../README.md) · [Support matrix](../../support.md)
+
 ## Objective and conditions
 
 Validate installed-wheel forward/backward correctness, reduction coverage and

@@ -1,7 +1,7 @@
 # Validation
 
 Validation is organized by the compatibility or behavior being checked.
-The [support matrix](../../README.md#support-matrix) summarizes CPU and CUDA
+The [support matrix](../support.md) summarizes CPU and CUDA
 status; the records below provide conditions, results and source-bound evidence.
 
 | Verification target | Record | Coverage |

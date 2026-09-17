@@ -75,11 +75,7 @@ CUDA 12.6. The local controller accepts the same selection through
 `--torch-version`. Validation uses the selected container's `python3`; override
 it with `CUDA_CHECKS_PYTHON` when invoking `run_cuda_checks.sh` directly.
 
-Validated on NVIDIA L4 with Python 3.11, PyTorch 2.5.1, and CUDA 12.4:
-36 tests completed with two expected skips (CPU-only build and a second GPU),
-and Compute Sanitizer memcheck reported zero errors. The same run saved the
-wheel/log artifacts and verified Pod deletion. See
-[the successful run](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/34704425778).
+Recorded environments and outcomes are in the [validation index](validation/README.md).
 
 ## Run the same checks from a local controller
 
@@ -216,14 +212,13 @@ PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6 at source
 Use `sanitizer=all` for release-candidate validation. Each tool must return zero
 with `--error-exitcode 1`; inspect the tool summary in its individual
 `sanitizer-TOOL.log`. Archive those logs with the exact source SHA and tool version
-alongside the release evidence described in T02. A historical memcheck pass is
+alongside the [required release evidence](#required-release-validation). A historical memcheck pass is
 not racecheck/synccheck/initcheck evidence for another revision. All four tools passed on both PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6
 with L4; see the [kernel correctness evidence](validation/kernel-correctness/README.md).
 
 Only named positive sampling/reduction tests run under sanitizers. Tests that
 intentionally trigger device assertions still run in isolated subprocesses in
-the normal suite, but cannot contaminate the sanitizer verdict. The reduction
-table grows with T03; T04's shared sampling suite is a prerequisite of this PR.
+the normal suite, separate from sanitizer runs.
 
 Racecheck diagnoses supported shared-memory hazards; it does not prove absence
 of global-memory races. Synccheck diagnoses supported synchronization misuse.
@@ -233,7 +228,7 @@ checks. Consult the installed Compute Sanitizer version's documentation and do
 not infer guarantees for memory types or execution paths the tool did not check.
 
 
-## P2 GPU configurations
+## Additional GPU checks
 
 The local controller accepts `--gpu-count 2` for the noncurrent-device test.
 `--max-hourly-usd` is the **total Pod compute rate**; its catalog preflight
@@ -251,5 +246,5 @@ and the unit-dimension call is explicitly identified.
 
 The benchmark workload includes eager/compiled float32/fp16/bf16 and encoder Q,
 with three repetitions. Use the standalone harness for additional batch/channel/
-step sweeps. See [benchmark metrics](benchmarks.md#p2-measurement-coverage-and-regression-policy)
+step sweeps. See [benchmark metrics](benchmarks.md#measurement-and-regression-policy)
 and [pinned module compatibility](compatibility.md).

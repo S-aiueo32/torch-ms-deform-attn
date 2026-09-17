@@ -1,9 +1,11 @@
 # Python/PyTorch support matrix
 
+[Validation index](../README.md) · [Support matrix](../../support.md)
+
 ## Objective and acceptance criteria
 
 Validate CPU and CUDA installed wheels across the Python/PyTorch pairs in the
-[support tables](../../../README.md#support-matrix). Each backend has 49 in-range
+[support tables](../../support.md). Each backend has 49 in-range
 pairs: **46 verified and 3 with known limitations**, with no unverified in-range
 cells. Six cells per backend are outside the supported upstream Python range.
 

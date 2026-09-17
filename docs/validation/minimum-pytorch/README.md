@@ -1,5 +1,7 @@
 # Minimum PyTorch compatibility
 
+[Validation index](../README.md) · [Support matrix](../../support.md)
+
 ## Objective and conditions
 
 The declared minimum is tested on Linux CPU and CUDA 12.4. The CUDA development

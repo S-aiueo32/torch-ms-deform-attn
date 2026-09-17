@@ -3,7 +3,8 @@
 [Back to README](../README.md)
 
 To use the published package, follow [Install from PyPI](installation.md#install-from-pypi).
-The instructions here cover working on the repository and publishing releases.
+Use this guide to build the repository, run validation, and publish releases.
+For the pull-request checklist, start with [Contributing](../CONTRIBUTING.md).
 
 ## Set up with uv
 
@@ -59,6 +60,7 @@ uv run --locked ruff format .
 
 ty checks `src/` using the installed PyTorch types and the native extension's
 `_C.pyi` stub. Update that stub when changing bindings in `csrc/vision.cpp`.
+For native changes, also run the [C++/CUDA checks](native-checks.md).
 The lint workflow runs all three checks with CPU PyTorch and does not compile
 the native extension. C++/CUDA validation runs in the package workflows below;
 shell syntax checks run in the Runpod controller workflow.
@@ -226,11 +228,9 @@ to its notes, then publish the release. Missing or mismatched evidence fails the
 workflow before upload. The evidence verifier checks contents; maintainers must
 still ensure the assets came from a trusted validation run.
 
-Version `0.1.0rc1` is published on PyPI and TestPyPI, with GitHub prerelease
-[`v0.1.0rc1`](https://github.com/S-aiueo32/torch-ms-deform-attn/releases/tag/v0.1.0rc1).
-Increment to `0.1.0rc2`, etc. for subsequent candidates and mark their GitHub
-releases as prereleases; use
-`0.1.0` only for the final release. Keep `uv.lock` in sync with `uv lock`.
+Increment the version for each candidate and mark its GitHub release as a
+prerelease. Reserve `0.1.0` for the final release. Keep `uv.lock` in sync with
+`uv lock`; uploaded filenames cannot be reused for changed archives.
 
 Use **Actions → Publish to PyPI / TestPyPI → Run workflow** with a target:
 

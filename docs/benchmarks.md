@@ -9,6 +9,30 @@ latency or peak memory usage.
 
 ## CPU benchmarks
 
+### Run CPU benchmarks
+
+After [installing the package](installation.md), run from the repository root:
+
+```bash
+python benchmarks/benchmark_cpu.py --threads 1 --min-run-time 1 --json
+python benchmarks/benchmark_cpu.py --threads 4 --min-run-time 1 --json
+```
+
+The harness checks outputs and all three gradients before timing. Check the
+[CPU parallel backend](installation.md#configure-cpu-parallelism) when comparing
+thread counts: `--threads` does not parallelize a serial extension.
+
+To compare eager and Inductor execution:
+
+```bash
+python benchmarks/benchmark_compile.py --threads 1 --strict
+```
+
+Compilation and warmup precede timing. The compile harness uses static shape
+tuples for the reference, so its baseline differs from `benchmark_cpu.py`.
+Compare runs with the same PyTorch version, build settings, shapes, and thread
+count.
+
 ### OpenMP measurement
 
 Measured on macOS 26.6.1 arm64 with Python 3.11.16,
@@ -35,48 +59,7 @@ the [measurement report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/
 | 4 | batched | forward | 1.2405 | 8.1830 | 6.60× |
 | 4 | batched | forward + backward | 5.4480 | 16.2660 | 2.99× |
 
-### Run CPU benchmarks
-
-After [installing the package](installation.md), run from the repository root:
-
-```bash
-python benchmarks/benchmark_cpu.py --threads 1 --min-run-time 1 --json
-python benchmarks/benchmark_cpu.py --threads 4 --min-run-time 1 --json
-```
-
-The harness checks outputs and all three gradients before timing. Check the
-[CPU parallel backend](installation.md#configure-cpu-parallelism) when comparing
-thread counts: `--threads` does not parallelize a serial extension.
-
-To compare eager and Inductor execution:
-
-```bash
-python benchmarks/benchmark_compile.py --threads 1
-```
-
-Compilation and warmup precede timing. The compile harness uses static shape
-tuples for the reference, so its baseline differs from `benchmark_cpu.py`.
-Compare runs with the same PyTorch version, build settings, shapes, and thread
-count.
-
 ## GPU benchmarks
-
-### L4 measurement
-
-Measured at commit `d229c2c`: NVIDIA L4,
-Python 3.11.10, PyTorch 2.5.1+cu124, eager float32, one CPU thread, five warmup
-calls, and one-second minimum measurement windows. This is one recorded run,
-not a benchmark of every subsequent revision.
-[Workflow record](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/34706657808).
-
-| Case | Mode | CUDA extension (ms) | PyTorch reference (ms) | Speedup |
-| --- | --- | ---: | ---: | ---: |
-| small | forward | 0.0522 | 0.1721 | 3.30× |
-| small | forward + backward | 0.4265 | 0.8757 | 2.05× |
-| decoder | forward | 0.0514 | 0.2320 | 4.51× |
-| decoder | forward + backward | 0.5026 | 1.2420 | 2.47× |
-| batched | forward | 0.0783 | 0.8129 | 10.39× |
-| batched | forward + backward | 0.3555 | 2.1476 | 6.04× |
 
 ### Run GPU benchmarks
 
@@ -118,7 +101,24 @@ Download `cuda-benchmark-<run-id>-<attempt>` from the workflow run within seven
 days. It contains `artifacts/benchmark-cuda.json`, GPU information, logs, and
 built distributions.
 
-## P2 measurement coverage and regression policy
+### L4 measurement
+
+Measured at commit `d229c2c`: NVIDIA L4,
+Python 3.11.10, PyTorch 2.5.1+cu124, eager float32, one CPU thread, five warmup
+calls, and one-second minimum measurement windows. This is one recorded run,
+not a benchmark of every subsequent revision.
+[Workflow record](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/34706657808).
+
+| Case | Mode | CUDA extension (ms) | PyTorch reference (ms) | Speedup |
+| --- | --- | ---: | ---: | ---: |
+| small | forward | 0.0522 | 0.1721 | 3.30× |
+| small | forward + backward | 0.4265 | 0.8757 | 2.05× |
+| decoder | forward | 0.0514 | 0.2320 | 4.51× |
+| decoder | forward + backward | 0.5026 | 1.2420 | 2.47× |
+| batched | forward | 0.0783 | 0.8129 | 10.39× |
+| batched | forward + backward | 0.3555 | 2.1476 | 6.04× |
+
+## Measurement and regression policy
 
 `benchmark_compile.py --strict` emits diagnostics in JSON and exits nonzero on
 any compile/correctness/timing failure. Failed rows never contain latency values.

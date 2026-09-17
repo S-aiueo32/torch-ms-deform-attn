@@ -31,39 +31,48 @@ examples, verification, and rebuilding after changing PyTorch.
 
 ## Support matrix
 
-Tested combinations on Linux x86_64. **✅ Verified · ➖ Unverified**
+Compatibility on Linux x86_64 with standard CPython (GIL enabled).
+
+- ✅ Verified with this library.
+- ➖ Within PyTorch's Python compatibility range, but unverified with this library.
+- ❌ Outside PyTorch's Python compatibility range.
+
+An asterisk (*) marks experimental Python support in PyTorch; those combinations
+are also unverified with this library. Upstream compatibility follows
+[PyTorch's release matrix](https://github.com/pytorch/pytorch/blob/v2.14.0/RELEASE.md#release-compatibility-matrix)
+and [2.14.0 package metadata](https://pypi.org/project/torch/2.14.0/).
 
 ### CPU
 
-| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 |
-| --- | :---: | :---: | :---: |
-| 2.4.0 | ✅ | ✅ | ➖ |
-| 2.5.0 | ✅ | ➖ | ➖ |
-| 2.5.1 | ➖ | ✅ | ➖ |
-| 2.7.1 | ➖ | ✅ | ✅ |
-| 2.8.0 | ➖ | ✅ | ✅ |
-| 2.9.1 | ➖ | ➖ | ✅ |
-| 2.10.0 | ➖ | ➖ | ✅ |
-| 2.11.0 | ➖ | ➖ | ✅ |
-| 2.12.1 | ➖ | ➖ | ✅ |
-| 2.13.0 | ➖ | ➖ | ✅ |
-| 2.14.0 | ➖ | ➖ | ✅ |
+| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| 2.4.0 | ✅ | ✅ | ➖ | ❌ | ❌ |
+| 2.5.0 | ✅ | ➖ | ➖ | ➖* | ❌ |
+| 2.5.1 | ➖ | ✅ | ➖ | ➖* | ❌ |
+| 2.7.1 | ➖ | ✅ | ✅ | ➖ | ❌ |
+| 2.8.0 | ➖ | ✅ | ✅ | ➖ | ❌ |
+| 2.9.1 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.10.0 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.11.0 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.12.1 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.13.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
+| 2.14.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
 
 ### GPU (CUDA)
 
-| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 |
-| --- | :---: | :---: | :---: |
-| 2.4.0 | ➖ | ✅ | ➖ |
-| 2.5.0 | ➖ | ➖ | ➖ |
-| 2.5.1 | ➖ | ✅ | ➖ |
-| 2.7.1 | ➖ | ✅ | ➖ |
-| 2.8.0 | ➖ | ✅ | ➖ |
-| 2.9.1 | ➖ | ➖ | ➖ |
-| 2.10.0 | ➖ | ➖ | ➖ |
-| 2.11.0 | ➖ | ➖ | ➖ |
-| 2.12.1 | ➖ | ➖ | ➖ |
-| 2.13.0 | ➖ | ➖ | ➖ |
-| 2.14.0 | ➖ | ➖ | ✅ |
+| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| 2.4.0 | ➖ | ✅ | ➖ | ❌ | ❌ |
+| 2.5.0 | ➖ | ➖ | ➖ | ➖* | ❌ |
+| 2.5.1 | ➖ | ✅ | ➖ | ➖* | ❌ |
+| 2.7.1 | ➖ | ✅ | ➖ | ➖ | ❌ |
+| 2.8.0 | ➖ | ✅ | ➖ | ➖ | ❌ |
+| 2.9.1 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.10.0 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.11.0 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.12.1 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.13.0 | ➖ | ➖ | ➖ | ➖ | ➖ |
+| 2.14.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
 
 CUDA validation selects a CUDA build from
 [PyTorch's official version-specific builds](https://pytorch.org/get-started/previous-versions/)
@@ -72,8 +81,10 @@ are recorded in the [detailed matrix](docs/installation.md#prerequisites).
 
 ### Scope
 
-Other Python/PyTorch combinations, CUDA toolkits, macOS and Windows are best
-effort. The dependency range permits more versions than this tested matrix.
+Unverified combinations within PyTorch's compatibility range, other CUDA
+toolkits, macOS and Windows are best effort. Combinations marked ❌ are excluded.
+This library requires Python >=3.10 even where PyTorch supports older Python.
+The dependency range permits more versions than this tested matrix.
 MPS is unsupported.
 
 The 2.4.0 and 2.8–2.14 entries describe current-source validation; the published

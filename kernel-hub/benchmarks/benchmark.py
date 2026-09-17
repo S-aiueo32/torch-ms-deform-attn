@@ -187,7 +187,13 @@ def main():
             for backend, fn in implementations.items():
                 # Public upstream/adapter already implement this policy internally.
                 direct = backend in ("torch-ms-deform-attn", "kernel-hub-adapter")
-                variants.append((backend, "fp32-compute", fn if direct else matched_precision(fn)))
+                variants.append(
+                    (
+                        backend,
+                        "fp32-compute",
+                        fn if direct or dtype == torch.float32 else matched_precision(fn),
+                    )
+                )
                 if dtype != torch.float32 and not direct and backend != "pytorch-reference":
                     variants.append((backend, "native", fn))
             rng.shuffle(variants)

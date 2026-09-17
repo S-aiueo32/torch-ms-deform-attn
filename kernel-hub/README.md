@@ -1,6 +1,6 @@
 # Kernel Hub adapter (experimental)
 
-This is a Phase 1 prototype, not an adopted or published Hugging Face kernel.
+This is an experimental adapter, not an adopted or published Hugging Face kernel.
 `torch-ms-deform-attn` remains the implementation source. No runtime import of,
 or dependency on, its PyPI package is added to the exported kernel.
 
@@ -96,8 +96,13 @@ initially passed 14/20 CUDA E2E cases. All six compiled failures now have passin
 individual rechecks under documented compiler and comparison policies; a full
 matrix at the final revision has not been rerun.
 The full regression gates, wider PyTorch coverage and reproducible Nix build
-remain open. Phase 3 benchmarking has not been run. Do not claim HF adoption
-or complete CUDA E2E compatibility.
+remain open. [Phase 3 measurements](../docs/validation/kernel-hub-benchmarks/README.md)
+cover six implementations on L4. The subsequent
+[performance investigation](../docs/validation/kernel-hub-performance/README.md)
+led to shared native autograd, guarded int32 CUDA indexing, and optional CUDA
+metadata-content checks. These changes passed core correctness and sanitizer
+checks, but do not establish HF performance parity across all shapes/dtypes.
+Do not claim HF adoption or complete CUDA E2E compatibility.
 
 ## References
 

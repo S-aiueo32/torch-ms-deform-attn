@@ -98,17 +98,15 @@ class RTDetrCPUFixtureTest(unittest.TestCase):
         (cls.kernel_dir / "deformable_detr/_ops.py").write_text(
             """import torch
 from torch_ms_deform_attn import _C as ops
-from torch_ms_deform_attn._ops import forward, backward
 
 def add_op_namespace_prefix(name):
     return "msda_cpu_e2e_fixture::" + name
 
-# This CPU fixture delegates autograd to the canonical native operators.
-# The real Kernel Hub namespace and CUDA binding need separate GPU validation.
+# Keep the fixture's operators opaque to tracing and visible to the profiler.
+# Its Python autograd formula is test-only; native HF autograd needs GPU validation.
 signature = "Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights"
 torch.library.define(add_op_namespace_prefix("forward"), f"({signature}, int step, bool check_cuda_metadata=False) -> Tensor")
 torch.library.impl(add_op_namespace_prefix("forward"), "CPU", ops.ms_deform_attn_forward)
-torch.library.impl(add_op_namespace_prefix("forward"), "Autograd", forward)
 torch.library.define(
     add_op_namespace_prefix("backward"),
     f"({signature}, Tensor grad, int step, bool check_cuda_metadata=False) -> (Tensor, Tensor, Tensor)",
@@ -117,7 +115,20 @@ torch.library.impl(
     add_op_namespace_prefix("backward"), "CPU",
     lambda *args: tuple(ops.ms_deform_attn_backward(*args)),
 )
-torch.library.impl(add_op_namespace_prefix("backward"), "Autograd", backward)
+def setup_context(ctx, inputs, output):
+    ctx.save_for_backward(*inputs[:5])
+    ctx.step, ctx.check = inputs[5:]
+
+def backward(ctx, grad):
+    value, shapes, starts, locations, weights = ctx.saved_tensors
+    dv, dl, dw = torch.ops.msda_cpu_e2e_fixture.backward.default(
+        value, shapes, starts, locations, weights, grad.contiguous(), ctx.step, ctx.check
+    )
+    return dv, None, None, dl, dw, None, None
+
+torch.library.register_autograd(
+    add_op_namespace_prefix("forward"), backward, setup_context=setup_context
+)
 """
         )
 

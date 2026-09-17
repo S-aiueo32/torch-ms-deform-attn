@@ -6,6 +6,29 @@ regression gates have not passed.**
 The corrected Phase 1 precision-contract suite passed on L4 at `4e21ffc`.
 The final-revision complete Phase 2 matrix remains outstanding.
 
+## Full regression after native dispatcher changes
+
+[Run 35231276149](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35231276149)
+tested merged main `bf256ebadce5e61841d97bbae72b9c92353a0cac` on L4 with
+PyTorch 2.10.0+cu126. The real builder/loader and all three Phase 1 tests passed.
+All 20 RT-DETR cases failed in the harness before completing comparison: its
+profiler namespace lookup used `CustomOpDef._qualname`, and its graph counter
+used `CustomOpDef._opoverload`. After PR #16 the registered forward is already
+an `OpOverload`, so neither attribute exists. This run supplies no completed
+E2E parity result.
+
+The harness now compares graph targets directly with the registered overload
+and uses its `name()` for profiler matching. Numerical tolerances, compiler
+policies and operator execution requirements are unchanged.
+
+Evidence: [suite summary](run-35231276149/kernel-hub-summary.json),
+[Phase 1 log](run-35231276149/phase1.log),
+[FP32 failures](run-35231276149/e2e-fp32.json),
+[source manifest](run-35231276149/UPSTREAM.json), and
+[verified Pod deletion](run-35231276149/runpod-state.json).
+
+## Earlier integration evidence
+
 The six initially failing compiled cases now have passing, source-bound
 rechecks under explicit numerical policies and query-identity comparison.
 BF16 AMP was also checked against a compiled HF reference. This is **not** a

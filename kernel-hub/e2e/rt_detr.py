@@ -317,8 +317,7 @@ def run_case(
                 {
                     "node_count": len(list(graph.graph.nodes)),
                     "msda_calls": sum(
-                        node.target == module._registrations.forward._opoverload
-                        for node in graph.graph.nodes
+                        node.target == module._registrations.forward for node in graph.graph.nodes
                     ),
                 }
             )
@@ -362,7 +361,7 @@ def run_case(
             execute=execute,
         )
     names = {event.key: event.count for event in profile.key_averages()}
-    prefix = module._registrations.forward._qualname.rsplit("::", 1)[0]
+    prefix = module._registrations.forward.name().rsplit("::", 1)[0]
     required = [f"{prefix}::forward"] + ([f"{prefix}::backward"] if training else [])
     for name in required:
         if not names.get(name):

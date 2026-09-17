@@ -1,0 +1,43 @@
+{
+  "status": "failed",
+  "model": "RTDetrForObjectDetection",
+  "weights": "random seed 123",
+  "scope": "CUDA local Kernel Hub artifact; tiny full detector; no dataset accuracy claim",
+  "python": "3.11.16",
+  "torch": "2.10.0+cu126",
+  "versions": {
+    "transformers": "5.17.0",
+    "kernels": "0.16.0"
+  },
+  "kernel_dir": "/workspace/ci/kernel-hub.kXn021MO/candidate",
+  "cases": [
+    {
+      "training": false,
+      "compile_backend": null,
+      "error": "Traceback (most recent call last):\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 518, in main\n    case = run_case(\n           ^^^^^^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 365, in run_case\n    prefix = module._registrations.forward._qualname.rsplit(\"::\", 1)[0]\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OpOverload' object has no attribute '_qualname'\n",
+      "diagnostics": {}
+    },
+    {
+      "training": false,
+      "compile_backend": "inductor",
+      "error": "Traceback (most recent call last):\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 518, in main\n    case = run_case(\n           ^^^^^^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 347, in run_case\n    run_model(\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 123, in run_model\n    output = execute(pixel_values=inputs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py\", line 465, in __call__\n    return super().__call__(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1776, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1787, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py\", line 967, in compile_wrapper\n    raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/output_graph.py\", line 2437, in _call_user_compiler\n    raise BackendCompilerFailed(\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/output_graph.py\", line 2412, in _call_user_compiler\n    compiled_fn = compiler_fn(gm, example_inputs)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/repro/after_dynamo.py\", line 156, in __call__\n    compiled_gm = compiler_fn(gm, example_inputs)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/__init__.py\", line 2509, in __call__\n    return self.compiler_fn(model_, inputs_, **self.kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 319, in record_graph\n    \"msda_calls\": sum(\n                  ^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 320, in <genexpr>\n    node.target == module._registrations.forward._opoverload\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntorch._dynamo.exc.BackendCompilerFailed: backend='record_graph' raised:\nAttributeError: 'OpOverload' object has no attribute '_opoverload'\n\nSet TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS=\"+dynamo\"\n\n",
+      "diagnostics": {}
+    },
+    {
+      "training": true,
+      "compile_backend": null,
+      "error": "Traceback (most recent call last):\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 518, in main\n    case = run_case(\n           ^^^^^^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 365, in run_case\n    prefix = module._registrations.forward._qualname.rsplit(\"::\", 1)[0]\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OpOverload' object has no attribute '_qualname'\n",
+      "diagnostics": {}
+    },
+    {
+      "training": true,
+      "compile_backend": "inductor",
+      "error": "Traceback (most recent call last):\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 518, in main\n    case = run_case(\n           ^^^^^^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 347, in run_case\n    run_model(\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 123, in run_model\n    output = execute(pixel_values=inputs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py\", line 465, in __call__\n    return super().__call__(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1776, in _wrapped_call_impl\n    return self._call_impl(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/nn/modules/module.py\", line 1787, in _call_impl\n    return forward_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py\", line 967, in compile_wrapper\n    raise e.remove_dynamo_frames() from None  # see TORCHDYNAMO_VERBOSE=1\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/output_graph.py\", line 2437, in _call_user_compiler\n    raise BackendCompilerFailed(\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/output_graph.py\", line 2412, in _call_user_compiler\n    compiled_fn = compiler_fn(gm, example_inputs)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/_dynamo/repro/after_dynamo.py\", line 156, in __call__\n    compiled_gm = compiler_fn(gm, example_inputs)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/kernel-hub.kXn021MO/venv/lib/python3.11/site-packages/torch/__init__.py\", line 2509, in __call__\n    return self.compiler_fn(model_, inputs_, **self.kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 319, in record_graph\n    \"msda_calls\": sum(\n                  ^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 320, in <genexpr>\n    node.target == module._registrations.forward._opoverload\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntorch._dynamo.exc.BackendCompilerFailed: backend='record_graph' raised:\nAttributeError: 'OpOverload' object has no attribute '_opoverload'\n\nSet TORCHDYNAMO_VERBOSE=1 for the internal stack trace (please do this especially if you're reporting a bug to PyTorch). For even more developer context, set TORCH_LOGS=\"+dynamo\"\n\n",
+      "diagnostics": {}
+    }
+  ],
+  "numerics": "eager",
+  "harness_sha256": "f7a71096802f18e5912661c9abf6d9c52bbb4576afb6962202813b41e9706184",
+  "gpu": "NVIDIA L4",
+  "error": "Traceback (most recent call last):\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 540, in main\n    raise RuntimeError(\"E2E cases failed; inspect per-case errors in the report\")\nRuntimeError: E2E cases failed; inspect per-case errors in the report\n"
+}

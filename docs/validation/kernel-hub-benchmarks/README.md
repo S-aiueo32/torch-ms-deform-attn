@@ -17,6 +17,12 @@ three modes × three repetitions: 486 qualified timing rows.
 
 ## Findings and limits
 
+These measurements precede PR #16. The subsequent
+[performance investigation](../kernel-hub-performance/README.md) records the
+implemented dispatch/indexing improvements and optional metadata validation,
+with separate before/after measurements. The historical latency ratios below
+must not be presented as measurements of the current implementation.
+
 The common policy computes in FP32 and includes casts for FP16/BF16 inputs.
 On the encoder shape, adapter forward+backward takes 3.045 / 3.233 / 3.199 ms
 for FP32 / FP16 / BF16, compared with HF 2.877 / 3.031 / 3.029 ms: roughly
@@ -49,9 +55,9 @@ excluded from timing. This reflects the stated accuracy contract, not an
 unsupported-dtype regression in the canonical package: all six implementations
 passed all three dtypes under the common policy. No tolerance was relaxed.
 
-The benchmark implementation and evidence are ready for review. The performance
-investigation above remains a prerequisite to advancing the HF proposal; this
-report does not declare that adoption gate satisfied.
+The benchmark implementation and evidence are ready for review. See the linked
+performance investigation for the follow-up results and remaining HF gaps;
+this report does not declare the adoption gate satisfied.
 
 ## Provisioning attempts
 

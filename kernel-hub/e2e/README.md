@@ -145,6 +145,9 @@ python -m unittest discover -s kernel-hub/e2e -p test_rt_detr.py -v
 The fixture exports the real Python adapter, then supplies a **test-only**
 `_ops.py` backed by the installed upstream CPU extension and synthetic CPU
 metadata. The real kernels loader and Transformers integration run unchanged.
+The fixture registers a test-only Python autograd formula that calls its own
+namespaced backward operator, preserving graph and profiler visibility. It does
+not substitute a second operator through an Autograd dispatch implementation.
 This validates integration plumbing, not Kernel Builder/native binding/CUDA
 compatibility. The fixture's PyPI import never enters the distribution export.
 

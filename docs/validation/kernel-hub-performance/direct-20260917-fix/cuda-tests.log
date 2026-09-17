@@ -1,0 +1,91 @@
+test_module_optimizer_parity (integration.test_upstream.CPUUpstreamTest.test_module_optimizer_parity) ... ok
+test_module_optimizer_parity (integration.test_upstream.CUDAUpstreamTest.test_module_optimizer_parity) ... ok
+test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CPUAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... ok
+test_double_and_inference (test_amp_training.CPUAMPTrainingTest.test_double_and_inference) ... ok
+test_scaled_training_and_accumulation (test_amp_training.CPUAMPTrainingTest.test_scaled_training_and_accumulation) ... ok
+test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CUDAAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... ok
+test_double_and_inference (test_amp_training.CUDAAMPTrainingTest.test_double_and_inference) ... ok
+test_scaled_training_and_accumulation (test_amp_training.CUDAAMPTrainingTest.test_scaled_training_and_accumulation) ... ok
+test_colliding_samples_and_overlapping_levels (test_cpu.CPUAttentionTest.test_colliding_samples_and_overlapping_levels) ... ok
+test_cpu_parallel_workers_honor_thread_count (test_cpu.CPUAttentionTest.test_cpu_parallel_workers_honor_thread_count) ... ok
+test_empty_batch (test_cpu.CPUAttentionTest.test_empty_batch) ... ok
+test_empty_heads_channels_levels_and_points (test_cpu.CPUAttentionTest.test_empty_heads_channels_levels_and_points) ... ok
+test_empty_queries (test_cpu.CPUAttentionTest.test_empty_queries) ... ok
+test_gradcheck (test_cpu.CPUAttentionTest.test_gradcheck) ... ok
+test_invalid_inputs (test_cpu.CPUAttentionTest.test_invalid_inputs) ... ok
+test_level_start_index (test_cpu.CPUAttentionTest.test_level_start_index) ... ok
+test_offsets_collisions_and_noncontiguous_metadata (test_cpu.CPUAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+test_padding_support_and_channel_sizes (test_cpu.CPUAttentionTest.test_padding_support_and_channel_sizes) ... ok
+test_public_api (test_cpu.CPUAttentionTest.test_public_api) ... ok
+test_reference_forward_and_backward (test_cpu.CPUAttentionTest.test_reference_forward_and_backward) ... ok
+test_reject_invalid_gradient (test_cpu.CPUAttentionTest.test_reject_invalid_gradient) ... ok
+test_reject_unsupported_dtype (test_cpu.CPUAttentionTest.test_reject_unsupported_dtype) ... ok
+test_cuda_input_error (test_cuda.CPUOnlyBuildTest.test_cuda_input_error) ... skipped 'Requires GPU and CPU-only build'
+test_amp_and_compile (test_cuda.CUDAAttentionTest.test_amp_and_compile) ... ok
+test_compile_dynamic (test_cuda.CUDAAttentionTest.test_compile_dynamic) ... ok
+test_deterministic_algorithms (test_cuda.CUDAAttentionTest.test_deterministic_algorithms) ... ok
+test_gradcheck (test_cuda.CUDAAttentionTest.test_gradcheck) ... ok
+test_invalid_inputs (test_cuda.CUDAAttentionTest.test_invalid_inputs) ... ok
+test_invalid_metadata_device_assert (test_cuda.CUDAAttentionTest.test_invalid_metadata_device_assert) ... ok
+test_noncontiguous_and_stream (test_cuda.CUDAAttentionTest.test_noncontiguous_and_stream) ... ok
+test_noncurrent_device (test_cuda.CUDAAttentionTest.test_noncurrent_device) ... skipped 'Requires two GPUs'
+test_offsets_collisions_and_noncontiguous_metadata (test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+test_padding_support_and_channel_sizes (test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes) ... ok
+test_partial_batch_chunk (test_cuda.CUDAAttentionTest.test_partial_batch_chunk) ... ok
+test_reference_forward_backward (test_cuda.CUDAAttentionTest.test_reference_forward_backward) ... ok
+test_dynamic_shapes_and_metadata (test_cuda_graphs.CUDAGraphTest.test_dynamic_shapes_and_metadata) ... ok
+test_opcheck (test_cuda_graphs.CUDAGraphTest.test_opcheck) ... ok
+test_backward_metadata (test_fake_contract.FakeContractTest.test_backward_metadata) ... ok
+test_fake_devices_and_empty_dimensions (test_fake_contract.FakeContractTest.test_fake_devices_and_empty_dimensions) ... ok
+test_invalid_forward_metadata (test_fake_contract.FakeContractTest.test_invalid_forward_metadata) ... ok
+test_grid_limit_can_be_resolved_by_chunking (test_indexing.CUDAIndexingTest.test_grid_limit_can_be_resolved_by_chunking) ... ok
+test_int32_locations_and_metadata_headroom (test_indexing.CUDAIndexingTest.test_int32_locations_and_metadata_headroom) ... ok
+test_int32_padded_grid_increment_headroom (test_indexing.CUDAIndexingTest.test_int32_padded_grid_increment_headroom) ... ok
+test_int32_selection_is_chunk_local (test_indexing.CUDAIndexingTest.test_int32_selection_is_chunk_local) ... ok
+test_int32_value_neighbor_headroom (test_indexing.CUDAIndexingTest.test_int32_value_neighbor_headroom) ... ok
+test_invalid_dimensions_and_overflow (test_indexing.CUDAIndexingTest.test_invalid_dimensions_and_overflow) ... ok
+test_location_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_location_offsets_exceed_int32) ... ok
+test_partial_chunk_plan (test_indexing.CUDAIndexingTest.test_partial_chunk_plan) ... ok
+test_value_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_value_offsets_exceed_int32) ... ok
+test_work_exceeds_int32 (test_indexing.CUDAIndexingTest.test_work_exceeds_int32) ... ok
+test_backward_contract (test_input_contract.CPUInputContractTest.test_backward_contract) ... ok
+test_empty_dimension_policy (test_input_contract.CPUInputContractTest.test_empty_dimension_policy) ... ok
+test_forward_contract (test_input_contract.CPUInputContractTest.test_forward_contract) ... ok
+test_backward_contract (test_input_contract.CUDAInputContractTest.test_backward_contract) ... ok
+test_empty_dimension_policy (test_input_contract.CUDAInputContractTest.test_empty_dimension_policy) ... ok
+test_forward_contract (test_input_contract.CUDAInputContractTest.test_forward_contract) ... ok
+test_amp_and_compiled_amp (test_integration.IntegrationTest.test_amp_and_compiled_amp) ... ok
+test_backward_rejects_gradient_through_grad_output (test_integration.IntegrationTest.test_backward_rejects_gradient_through_grad_output) ... ok
+test_compile_dynamic_forward_backward (test_integration.IntegrationTest.test_compile_dynamic_forward_backward) ... ok
+test_compiled_autograd (test_integration.IntegrationTest.test_compiled_autograd) ... ok
+test_double_preserved_under_autocast (test_integration.IntegrationTest.test_double_preserved_under_autocast) ... ok
+test_export_keeps_opaque_operator (test_integration.IntegrationTest.test_export_keeps_opaque_operator) ... ok
+test_higher_order_gradients_rejected (test_integration.IntegrationTest.test_higher_order_gradients_rejected) ... ok
+test_legacy_apply_compile (test_integration.IntegrationTest.test_legacy_apply_compile) ... ok
+test_opcheck (test_integration.IntegrationTest.test_opcheck) ... ok
+test_saved_tensor_hooks_and_mutation (test_integration.IntegrationTest.test_saved_tensor_hooks_and_mutation) ... ok
+test_forward_backward_and_dynamic_compile (test_low_precision.CPULowPrecisionTest.test_forward_backward_and_dynamic_compile) ... ok
+test_inference_and_empty_queries (test_low_precision.CPULowPrecisionTest.test_inference_and_empty_queries) ... ok
+test_optimizer_steps (test_low_precision.CPULowPrecisionTest.test_optimizer_steps) ... ok
+test_forward_backward_and_dynamic_compile (test_low_precision.CUDALowPrecisionTest.test_forward_backward_and_dynamic_compile) ... ok
+test_inference_and_empty_queries (test_low_precision.CUDALowPrecisionTest.test_inference_and_empty_queries) ... ok
+test_optimizer_steps (test_low_precision.CUDALowPrecisionTest.test_optimizer_steps) ... ok
+test_autocast (test_mps.MPSTest.test_autocast) ... skipped 'Requires Metal GPU/build'
+test_channels_boundaries_offsets_and_layouts (test_mps.MPSTest.test_channels_boundaries_offsets_and_layouts) ... skipped 'Requires Metal GPU/build'
+test_determinism_and_higher_order (test_mps.MPSTest.test_determinism_and_higher_order) ... skipped 'Requires Metal GPU/build'
+test_fake_contract (test_mps.MPSTest.test_fake_contract) ... skipped 'Requires Metal GPU/build'
+test_forward_backward_and_legacy (test_mps.MPSTest.test_forward_backward_and_legacy) ... skipped 'Requires Metal GPU/build'
+test_low_precision (test_mps.MPSTest.test_low_precision) ... skipped 'Requires Metal GPU/build'
+test_near_knot (test_mps.MPSTest.test_near_knot) ... skipped 'Requires Metal GPU/build'
+test_rejections (test_mps.MPSTest.test_rejections) ... skipped 'Requires Metal GPU/build'
+test_storage_offsets_and_noncontiguous_grad (test_mps.MPSTest.test_storage_offsets_and_noncontiguous_grad) ... skipped 'Requires Metal GPU/build'
+test_near_knot_matches_double_oracle (test_sampling_precision.CPUSamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+test_near_knot_matches_double_oracle (test_sampling_precision.CUDASamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+
+----------------------------------------------------------------------
+Ran 83 tests in 76.768s
+
+OK (skipped=11)
+{"dtype": "torch.float32", "graphs_after_calls": [1, 2, 2, 3], "unit_dimension_call": 3, "repeat_graphs": 3}
+{"dtype": "torch.float16", "graphs_after_calls": [1, 2, 2, 3], "unit_dimension_call": 3, "repeat_graphs": 3}
+{"dtype": "torch.bfloat16", "graphs_after_calls": [1, 2, 2, 3], "unit_dimension_call": 3, "repeat_graphs": 3}

@@ -1,0 +1,4 @@
+# Keep generated benchmark evidence out of the default PR code view.
+docs/validation/kernel-hub-performance/**/*.json linguist-generated=true
+docs/validation/kernel-hub-performance/**/*.log linguist-generated=true
+docs/validation/kernel-hub-performance/**/*.patch linguist-generated=true whitespace=-blank-at-eol

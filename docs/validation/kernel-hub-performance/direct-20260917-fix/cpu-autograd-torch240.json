@@ -1,0 +1,71 @@
+{
+  "torch": "2.4.0",
+  "python": "3.11.16 (main, Sep  1 2026, 14:08:22) [Clang 22.1.3 ]",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "package": {
+    "path": "/private/tmp/msda-autograd24-lib/torch_ms_deform_attn/__init__.py",
+    "size": 259,
+    "sha256": "9fc59a68e0bba2b9cd001c8b8d886af745c8fb26eda8e11b45f672651dfe1fbc"
+  },
+  "extension": {
+    "path": "/private/tmp/msda-autograd24-lib/torch_ms_deform_attn/_C.cpython-311-darwin.so",
+    "size": 579989,
+    "sha256": "0ed701170fe41032b1318865b32ded6844fe5cbc54094f71ae22d6ae97dc09d8"
+  },
+  "imported_python": {
+    "_ops.py": {
+      "path": "/private/tmp/msda-autograd24-lib/torch_ms_deform_attn/_ops.py",
+      "size": 3792,
+      "sha256": "ac86a7ceaeebb4477a41a0f586b1efef4bb372bae8d129bbd06c284f49ac8267"
+    },
+    "functional.py": {
+      "path": "/private/tmp/msda-autograd24-lib/torch_ms_deform_attn/functional.py",
+      "size": 6053,
+      "sha256": "5b77e41d6ded2545a32dcf2267664d7943c205c851d26157fdda8bdf744b587a"
+    }
+  },
+  "source_files": {
+    "csrc/dispatcher.h": {
+      "path": "/Users/s-aiueo32/torch-ms-deform-attn/csrc/dispatcher.h",
+      "size": 7407,
+      "sha256": "8420ed604c13857ee0629f92a8c37ba309a65b2794b4214cb20342d099cc687f"
+    },
+    "csrc/vision.cpp": {
+      "path": "/Users/s-aiueo32/torch-ms-deform-attn/csrc/vision.cpp",
+      "size": 3267,
+      "sha256": "195a4e4be1bd163f1e36c80ad611cd1f84b5f1714b37b52def97827cd144fff6"
+    },
+    "src/torch_ms_deform_attn/_ops.py": {
+      "path": "/Users/s-aiueo32/torch-ms-deform-attn/src/torch_ms_deform_attn/_ops.py",
+      "size": 3792,
+      "sha256": "ac86a7ceaeebb4477a41a0f586b1efef4bb372bae8d129bbd06c284f49ac8267"
+    },
+    "src/torch_ms_deform_attn/functional.py": {
+      "path": "/Users/s-aiueo32/torch-ms-deform-attn/src/torch_ms_deform_attn/functional.py",
+      "size": 6053,
+      "sha256": "5b77e41d6ded2545a32dcf2267664d7943c205c851d26157fdda8bdf744b587a"
+    },
+    "tests/test_integration.py": {
+      "path": "/Users/s-aiueo32/torch-ms-deform-attn/tests/test_integration.py",
+      "size": 8095,
+      "sha256": "339dcf50280b7497fcbc8b01eaee2f51c6f4f03e8613fff495e262cc6f4fe918"
+    }
+  },
+  "tests_run": 10,
+  "successful": true,
+  "passed": [
+    "test_integration.IntegrationTest.test_amp_and_compiled_amp",
+    "test_integration.IntegrationTest.test_backward_rejects_gradient_through_grad_output",
+    "test_integration.IntegrationTest.test_compile_dynamic_forward_backward",
+    "test_integration.IntegrationTest.test_compiled_autograd",
+    "test_integration.IntegrationTest.test_double_preserved_under_autocast",
+    "test_integration.IntegrationTest.test_export_keeps_opaque_operator",
+    "test_integration.IntegrationTest.test_higher_order_gradients_rejected",
+    "test_integration.IntegrationTest.test_legacy_apply_compile",
+    "test_integration.IntegrationTest.test_opcheck",
+    "test_integration.IntegrationTest.test_saved_tensor_hooks_and_mutation"
+  ],
+  "failures": [],
+  "errors": [],
+  "skipped": []
+}

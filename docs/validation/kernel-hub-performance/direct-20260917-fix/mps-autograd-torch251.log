@@ -1,0 +1,14 @@
+test_autocast (test_mps.MPSTest.test_autocast) ... ok
+test_channels_boundaries_offsets_and_layouts (test_mps.MPSTest.test_channels_boundaries_offsets_and_layouts) ... ok
+test_determinism_and_higher_order (test_mps.MPSTest.test_determinism_and_higher_order) ... ok
+test_fake_contract (test_mps.MPSTest.test_fake_contract) ... ok
+test_forward_backward_and_legacy (test_mps.MPSTest.test_forward_backward_and_legacy) ... ok
+test_low_precision (test_mps.MPSTest.test_low_precision) ... ok
+test_near_knot (test_mps.MPSTest.test_near_knot) ... ok
+test_rejections (test_mps.MPSTest.test_rejections) ... ok
+test_storage_offsets_and_noncontiguous_grad (test_mps.MPSTest.test_storage_offsets_and_noncontiguous_grad) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.847s
+
+OK

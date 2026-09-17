@@ -1,0 +1,15 @@
+test_amp_and_compiled_amp (test_integration.IntegrationTest.test_amp_and_compiled_amp) ... ok
+test_backward_rejects_gradient_through_grad_output (test_integration.IntegrationTest.test_backward_rejects_gradient_through_grad_output) ... ok
+test_compile_dynamic_forward_backward (test_integration.IntegrationTest.test_compile_dynamic_forward_backward) ... ok
+test_compiled_autograd (test_integration.IntegrationTest.test_compiled_autograd) ... ok
+test_double_preserved_under_autocast (test_integration.IntegrationTest.test_double_preserved_under_autocast) ... ok
+test_export_keeps_opaque_operator (test_integration.IntegrationTest.test_export_keeps_opaque_operator) ... ok
+test_higher_order_gradients_rejected (test_integration.IntegrationTest.test_higher_order_gradients_rejected) ... ok
+test_legacy_apply_compile (test_integration.IntegrationTest.test_legacy_apply_compile) ... ok
+test_opcheck (test_integration.IntegrationTest.test_opcheck) ... ok
+test_saved_tensor_hooks_and_mutation (test_integration.IntegrationTest.test_saved_tensor_hooks_and_mutation) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.703s
+
+OK

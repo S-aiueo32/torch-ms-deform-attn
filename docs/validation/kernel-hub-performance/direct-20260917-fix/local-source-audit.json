@@ -1,0 +1,23 @@
+[
+  {
+    "result": "cpu-autograd-torch240.json",
+    "tests_run": 10,
+    "source_files_match_current_tree": true,
+    "imported_files_match_recorded_hashes": true,
+    "binary_matches_recorded_hash": true
+  },
+  {
+    "result": "cpu-autograd-torch251.json",
+    "tests_run": 10,
+    "source_files_match_current_tree": true,
+    "imported_files_match_recorded_hashes": true,
+    "binary_matches_recorded_hash": true
+  },
+  {
+    "result": "mps-autograd-torch251.json",
+    "tests_run": 9,
+    "source_files_match_current_tree": true,
+    "imported_files_match_recorded_hashes": true,
+    "binary_matches_recorded_hash": true
+  }
+]

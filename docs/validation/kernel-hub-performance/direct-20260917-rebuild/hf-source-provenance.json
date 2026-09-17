@@ -1,0 +1,149 @@
+{
+  "created_utc": "2026-09-17T13:01:07.894380+00:00",
+  "hub_repository": "kernels-community/deformable-detr",
+  "hub_repo_type": "kernel",
+  "hub_revision": "abfd4042216fa4f84c9c5c4e3e844a3143c70ad5",
+  "hub_build": "torch210-cxx11-cu126-x86_64-linux",
+  "binary_file": "_deformable_detr_cuda_5129df0.abi3.so",
+  "binary_sha256": "1a5053e022f3e5840ca9f40d361b5356ef0beeefdd8686029378dd4a7284b959",
+  "source_repository": "https://github.com/huggingface/kernels-community",
+  "source_subdirectory": "deformable-detr",
+  "source_snapshot_commit": "8a6be7bc77565ad65c8ae2deb456482ff6aa50ed",
+  "cuda_and_wrapper_last_change_commit": "158f270ed49815cc0f5ad4cf38478ea7f4521da3",
+  "source_license": "Apache-2.0",
+  "license_evidence": [
+    "CUDA file copyright/license headers",
+    "build.toml general.license",
+    "hub-build/metadata.json license"
+  ],
+  "license_note": "No standalone LICENSE file is present in the upstream repository snapshot; original per-file copyright headers are preserved.",
+  "binding_sources": [
+    "deformable_detr/ms_deform_attn_cuda.cu"
+  ],
+  "include_path": ".",
+  "declarations": "torch-ext/torch_binding.h",
+  "forward_symbol": "ms_deform_attn_cuda_forward",
+  "backward_symbol": "ms_deform_attn_cuda_backward",
+  "im2col_step_type": "int64_t",
+  "relationship_evidence": {
+    "hub_metadata_and_lfs_match_previously_profiled_binary_sha256": true,
+    "github_cuda_and_wrapper_history_only_initial_addition": true,
+    "hub_public_python_init_byte_identical_to_github_source": true,
+    "hub_layers_byte_identical_to_github_source": true,
+    "downloaded_source_blobs_match_fixed_github_tree": true,
+    "hub_binary_metadata_contains_original_build_source_commit": false,
+    "sigstore_caveat": "Certificate identifies Sign old builds workflow at source_snapshot_commit. This is a later metadata-signing commit, NOT an attestation of the binary's original build source commit. Signature bundle is preserved, not cryptographically reverified here.",
+    "conclusion": "Unmodified official CUDA source, unchanged in repository history, with byte-identical packaged Python implementation. Exact binary-to-original-build-commit provenance is not provided by this older artifact metadata."
+  },
+  "wrapper_semantics": {
+    "function": "torch.autograd.Function with save_for_backward of all 5 input tensors and once_differentiable backward",
+    "casting": "No input casts in the source wrapper; benchmark must enforce its common FP16-to-FP32 compute policy externally.",
+    "contiguity": "No Python grad_output.contiguous(); CUDA host wrapper requires contiguous inputs and grad_output.",
+    "module_forward": "Delegates to Function.apply; accepts but does not use value_spatial_shapes_list.",
+    "operations": "Python public forward/backward simply delegate to generated torch.ops namespace."
+  },
+  "source_files": [
+    {
+      "path": "deformable_detr/ms_deform_attn_cuda.cu",
+      "bytes": 7586,
+      "sha256": "c4bd606af533c929535ed5a212ece35dfae01cd1d32d0f8b1ba001b7e80aa548",
+      "git_blob_sha1": "b9d6cc74146f22fa8cc0826ab1299a6c90c73014",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/deformable_detr/ms_deform_attn_cuda.cu"
+    },
+    {
+      "path": "deformable_detr/ms_deform_attn_cuda.cuh",
+      "bytes": 61655,
+      "sha256": "8b53dd1e599400659175104e087008d33f5267fb8f746e7dc439637e3b79ad83",
+      "git_blob_sha1": "20ae6892e4b9881578a72aae27ddc4ec9f68ae1c",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/deformable_detr/ms_deform_attn_cuda.cuh"
+    },
+    {
+      "path": "deformable_detr/ms_deform_attn_cuda.h",
+      "bytes": 1690,
+      "sha256": "67a2b9a220ddc7233dc15f086fb3ed166f55771f218e7f77e9557ebf2da06d7e",
+      "git_blob_sha1": "5bf596397916b099eb317114dc929720e0bed695",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/deformable_detr/ms_deform_attn_cuda.h"
+    },
+    {
+      "path": "deformable_detr/ms_deform_im2col_cuda.cuh",
+      "bytes": 54814,
+      "sha256": "d9babd28bb17c497c0f4b8ed4b714958f25d3d1d9376aeb878cc7409b989d643",
+      "git_blob_sha1": "4fb544bf791ddae79238924df591b7a33f3cccdd",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/deformable_detr/ms_deform_im2col_cuda.cuh"
+    },
+    {
+      "path": "torch-ext/deformable_detr/__init__.py",
+      "bytes": 1027,
+      "sha256": "fcff6b98a8e383384ea94de97928d4222d2ef466b102630471a41be643461bdd",
+      "git_blob_sha1": "33db73ca6e361af4707ba5bb5f55bf0e7c3005a4",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/torch-ext/deformable_detr/__init__.py"
+    },
+    {
+      "path": "torch-ext/deformable_detr/layers.py",
+      "bytes": 2307,
+      "sha256": "1f79b2a5b0ed79a82fcc6e564ec7260f4e417c984d6f295b3c9af4cdbde4f360",
+      "git_blob_sha1": "db94032dea3d445f27017f923ae80468e18d2d77",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/torch-ext/deformable_detr/layers.py"
+    },
+    {
+      "path": "torch-ext/torch_binding.cpp",
+      "bytes": 877,
+      "sha256": "bb1c1d7144e6194beb550c59d05e72c188d7bd2a8629f9742a9bf3c63ca4b270",
+      "git_blob_sha1": "fb462761e30f07241c192fd610ac307ae3b76af2",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/torch-ext/torch_binding.cpp"
+    },
+    {
+      "path": "torch-ext/torch_binding.h",
+      "bytes": 750,
+      "sha256": "edaea06bec5a536dfd154bfcbe351125651f1a69316a4526ece0889a782dbc8e",
+      "git_blob_sha1": "e6e0d303971fc6641d03f610ea681369c82ff90f",
+      "matches_fixed_github_tree": true,
+      "url": "https://raw.githubusercontent.com/huggingface/kernels-community/8a6be7bc77565ad65c8ae2deb456482ff6aa50ed/deformable-detr/torch-ext/torch_binding.h"
+    }
+  ],
+  "hub_files": [
+    {
+      "path": "hub-build/__init__.py",
+      "sha256": "fcff6b98a8e383384ea94de97928d4222d2ef466b102630471a41be643461bdd",
+      "git_blob_sha1": "33db73ca6e361af4707ba5bb5f55bf0e7c3005a4",
+      "matches_fixed_hub_tree": true
+    },
+    {
+      "path": "hub-build/_ops.py",
+      "sha256": "13e94b1243860b618297357b7c6c85a99205654ac2d15ff4a3d4085fd5c88d27",
+      "git_blob_sha1": "783ce5bea1df5ca480d0b45081055c75218172a9",
+      "matches_fixed_hub_tree": true
+    },
+    {
+      "path": "hub-build/deformable_detr/__init__.py",
+      "sha256": "0c560f96b857c188c4a8297ff27d1299619957c3459a5e433e132329fbfdf066",
+      "git_blob_sha1": "a9b2672c1cd85b74c1b3ded0fc0b2100e1aeac23",
+      "matches_fixed_hub_tree": true
+    },
+    {
+      "path": "hub-build/layers.py",
+      "sha256": "1f79b2a5b0ed79a82fcc6e564ec7260f4e417c984d6f295b3c9af4cdbde4f360",
+      "git_blob_sha1": "db94032dea3d445f27017f923ae80468e18d2d77",
+      "matches_fixed_hub_tree": true
+    },
+    {
+      "path": "hub-build/metadata.json",
+      "sha256": "ecf6cccd8dc285fdd2df49a2da5dd115e201432e85d95055db454975a3fc7811",
+      "git_blob_sha1": "98f392b1d9fb29f8de57c2c624cbba98387c5b18",
+      "matches_fixed_hub_tree": true
+    },
+    {
+      "path": "hub-build/metadata.json.sigstore",
+      "sha256": "20618029b6d30d558eff414299bdf13660b4fcf338df3d4333cee91a959dcf4b",
+      "git_blob_sha1": "b381c455ac9c1ef6eb009725058ea87eb62fb583",
+      "matches_fixed_hub_tree": true
+    }
+  ]
+}

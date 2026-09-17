@@ -1,0 +1,8 @@
+{
+  "archive": "fix-evidence.tar.gz",
+  "sha256": "400cc8771d164b09b89e1c540405b41d60afe362da628a2cda939c231293e83a",
+  "bytes": 3520146,
+  "manifest_members_verified": 152,
+  "mismatches": [],
+  "candidate_source_files_verified": 80
+}

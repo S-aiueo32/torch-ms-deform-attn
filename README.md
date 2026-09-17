@@ -10,7 +10,8 @@ outside the package's scope.
 
 Install the published release candidate from
 [PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.0rc2/).
-The current source requires Python 3.10+, PyTorch >=2.4.0,<3, and a C++17 compiler. The package is
+The current source requires Python 3.10+, PyTorch >=2.4.0,<3, and a C++ compiler
+compatible with PyTorch (C++17 through 2.12; C++20 from 2.13). The package is
 distributed as source and compiles against the PyTorch in your environment:
 
 ```bash
@@ -72,6 +73,8 @@ and Compute Sanitizer memcheck have been recorded on an NVIDIA L4 with CUDA 12.4
 see the [GPU validation record](docs/gpu-runner.md#run-tests).
 The current source also has [PyTorch 2.4.0 validation](docs/validation/2026-09-17-pytorch240/README.md)
 on Linux CPU and L4/CUDA 12.4, including all four Compute Sanitizer tools.
+Newer-source checks cover [each CPU series from 2.8 through 2.14, plus
+2.8.0 and 2.14.0 on L4/CUDA 12.6](docs/validation/2026-09-17-newer-pytorch/README.md).
 The declared dependency range is broader than this tested configuration.
 
 - [Installation](docs/installation.md): requirements, backend selection, CPU parallelism.

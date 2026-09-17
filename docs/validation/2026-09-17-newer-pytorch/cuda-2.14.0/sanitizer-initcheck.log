@@ -1,0 +1,11 @@
+========= COMPUTE-SANITIZER
+test_reference_forward_backward (test_cuda.CUDAAttentionTest.test_reference_forward_backward) ... ok
+test_partial_batch_chunk (test_cuda.CUDAAttentionTest.test_partial_batch_chunk) ... ok
+test_padding_support_and_channel_sizes (test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes) ... ok
+test_offsets_collisions_and_noncontiguous_metadata (test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.635s
+
+OK
+========= ERROR SUMMARY: 0 errors

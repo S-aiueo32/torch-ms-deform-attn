@@ -7,8 +7,8 @@ image is pinned to
 ## Results
 
 Tested source: `4863ba7ffa23af96766541ea8d780db3e9db7ac1`. This includes the
-PyTorch 2.4 CUDA assertion fix. Subsequent changes in this branch only document
-the results and archive evidence; a future release SHA needs its own checks.
+PyTorch 2.4 CUDA assertion fix. Evidence was archived after this tested source
+commit; a future release SHA needs its own checks.
 
 | Environment | Result |
 | --- | --- |

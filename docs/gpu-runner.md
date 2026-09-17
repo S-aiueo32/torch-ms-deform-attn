@@ -70,8 +70,10 @@ fresh Pod; the workflow never substitutes a more expensive GPU model by itself.
 Only one CUDA workflow runs at a time.
 
 Use `torch_version=2.4.0` for the minimum supported PyTorch with CUDA 12.4.
-The other selectable pairs are 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6. The local
-controller accepts the same selection through `--torch-version`.
+The other selectable pairs are 2.5.1/CUDA 12.4 and 2.7.1, 2.8.0 or 2.14.0 with
+CUDA 12.6. The local controller accepts the same selection through
+`--torch-version`. Validation uses the selected container's `python3`; override
+it with `CUDA_CHECKS_PYTHON` when invoking `run_cuda_checks.sh` directly.
 
 Validated on NVIDIA L4 with Python 3.11, PyTorch 2.5.1, and CUDA 12.4:
 36 tests completed with two expected skips (CPU-only build and a second GPU),

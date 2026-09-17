@@ -39,15 +39,18 @@ refer to the published releases. The development lock remains on PyTorch 2.5.1.
 
 ## Prerequisites
 
-The published `0.1.0rc2` requires Python 3.10+, PyTorch >=2.5,<3, and a C++17 compiler. CUDA builds also
+The published `0.1.0rc2` requires Python 3.10+ and PyTorch >=2.5,<3.
+The compiler must support the C++ standard required by the installed PyTorch:
+C++17 through 2.12, C++20 from 2.13. `BuildExtension` selects that standard.
+CUDA builds also
 require CUDA-enabled PyTorch and a matching CUDA toolkit. MPS is unsupported.
 The dependency range permits installation; it is not a tested Cartesian product.
 The maintained support and CI matrix is Linux-only. The validation targets
 below use published wheels from the
 [official PyTorch version table](https://pytorch.org/get-started/previous-versions/).
 Other Python/PyTorch versions in the dependency range, macOS, Windows, and other CUDA
-pairs are best effort. 2.7.1 is the selected newer regression series, not a claim
-that it is the newest available release.
+pairs are best effort. The CPU matrix includes each minor series from 2.7 to
+2.14, selecting one patch release per series; it does not test every patch.
 
 | Platform | Python | PyTorch | Backend/toolkit | Build / test evidence |
 | --- | --- | --- | --- | --- |
@@ -57,8 +60,23 @@ that it is the newest available release.
 | Linux | 3.10 | 2.5.0 | CPU serial (published RC lower bounds) | RC CPU package job passed |
 | Linux | 3.11 | 2.5.1 | CPU OpenMP | RC CPU package job passed |
 | Linux | 3.12 | 2.7.1 | CPU OpenMP | RC CPU package job passed |
+| Linux | 3.12 | 2.8.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.9.1 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.10.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.11.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.12.1 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.13.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.14.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-newer-pytorch/README.md) |
 | Linux | 3.11 | 2.5.1 | CUDA 12.4 | RC L4 full suite and all four sanitizers passed |
 | Linux | 3.11 | 2.7.1 | CUDA 12.6 | Local L4 sdist-to-wheel build, full suite and all four sanitizers passed |
+| Linux | 3.11 | 2.8.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-newer-pytorch/README.md) |
+| Linux | 3.12 | 2.14.0 | CUDA 12.6 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-newer-pytorch/README.md) |
+
+The 2.8–2.14 rows refer to current-source validation, not the published RC.
+Intermediate 2.9–2.13 releases have CPU evidence only; the new CUDA runtime
+checks select 2.8.0 and 2.14.0 with CUDA 12.6. Exact source identities, Python
+versions, skips and sanitizer reports are in the
+[newer-PyTorch validation record](validation/2026-09-17-newer-pytorch/README.md).
 
 The CUDA 12.6 local result above refers only to source
 `c29ca3640b8a7a0cf4fc9907d40ccde4d42f9045`; see the

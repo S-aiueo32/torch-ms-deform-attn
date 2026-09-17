@@ -150,7 +150,11 @@ no sanitizer, and no benchmark or support-matrix options. The local controller
 equivalent is `--workload kernel-hub --torch-version 2.14.0`.
 
 `scripts/run_kernel_hub_checks.sh` uses the official kernel-builder 0.16.0 local
-development build (`create-pyproject`, then CMake build and `local_install`). This is a
+development build (`create-pyproject`, then CMake build and `local_install`).
+The workflow caches the pinned builder on the CPU runner and generates the
+project before renting a GPU. `--prepared-kernel` transfers that generated tree
+with the source archive after checking its upstream revision. The GPU host only
+installs runtime/build dependencies, compiles CUDA, and executes the tests. This is a
 real native adapter build and loader run, but not a Nix release build or proof
 of distribution portability. Builder artifacts are not uploaded to HF.
 

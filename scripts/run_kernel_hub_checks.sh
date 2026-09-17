@@ -22,16 +22,10 @@ python -m pip install --no-cache-dir -r kernel-hub/e2e/requirements.txt \
     'setuptools>=77' wheel ninja 'cmake>=3.26' numpy packaging
 python -c 'import torch; assert torch.cuda.is_available(); assert torch.version.cuda == "12.6"; print(torch.__version__, torch.cuda.get_device_name())'
 
-# Official kernel-builder local development route: generate CMake/setup.py,
-# then CMake's local_install target. This does not establish Nix portability.
-curl --fail --location --proto '=https' https://sh.rustup.rs -o "$msda_work/rustup.sh"
-sh "$msda_work/rustup.sh" -y --profile minimal --default-toolchain 1.94.0 --no-modify-path
-export PATH="$HOME/.cargo/bin:$PATH"
-cargo install hf-kernel-builder --version 0.16.0 --locked
-kernel-builder --version
-python kernel-hub/export.py "$msda_work/candidate" --revision "$CUDA_CHECKS_SOURCE_SHA"
+# Configuration generation runs on the CPU controller before GPU rental.
+# Only CUDA compilation and execution need the GPU host.
+cp -R "$msda_source/kernel-hub-prepared" "$msda_work/candidate"
 cp "$msda_work/candidate/UPSTREAM.json" "$msda_output/UPSTREAM.json"
-kernel-builder create-pyproject "$msda_work/candidate" --unique-id "$CUDA_CHECKS_SOURCE_SHA"
 cmake -S "$msda_work/candidate" -B "$msda_work/cmake" -G Ninja \
     -DPython3_EXECUTABLE="$msda_work/venv/bin/python" -DCMAKE_BUILD_TYPE=Release
 cmake --build "$msda_work/cmake" --parallel "$MAX_JOBS"

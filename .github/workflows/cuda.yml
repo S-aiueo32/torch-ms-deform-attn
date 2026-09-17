@@ -63,25 +63,42 @@ jobs:
         run: |
           python3 scripts/runpod_ci.py check \
             --gpu "$GPU" --max-hourly-usd "$MAX_HOURLY_USD"
+      - uses: actions/cache/restore@v4
+        id: builder-cache
+        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub'
+        with:
+          path: ~/.cargo/bin/kernel-builder
+          key: kernel-builder-0.16.0-ubuntu-x86_64
       - name: Validate Kernel Builder configuration before renting a GPU
         if: inputs.operation == 'test' && inputs.workload == 'kernel-hub'
         run: |
-          rustup toolchain install 1.94.0 --profile minimal
-          cargo +1.94.0 install hf-kernel-builder --version 0.16.0 --locked
+          if ! command -v kernel-builder; then
+            rustup toolchain install 1.94.0 --profile minimal
+            cargo +1.94.0 install hf-kernel-builder --version 0.16.0 --locked
+          fi
           python3 kernel-hub/export.py "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
           kernel-builder create-pyproject "$RUNNER_TEMP/kernel-hub-preflight" --unique-id "$GITHUB_SHA"
+      - uses: actions/cache/save@v4
+        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && steps.builder-cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/.cargo/bin/kernel-builder
+          key: kernel-builder-0.16.0-ubuntu-x86_64
       - name: Start Runpod GPU, test CUDA, and delete Pod
         if: inputs.operation == 'test'
         env:
           RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
         run: |
+          prepared=()
+          if [ "$WORKLOAD" = kernel-hub ]; then
+            prepared=(--prepared-kernel "$RUNNER_TEMP/kernel-hub-preflight")
+          fi
           python3 scripts/runpod_ci.py run \
             --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
             --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
             --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
             --output-dir "$RUNNER_TEMP/runpod-results" \
             --gpu "$GPU" --sanitizer "$SANITIZER" --torch-version "$TORCH_VERSION" \
-            --workload "$WORKLOAD" \
+            --workload "$WORKLOAD" "${prepared[@]}" \
             --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES"
       - name: Retry cleanup after failure or cancellation
         if: always() && inputs.operation == 'test'

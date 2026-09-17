@@ -156,6 +156,31 @@ def artifact_hashes(module):
     }
 
 
+def align_proposals(actual, expected, *, atol, rtol):
+    """Compare detector queries by their input proposals, never by predictions.
+
+    topk can permute tied scores. Require the same proposal set before aligning
+    output rows; a changed selection is still a failure. Losses and gradients
+    remain untouched.
+    """
+    from scipy.optimize import linear_sum_assignment
+
+    permutations = []
+    for value, target in zip(actual["proposals"], expected["proposals"]):
+        cost = torch.cdist(target.float(), value.float(), p=1).detach().cpu().numpy()
+        _, columns = linear_sum_assignment(cost)
+        indices = torch.tensor(columns, device=value.device)
+        torch.testing.assert_close(
+            value[indices].float(), target.float(), atol=min(atol, 1e-5), rtol=min(rtol, 1e-5)
+        )
+        permutations.append(indices)
+    indices = torch.stack(permutations)
+    aligned = dict(actual)
+    for name in ("logits", "boxes", "proposals"):
+        aligned[name] = actual[name].gather(1, indices[..., None].expand_as(actual[name]))
+    return aligned, indices.tolist()
+
+
 def reference_precision(model):
     """Evaluate reference interpolation in FP32 within the same precision model.
 
@@ -278,17 +303,22 @@ def run_case(
                     ),
                 }
             )
-            if backend == "inductor" and numerics != "default":
-                return compiler(
-                    graph,
-                    inputs,
-                    config_patches={
-                        "emulate_precision_casts": True,
-                        "emulate_divison_rounding": True,
-                        **({"pattern_matcher": False} if numerics == "controlled" else {}),
-                    },
-                )
-            return compiler(graph, inputs)
+            from torch._functorch import config as autograd_config
+
+            # run_model calls backward outside autocast. AOT must use the same
+            # assumption when tracing its backward graph.
+            with autograd_config.patch(backward_pass_autocast="off"):
+                if backend == "inductor" and numerics != "default":
+                    return compiler(
+                        graph,
+                        inputs,
+                        config_patches={
+                            "emulate_precision_casts": True,
+                            "emulate_divison_rounding": True,
+                            **({"pattern_matcher": False} if numerics == "controlled" else {}),
+                        },
+                    )
+                return compiler(graph, inputs)
 
         # RT-DETR has a data-dependent finite-value check during training.
         # Permit that model graph break, but require MSDA inside captured graphs.
@@ -343,6 +373,9 @@ def run_case(
         if eager_candidate is not None:
             diagnostics["candidate_compiled_vs_eager"] = comparison(actual, eager_candidate)
             diagnostics["candidate_eager_vs_hf"] = comparison(eager_candidate, expected)
+    actual, query_permutation = align_proposals(actual, expected, atol=atol, rtol=rtol)
+    if diagnostics is not None:
+        diagnostics["query_permutation"] = query_permutation
     errors = {}
     for name in actual:
         value, target = actual[name].float(), expected[name].float()
@@ -354,6 +387,8 @@ def run_case(
         "training": training,
         "compile_backend": backend,
         "numerics": numerics,
+        "backward_pass_autocast": "off",
+        "query_permutation": query_permutation,
         "dtype": dtype,
         "autocast": amp,
         "replaced_layers": replaced,

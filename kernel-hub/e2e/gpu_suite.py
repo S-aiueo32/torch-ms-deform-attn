@@ -75,7 +75,7 @@ def main():
             ("fp16", True),
             ("bf16", True),
         ):
-            if args.focus_compile and dtype != "fp32" and not amp:
+            if args.focus_compile and not amp:
                 continue
             name = f"e2e-{dtype}" + ("-amp" if amp else "")
             command = [

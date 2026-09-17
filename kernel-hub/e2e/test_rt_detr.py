@@ -15,11 +15,37 @@ import unittest
 from pathlib import Path
 
 import torch
-from rt_detr import run_case, run_model, tiny_model
+from rt_detr import align_proposals, run_case, run_model, tiny_model
 
 from torch_ms_deform_attn import _C
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+class ProposalAlignmentTest(unittest.TestCase):
+    def test_only_permutation_is_normalized(self):
+        expected = {
+            "proposals": torch.tensor([[[0.0, 1.0], [2.0, 3.0]]]),
+            "logits": torch.tensor([[[4.0], [5.0]]]),
+            "boxes": torch.tensor([[[6.0], [7.0]]]),
+            "grad:weight": torch.tensor([8.0]),
+        }
+        actual = {
+            name: value.flip(1) if value.ndim == 3 else value.clone()
+            for name, value in expected.items()
+        }
+        aligned, order = align_proposals(actual, expected, atol=0.02, rtol=0.05)
+        self.assertEqual(order, [[1, 0]])
+        for name in expected:
+            torch.testing.assert_close(aligned[name], expected[name], atol=0, rtol=0)
+        self.assertIs(aligned["grad:weight"], actual["grad:weight"])
+        # Never match a different proposal or hide a prediction error.
+        actual["logits"] += 1
+        aligned, _ = align_proposals(actual, expected, atol=0.02, rtol=0.05)
+        self.assertFalse(torch.equal(aligned["logits"], expected["logits"]))
+        actual["proposals"][0, 0, 0] += 0.01
+        with self.assertRaises(AssertionError):
+            align_proposals(actual, expected, atol=0.02, rtol=0.05)
 
 
 class RTDetrCPUFixtureTest(unittest.TestCase):

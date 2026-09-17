@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-09-17T03:51:56.546114+00:00",
+  "python": "3.11.16 (main, Sep  1 2026, 14:08:22) [Clang 22.1.3 ]",
+  "torch": "2.14.0",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "extension": "/tmp/msda-mps214/lib/python3.11/site-packages/torch_ms_deform_attn/_C.cpython-311-darwin.so",
+  "extension_sha256": "4c4ab92d1f8ac982206f777408ffc0929c87bbd5c96eb75151fb0789b9bfbfb6",
+  "mps_available": true,
+  "with_mps": true,
+  "tests": 75,
+  "failures": 0,
+  "errors": 0,
+  "skips": 26
+}

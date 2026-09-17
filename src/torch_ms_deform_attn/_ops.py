@@ -35,6 +35,8 @@ def _validate_fake_inputs(value, shapes, starts, locations, weights, step, grad=
         value.dtype in (torch.float32, torch.float64),
         lambda: "deformable attention supports float32 and float64",
     )
+    if value.device.type == "mps":
+        torch._check(value.dtype == torch.float32, lambda: "MPS requires float32 computation")
     for tensor in (locations, weights):
         torch._check(tensor.dtype == value.dtype, lambda: "Floating input dtypes must match")
     for tensor in (shapes, starts):
@@ -56,9 +58,9 @@ def _validate_fake_inputs(value, shapes, starts, locations, weights, step, grad=
     for actual, expected in zip(weights.shape, locations.shape[:5]):
         torch._check(actual == expected, lambda: "Invalid attention_weights shape")
     torch._check(step > 0, lambda: "im2col_step must be positive")
-    if value.is_cuda:
+    if value.device.type in ("cuda", "mps"):
         for size in (*value.shape, shapes.shape[0], locations.shape[1], locations.shape[4]):
-            torch._check(size > 0, lambda: "CUDA inputs must be nonempty")
+            torch._check(size > 0, lambda: "CUDA and MPS inputs must be nonempty")
     if grad is not None:
         torch._check(grad.dim() == 3, lambda: "Invalid grad_output rank")
         torch._check(grad.dtype == value.dtype, lambda: "grad_output dtype must match value")

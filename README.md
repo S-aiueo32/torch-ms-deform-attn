@@ -1,6 +1,6 @@
 # torch-ms-deform-attn
 
-Multi-scale deformable attention for PyTorch on CPU and CUDA, extracted from
+Multi-scale deformable attention for PyTorch on CPU, CUDA, and Apple Silicon MPS, extracted from
 [Deformable DETR](https://github.com/fundamentalvision/Deformable-DETR).
 Use the sampling and weighted reduction operator in your model with first-order
 autograd, AMP, and `torch.compile`. Projection layers and detection models are
@@ -43,22 +43,30 @@ assert output.shape == (1, 3, 16)
 output.square().mean().backward()
 ```
 
-All inputs must be on the same CPU or CUDA device, including `shapes` and
+All inputs must be on the same device, including `shapes` and
 `starts`. Outside autocast, floating inputs must share float16, bfloat16,
 float32, or float64 dtype.
 Weights are used directly, without softmax.
 
 Explicit `.half()` / `.bfloat16()` inputs compute in float32 and return the input
 dtype. AMP computes low-precision inputs in float32 and returns float32.
-Native low-precision kernels,
-MPS, and higher-order gradients are unsupported. CUDA backward is
+Native low-precision arithmetic and higher-order gradients are unsupported. CUDA backward is
 nondeterministic.
+
+The current checkout also supports Apple Silicon MPS with dedicated Metal forward
+and backward kernels (macOS 13.3+, PyTorch 2.4+). Install from source using the
+[MPS installation instructions](docs/installation.md#apple-silicon-mps).
+All five inputs must be on MPS. float32 and float16 inputs are supported; bfloat16
+requires macOS 14+. float64, empty dimensions, and MPS `torch.compile` support are
+excluded. MPS backward is nondeterministic. This backend is not in `0.1.0rc2` on PyPI.
 
 ## Support matrix
 
-See the [CPU and CUDA support matrix](docs/support.md) for tested Python/PyTorch
+See the [support matrix](docs/support.md) for tested Python/PyTorch
 pairs, CUDA toolkits, and known `torch.compile` limitations. The maintained
-matrix covers Linux x86_64 with standard CPython; macOS and Windows are best effort.
+CPU/CUDA matrix covers Linux x86_64 with standard CPython. Apple Silicon MPS
+has a separate [validation record](docs/validation/mps/README.md); other macOS
+and Windows configurations are best effort.
 Results are tied to source revisions, including revisions newer than `0.1.0rc2`.
 
 ## Documentation

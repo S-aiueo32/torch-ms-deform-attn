@@ -1,0 +1,474 @@
+{
+  "torch": "2.5.1",
+  "python": "3.11.16",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "gpu": [
+    "Apple M2"
+  ],
+  "revision": "6710d56507665a0e3498a43780e6b589f8942614",
+  "working_tree_diff": " MANIFEST.in                            |  2 +-\n README.md                              | 12 +++++++++---\n build_tests/test_build_config.py       | 25 +++++++++++++++++++++++++\n csrc/vision.cpp                        | 26 ++++++++++++++++++++++++++\n pyproject.toml                         |  1 +\n setup.py                               | 30 +++++++++++++++++++++++++++++-\n src/torch_ms_deform_attn/_C.pyi        |  1 +\n src/torch_ms_deform_attn/_ops.py       |  6 ++++--\n src/torch_ms_deform_attn/functional.py |  4 ++--\n tests/test_fake_contract.py            |  6 +++---\n 10 files changed, 101 insertions(+), 12 deletions(-)\n",
+  "dtype": "float32",
+  "warmup": 5,
+  "iterations": 20,
+  "first_forward_including_shader_compile_ms": 497.6171250018524,
+  "memory_measurement": "Observed live tensor bytes at operator boundaries; excludes allocator cache and may miss intra-operator workspace. Measured separately from latency.",
+  "results": [
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 32.17925000353716,
+      "min_ms": 31.200625002384186,
+      "max_ms": 67.79512499633711,
+      "observed_peak_extra_tensor_bytes": 13613056
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 134.0864374942612,
+      "min_ms": 127.19862500671297,
+      "max_ms": 152.14358299272135,
+      "observed_peak_extra_tensor_bytes": 667040256
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 224.73106250254204,
+      "min_ms": 223.22258399799466,
+      "max_ms": 229.39354200207163,
+      "observed_peak_extra_tensor_bytes": 47645696
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 2.5374165052198805,
+      "min_ms": 2.4151660036295652,
+      "max_ms": 2.635500000906177,
+      "observed_peak_extra_tensor_bytes": 921600
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 9.303229504439514,
+      "min_ms": 8.823291005683132,
+      "max_ms": 9.690040998975746,
+      "observed_peak_extra_tensor_bytes": 45158912
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 14.476124997599982,
+      "min_ms": 13.975291993119754,
+      "max_ms": 15.720208990387619,
+      "observed_peak_extra_tensor_bytes": 17049600
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 65.2351459939382,
+      "min_ms": 63.48374999652151,
+      "max_ms": 67.17329200182576,
+      "observed_peak_extra_tensor_bytes": 27226112
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 306.2058750001597,
+      "min_ms": 290.68599999300204,
+      "max_ms": 317.0007500011707,
+      "observed_peak_extra_tensor_bytes": 1354845696
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 475.78820849594194,
+      "min_ms": 474.2073329980485,
+      "max_ms": 478.0374169931747,
+      "observed_peak_extra_tensor_bytes": 95291392
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 4.541312002402265,
+      "min_ms": 4.453165995073505,
+      "max_ms": 4.7927080013323575,
+      "observed_peak_extra_tensor_bytes": 1843200
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 24.30500050104456,
+      "min_ms": 23.14270898932591,
+      "max_ms": 25.31604201067239,
+      "observed_peak_extra_tensor_bytes": 105728512
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 28.611000503588002,
+      "min_ms": 28.39329199923668,
+      "max_ms": 29.664834000868723,
+      "observed_peak_extra_tensor_bytes": 34099200
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 52.747562498552725,
+      "min_ms": 52.38491599448025,
+      "max_ms": 53.65324999729637,
+      "observed_peak_extra_tensor_bytes": 22858752
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 219.06999999191612,
+      "min_ms": 210.33408300718293,
+      "max_ms": 238.58808299701195,
+      "observed_peak_extra_tensor_bytes": 1120079360
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 387.9298329993617,
+      "min_ms": 386.2500419927528,
+      "max_ms": 404.49354199517984,
+      "observed_peak_extra_tensor_bytes": 80005632
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 2.4287085034302436,
+      "min_ms": 2.358625002671033,
+      "max_ms": 3.0392089975066483,
+      "observed_peak_extra_tensor_bytes": 921600
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 9.395895496709272,
+      "min_ms": 8.864834002451971,
+      "max_ms": 9.904042002744973,
+      "observed_peak_extra_tensor_bytes": 45158912
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 14.284083496022504,
+      "min_ms": 13.811708995490335,
+      "max_ms": 15.014417003840208,
+      "observed_peak_extra_tensor_bytes": 25162752
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 107.21524999826215,
+      "min_ms": 106.73337501066271,
+      "max_ms": 108.13212499488145,
+      "observed_peak_extra_tensor_bytes": 45717504
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 544.3370209977729,
+      "min_ms": 519.4018750044052,
+      "max_ms": 642.9121249966556,
+      "observed_peak_extra_tensor_bytes": 2275005440
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 819.0653955025482,
+      "min_ms": 817.2329579974758,
+      "max_ms": 832.4960419995477,
+      "observed_peak_extra_tensor_bytes": 160011264
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 4.542291499092244,
+      "min_ms": 4.44983399938792,
+      "max_ms": 4.8285409866366535,
+      "observed_peak_extra_tensor_bytes": 1843200
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 24.187500006519258,
+      "min_ms": 23.42329100065399,
+      "max_ms": 25.244708987884223,
+      "observed_peak_extra_tensor_bytes": 120982016
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 28.88616699783597,
+      "min_ms": 28.27945799799636,
+      "max_ms": 33.536417002324015,
+      "observed_peak_extra_tensor_bytes": 50325504
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "unsupported": "The operator 'aten::grid_sampler_2d_backward' is not currently implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS."
+    }
+  ],
+  "extension_sha256": "d051bd1cfd67f21eea2e09705248d6a590632d1fe5255f0fd6ebe97b6f3528ef"
+}

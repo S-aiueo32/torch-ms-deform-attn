@@ -79,8 +79,8 @@ class FakeContractTest(unittest.TestCase):
                             backward(*args, grad, 2)
 
     def test_fake_devices_and_empty_dimensions(self):
-        # Fake CUDA runs even on a CPU-only host; no native CUDA claim is made.
-        for device in ("cpu", "cuda"):
+        # Fake accelerators work without the corresponding hardware.
+        for device in ("cpu", "cuda", "mps"):
             with FakeTensorMode():
                 args = [torch.empty_like(t, device=device) for t in inputs()]
                 for index in range(1, 5):
@@ -118,7 +118,7 @@ class FakeContractTest(unittest.TestCase):
                         for shape, t in zip(sizes, args)
                     ]
                     with self.subTest(device=device, dimension=dimension):
-                        if device == "cuda":
+                        if device in ("cuda", "mps"):
                             with self.assertRaisesRegex(RuntimeError, "nonempty"):
                                 forward(v, s, i, loc, w, 2)
                         else:

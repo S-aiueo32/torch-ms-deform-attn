@@ -1,0 +1,498 @@
+{
+  "torch": "2.14.0",
+  "python": "3.11.16",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "gpu": [
+    "Apple M2"
+  ],
+  "extension_sha256": "4c4ab92d1f8ac982206f777408ffc0929c87bbd5c96eb75151fb0789b9bfbfb6",
+  "revision": "6710d56507665a0e3498a43780e6b589f8942614",
+  "working_tree_diff": " MANIFEST.in                            |  2 +-\n README.md                              | 20 ++++++++++++++------\n build_tests/test_build_config.py       | 25 +++++++++++++++++++++++++\n csrc/vision.cpp                        | 26 ++++++++++++++++++++++++++\n docs/api.md                            | 26 ++++++++++++++++++++++++--\n docs/benchmarks.md                     | 27 +++++++++++++++++++++++++--\n docs/installation.md                   | 26 +++++++++++++++++++++++++-\n docs/support.md                        |  5 ++++-\n pyproject.toml                         |  3 ++-\n setup.py                               | 30 +++++++++++++++++++++++++++++-\n src/torch_ms_deform_attn/_C.pyi        |  1 +\n src/torch_ms_deform_attn/_ops.py       |  6 ++++--\n src/torch_ms_deform_attn/functional.py | 15 ++++++++++-----\n tests/test_fake_contract.py            |  6 +++---\n 14 files changed, 193 insertions(+), 25 deletions(-)\n",
+  "dtype": "float32",
+  "warmup": 5,
+  "iterations": 20,
+  "first_forward_including_shader_compile_ms": 626.1209169897484,
+  "memory_measurement": "Observed live tensor bytes at operator boundaries; excludes allocator cache and may miss intra-operator workspace. Measured separately from latency.",
+  "results": [
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 32.32572949491441,
+      "min_ms": 31.23941700323485,
+      "max_ms": 32.96862500428688,
+      "observed_peak_extra_tensor_bytes": 13631488
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 51.32231250172481,
+      "min_ms": 49.70445900107734,
+      "max_ms": 52.226125000743195,
+      "observed_peak_extra_tensor_bytes": 667942912
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 230.96335450100014,
+      "min_ms": 228.00312499748543,
+      "max_ms": 234.36645799665712,
+      "observed_peak_extra_tensor_bytes": 47710208
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 217.38599999662256,
+      "min_ms": 214.41016599419527,
+      "max_ms": 220.30833399912808,
+      "observed_peak_extra_tensor_bytes": 688390144
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 2.530791505705565,
+      "min_ms": 2.4581670004408807,
+      "max_ms": 3.5492919996613637,
+      "observed_peak_extra_tensor_bytes": 921600
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 4.07195849402342,
+      "min_ms": 3.971999991335906,
+      "max_ms": 4.839291999815032,
+      "observed_peak_extra_tensor_bytes": 45748224
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 13.979479503177572,
+      "min_ms": 13.797999999951571,
+      "max_ms": 14.890833001118153,
+      "observed_peak_extra_tensor_bytes": 15935488
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 18.09187500475673,
+      "min_ms": 16.710791998775676,
+      "max_ms": 19.594957993831486,
+      "observed_peak_extra_tensor_bytes": 47130624
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 64.9929580031312,
+      "min_ms": 64.44950000150129,
+      "max_ms": 68.05954199808184,
+      "observed_peak_extra_tensor_bytes": 27262976
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 93.23268750449643,
+      "min_ms": 92.66808300162666,
+      "max_ms": 99.61612499319017,
+      "observed_peak_extra_tensor_bytes": 1356679168
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 485.3251664972049,
+      "min_ms": 482.51270900072996,
+      "max_ms": 500.068209003075,
+      "observed_peak_extra_tensor_bytes": 95420416
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 13294,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 344.25024949450744,
+      "min_ms": 336.82145799684804,
+      "max_ms": 350.36629099340644,
+      "observed_peak_extra_tensor_bytes": 1445545984
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 4.6184165039449,
+      "min_ms": 4.499041999224573,
+      "max_ms": 5.6019999901764095,
+      "observed_peak_extra_tensor_bytes": 1867776
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 8.50072950561298,
+      "min_ms": 8.047374998568557,
+      "max_ms": 9.561208993545733,
+      "observed_peak_extra_tensor_bytes": 93249536
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 30.666521000966895,
+      "min_ms": 28.88600000005681,
+      "max_ms": 32.67916700860951,
+      "observed_peak_extra_tensor_bytes": 31920128
+    },
+    {
+      "image": [
+        800,
+        800
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 28.524229499453213,
+      "min_ms": 26.620916003594175,
+      "max_ms": 43.31816699414048,
+      "observed_peak_extra_tensor_bytes": 126257152
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 54.56037500698585,
+      "min_ms": 53.34533299901523,
+      "max_ms": 67.99945900274906,
+      "observed_peak_extra_tensor_bytes": 23068672
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 86.89635449991329,
+      "min_ms": 85.63658299681265,
+      "max_ms": 105.13691700180061,
+      "observed_peak_extra_tensor_bytes": 1130364928
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 403.5881250019884,
+      "min_ms": 391.9325419992674,
+      "max_ms": 482.4089999892749,
+      "observed_peak_extra_tensor_bytes": 80740352
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 373.0612920044223,
+      "min_ms": 359.2282919998979,
+      "max_ms": 381.61187499645166,
+      "observed_peak_extra_tensor_bytes": 1164967936
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 2.4948744976427406,
+      "min_ms": 2.4089999933494255,
+      "max_ms": 6.697958000586368,
+      "observed_peak_extra_tensor_bytes": 921600
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 4.464749996259343,
+      "min_ms": 4.273957994882949,
+      "max_ms": 7.37308400857728,
+      "observed_peak_extra_tensor_bytes": 45748224
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 16.769062502135057,
+      "min_ms": 13.914042006945238,
+      "max_ms": 20.974416998797096,
+      "observed_peak_extra_tensor_bytes": 25372672
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 1,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 19.810417004919145,
+      "min_ms": 18.52712499385234,
+      "max_ms": 26.778499988722615,
+      "observed_peak_extra_tensor_bytes": 48360448
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 111.63706250226824,
+      "min_ms": 108.97070801001973,
+      "max_ms": 149.31604199227877,
+      "observed_peak_extra_tensor_bytes": 46137344
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 165.22297949995846,
+      "min_ms": 161.11675000865944,
+      "max_ms": 180.7880840060534,
+      "observed_peak_extra_tensor_bytes": 2295891968
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 834.786957995675,
+      "min_ms": 819.5680419885321,
+      "max_ms": 851.8042500072625,
+      "observed_peak_extra_tensor_bytes": 161480704
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "encoder",
+      "queries": 22323,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 597.9327085005934,
+      "min_ms": 571.0567500063917,
+      "max_ms": 692.0953750086483,
+      "observed_peak_extra_tensor_bytes": 2445117440
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "metal",
+      "median_ms": 4.568645999825094,
+      "min_ms": 4.469334002351388,
+      "max_ms": 5.2680829976452515,
+      "observed_peak_extra_tensor_bytes": 1867776
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward",
+      "backend": "grid_sample",
+      "median_ms": 10.39074999425793,
+      "min_ms": 9.816667006816715,
+      "max_ms": 11.56266700127162,
+      "observed_peak_extra_tensor_bytes": 93462528
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "metal",
+      "median_ms": 30.63491699140286,
+      "min_ms": 29.93229200365022,
+      "max_ms": 33.10395800508559,
+      "observed_peak_extra_tensor_bytes": 50794496
+    },
+    {
+      "image": [
+        800,
+        1344
+      ],
+      "batch": 2,
+      "stage": "decoder",
+      "queries": 900,
+      "mode": "forward_backward",
+      "backend": "grid_sample",
+      "median_ms": 33.413478995498735,
+      "min_ms": 32.02708301250823,
+      "max_ms": 35.668583994265646,
+      "observed_peak_extra_tensor_bytes": 143050752
+    }
+  ]
+}

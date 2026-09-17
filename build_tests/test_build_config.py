@@ -38,9 +38,34 @@ class BuildConfigTest(unittest.TestCase):
             (dict(FORCE_CPU="1", FORCE_CUDA="1"), "cannot both"),
             (dict(FORCE_CUDA="1"), "CUDA-enabled PyTorch"),
             (dict(USE_NINJA="bad"), "USE_NINJA"),
+            (dict(FORCE_MPS="bad"), "FORCE_MPS"),
+            (dict(FORCE_CPU="1", FORCE_MPS="1"), "cannot be combined"),
+            (dict(FORCE_CUDA="1", FORCE_MPS="1"), "cannot be combined"),
         ):
             with self.subTest(env=env), self.assertRaisesRegex(RuntimeError, message):
                 load(**env)
+
+    def test_mps_build_policy(self):
+        for platform_name, arch, built, expected in (
+            ("darwin", "arm64", True, True),
+            ("darwin", "x86_64", True, False),
+            ("darwin", "arm64", False, False),
+            ("linux", "arm64", True, False),
+        ):
+            with (
+                patch("sys.platform", platform_name),
+                patch("platform.machine", return_value=arch),
+                patch("platform.mac_ver", return_value=("14.0", (), "")),
+                patch("torch.backends.mps.is_built", return_value=built),
+            ):
+                ns = load()
+                self.assertEqual(ns["with_mps"], expected)
+                self.assertEqual("csrc/mps/ms_deform_attn_mps.mm" in ns["sources"], expected)
+                self.assertFalse(load(FORCE_CPU="1")["with_mps"])
+                self.assertFalse(load(FORCE_MPS="0")["with_mps"])
+                if not expected:
+                    with self.assertRaisesRegex(RuntimeError, "FORCE_MPS requires"):
+                        load(FORCE_MPS="1")
 
     def test_architecture(self):
         ns = load(FORCE_CPU="1")

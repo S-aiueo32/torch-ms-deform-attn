@@ -23,12 +23,36 @@ existing environment with your chosen PyTorch version.
 
 The compiler needs C++17 through PyTorch 2.12 and C++20 from 2.13;
 `BuildExtension` selects the standard. CPU builds need neither the CUDA toolkit
-nor torchvision. MPS is unsupported.
+nor torchvision. Apple Silicon MPS is available from the current checkout.
 
 Check the [support matrix](support.md) before choosing versions: the dependency
 range is broader than the tested combinations. PyTorch 2.4.0 requires the current
 checkout; see [Install from a checkout](#install-from-a-checkout). For repository
 work, the development lock uses PyTorch 2.5.1.
+
+## Apple Silicon MPS
+
+MPS support is available from the current checkout, not the published `0.1.0rc2`.
+Use Apple Silicon, macOS 13.3+, Python 3.10+, PyTorch >=2.4,<3, and Xcode Command
+Line Tools. Install the extension against your chosen PyTorch:
+
+```bash
+python -m pip install 'torch>=2.4,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
+python -m pip install --no-build-isolation .
+python -c 'import torch; from torch_ms_deform_attn import _C; print(_C.with_mps, torch.backends.mps.is_available())'
+```
+
+On supported macOS builds MPS is enabled automatically, even if the build process
+cannot access the GPU. `FORCE_MPS=1` requires MPS build support; `FORCE_MPS=0`
+disables it. `FORCE_CPU=1` disables both MPS and CUDA. Combining `FORCE_MPS=1`
+with `FORCE_CPU=1` or `FORCE_CUDA=1` is an error. `_C.with_mps` describes the
+extension build; `torch.backends.mps.is_available()` describes runtime availability.
+
+Metal source is embedded in the extension and compiled on first use. No offline
+Metal compiler or separate shader files are needed at runtime. CPU functionality
+remains available. Rebuild after changing PyTorch; both Ninja and distutils builds
+are supported. See [MPS API constraints](api.md#mps-constraints-and-errors) for dtype,
+autocast, synchronization, and gradient limitations.
 
 ## Install from PyPI
 

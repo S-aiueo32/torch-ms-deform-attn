@@ -7,6 +7,7 @@ from torch import Tensor
 
 cpu_parallel_backend: str
 with_cuda: bool
+with_mps: bool
 
 def ms_deform_attn_forward(
     value: Float[Tensor, "N S M D"],

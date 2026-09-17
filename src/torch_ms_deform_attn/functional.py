@@ -18,6 +18,7 @@ import torch.nn.functional as F
 
 from ._ops import forward as _forward
 
+_MPS_AUTOCAST_AVAILABLE = torch.amp.autocast_mode.is_autocast_available("mps")
 if TYPE_CHECKING:
     from jaxtyping import Float, Int64
 
@@ -77,7 +78,7 @@ def ms_deform_attn(
     attention_weights: Float[torch.Tensor, "N Q M L P"],
     im2col_step: int = 64,
 ) -> Float[torch.Tensor, "N Q M*D"]:
-    """Multi-scale deformable attention on CPU or CUDA, with first-order autograd.
+    """Multi-scale deformable attention on CPU, CUDA, or MPS, with first-order autograd.
 
     Args:
         value: [N, S, M, D], float16, bfloat16, float32, or float64.
@@ -85,9 +86,10 @@ def ms_deform_attn(
         level_start_index: [L] int64, each level's offset in S.
         sampling_locations: [N, Q, M, L, P, 2], normalized (x, y).
         attention_weights: [N, Q, M, L, P], same dtype as value.
-        im2col_step: Maximum CUDA batch chunk size; CPU does not chunk by it.
+        im2col_step: Maximum CUDA batch chunk size; CPU/MPS do not chunk by it.
 
-    All inputs must be on the same CPU or CUDA device. Samples use bilinear interpolation with zero
+    All inputs must be on the same device. MPS excludes float64 and empty dimensions.
+    Samples use bilinear interpolation with zero
     padding and align_corners=False. Weights are used as supplied, without
     normalization. Returns [N, Q, M * D]. Explicit low-precision inputs are computed
     in float32 and returned in the input dtype; under autocast the output stays float32.
@@ -96,7 +98,10 @@ def ms_deform_attn(
     # Keep interpolation and gradient accumulation in float32 under AMP.
     # Casting here (outside the opaque operator) preserves gradients to low-precision inputs.
     device_type = value.device.type
-    if device_type in ("cpu", "cuda") and torch.is_autocast_enabled(device_type):
+    autocast_supported = device_type in ("cpu", "cuda") or (
+        device_type == "mps" and _MPS_AUTOCAST_AVAILABLE
+    )
+    if autocast_supported and torch.is_autocast_enabled(device_type):
         value, sampling_locations, attention_weights = (
             t.float() if t.dtype in (torch.float16, torch.bfloat16) else t
             for t in (value, sampling_locations, attention_weights)
@@ -110,7 +115,7 @@ def ms_deform_attn(
                 attention_weights,
                 im2col_step,
             )
-    if device_type in ("cpu", "cuda") and value.dtype in (torch.float16, torch.bfloat16):
+    if device_type in ("cpu", "cuda", "mps") and value.dtype in (torch.float16, torch.bfloat16):
         if sampling_locations.dtype != value.dtype or attention_weights.dtype != value.dtype:
             raise RuntimeError("Floating input dtypes must match outside autocast")
         return _forward(

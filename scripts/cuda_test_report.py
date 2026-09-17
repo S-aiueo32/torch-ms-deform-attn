@@ -18,7 +18,10 @@ ALLOWED_SKIPS = {
 
 def unexpected_skips(skipped):
     return [
-        (test.id(), reason) for test, reason in skipped if ALLOWED_SKIPS.get(test.id()) != reason
+        (test.id(), reason)
+        for test, reason in skipped
+        if ALLOWED_SKIPS.get(test.id()) != reason
+        and not (test.id().startswith("test_mps.MPSTest.") and reason == "Requires Metal GPU/build")
     ]
 
 

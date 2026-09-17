@@ -1,13 +1,55 @@
 # Kernel Hub / Transformers integration evidence
 
-Recorded on 2026-09-17. **CUDA E2E is partially validated; the full Phase 1/2
-regression gates have not passed.**
+Updated on 2026-09-18. **The full Phase 1/2 L4 regression gate passed at
+`2ae90ab38a26c8ca9223d811f19a4532c7f5010c`: Phase 1 3/3, RT-DETR 20/20.**
 
-The latest full run at `2e7cdb5` passed Phase 1 and 19/20 RT-DETR cases on L4.
-BF16 autocast compiled training still fails its gradient comparison, so the
-full Phase 2 gate remains open. Earlier focused passes do not override this run.
+## Full regression with pinned integration dependencies
 
-## Full regression after native dispatcher changes
+[Run 35275929141](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35275929141)
+used Kernel Builder 0.16.1, kernels 0.16.2, Transformers 5.17.0 and
+PyTorch 2.10.0+cu126 on NVIDIA L4. It built the actual native CMake artifact,
+loaded it through Kernel Hub, and compared against the pinned HF artifact at
+`abfd4042216fa4f84c9c5c4e3e844a3143c70ad5`.
+
+| Precision | Eager inference | Eager training | Inductor inference | Inductor training |
+| --- | --- | --- | --- | --- |
+| FP32 | Pass | Pass | Pass | Pass |
+| FP16 | Pass | Pass | Pass | Pass |
+| BF16 | Pass | Pass | Pass | Pass |
+| FP16 autocast | Pass | Pass | Pass | Pass |
+| BF16 autocast | Pass | Pass | Pass | Pass |
+
+The BF16 AMP compiled-training case checked 241 gradient tensors, observed
+native forward/backward calls, and captured two MSDA calls in its graphs.
+The previously failing `model.decoder.layers.0.self_attn.o_proj.bias` gradient
+matches compiled HF exactly in this run. Numerical tolerances and CUDA
+arithmetic are unchanged. The earlier failure below remains part of the record:
+it did not recur in this full run or the direct diagnostics, but its cause has
+not been isolated. The dependency update alone is not evidence of its cause.
+
+The [suite summary](run-35275929141/kernel-hub-summary.json),
+[source manifest](run-35275929141/UPSTREAM.json),
+[BF16 AMP report](run-35275929141/e2e-bf16-amp.json), and
+[replay fixture and graphs](run-35275929141/e2e-bf16-amp-debug.tar.gz)
+preserve the tested configuration. All precision reports, native artifact
+hashes, package versions and logs are archived alongside them.
+[Pod deletion](run-35275929141/runpod-state.json) was verified.
+
+The evidence verifier passes:
+
+```bash
+python scripts/verify_kernel_hub.py \
+  --sha 2ae90ab38a26c8ca9223d811f19a4532c7f5010c \
+  --evidence docs/validation/kernel-hub/run-35275929141
+```
+
+Local checks passed all 20 CPU fixture cases (five tests), 55 controller/evidence
+tests, and Ruff. This establishes the documented synthetic RT-DETR contract
+under the recorded compiler/reference adaptations. Reproducible Nix distribution
+builds, broader PyTorch/GPU coverage, pretrained accuracy and HF adoption remain
+separate gates.
+
+## Earlier full regression after native dispatcher changes
 
 [Run 35233588181](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35233588181)
 tested `2e7cdb5d36922b82f97b2f9b0155752c2a1b9efa` with the harness corrections
@@ -46,7 +88,7 @@ do not isolate its cause or prove it harmless. Subsequent
 outputs and backward results, including a rebuild with the failed run's exact
 namespace. The discrepancy did not recur: forward inputs/outputs matched
 exactly and native value-gradient differences were at most `7.45e-9`. This does
-not establish why the formal run failed. A fresh full run is still required;
+not establish why that formal run failed. The fresh full run above passed;
 the runner now archives BF16 AMP fixtures and graphs for exact replay.
 Nix distribution validation and HF adoption remain
 separate, uncompleted gates.

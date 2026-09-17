@@ -94,11 +94,12 @@ native FP16/BF16 gradient differences were traced to precision policy, with the
 candidate closer to an independent FP64 oracle and exactly matching HF under
 FP32 computation. The [Phase 2 RT-DETR runner](e2e/README.md)
 initially passed 14/20 CUDA E2E cases, followed by passing focused rechecks.
-After the native dispatcher changes, the full run at `2e7cdb5` passed Phase 1
-and 19/20 E2E cases; BF16 autocast compiled training still fails a gradient
-comparison. Earlier focused passes do not close this remaining regression.
-The full regression gates, wider PyTorch coverage and reproducible Nix build
-remain open. [Phase 3 measurements](../docs/validation/kernel-hub-benchmarks/README.md)
+After the native dispatcher changes and harness corrections, the full run at
+`2ae90ab` passed all three Phase 1 tests and all 20 E2E cases, including BF16
+autocast compiled training. The preceding 19/20 run remains archived; its BF16
+discrepancy did not recur, but its cause has not been isolated. Wider PyTorch
+coverage and a reproducible Nix build remain open.
+[Phase 3 measurements](../docs/validation/kernel-hub-benchmarks/README.md)
 cover six implementations on L4. The subsequent
 [performance investigation](../docs/validation/kernel-hub-performance/README.md)
 led to shared native autograd, guarded int32 CUDA indexing, and optional CUDA

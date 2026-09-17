@@ -1,0 +1,37 @@
+{
+  "source_sha": "2ae90ab38a26c8ca9223d811f19a4532c7f5010c",
+  "baseline_revision": "abfd4042216fa4f84c9c5c4e3e844a3143c70ad5",
+  "builder": "hf-kernel-builder 0.16.1 create-pyproject + CMake local_install",
+  "torch": "2.10.0+cu126",
+  "cuda": "12.6",
+  "gpu": "NVIDIA L4",
+  "status": "passed",
+  "focus_compile": false,
+  "phase1_only": false,
+  "runs": [
+    {
+      "name": "phase1",
+      "exit_code": 0
+    },
+    {
+      "name": "e2e-fp32",
+      "exit_code": 0
+    },
+    {
+      "name": "e2e-fp16",
+      "exit_code": 0
+    },
+    {
+      "name": "e2e-bf16",
+      "exit_code": 0
+    },
+    {
+      "name": "e2e-fp16-amp",
+      "exit_code": 0
+    },
+    {
+      "name": "e2e-bf16-amp",
+      "exit_code": 0
+    }
+  ]
+}

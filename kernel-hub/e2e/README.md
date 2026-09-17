@@ -167,10 +167,11 @@ decorator code; the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for
 compilation checks.
 
 The [L4 evidence](../../docs/validation/kernel-hub/README.md) records a full
-post-dispatcher run at `2e7cdb5`: Phase 1 passed and 19/20 RT-DETR cases passed.
-BF16 autocast compiled training still fails a bias-gradient comparison against
-compiled HF, so the full regression gate remains open. The earlier 14/20 run
-and passing focused rechecks are retained as historical evidence. Native
+post-dispatcher run at `2ae90ab`: Phase 1 passed 3/3 and RT-DETR passed 20/20,
+including BF16 autocast compiled training against compiled HF. The preceding
+19/20 run's BF16 gradient discrepancy did not recur; its cause remains
+unisolated. That failure, the earlier 14/20 run, and focused rechecks are retained
+as historical evidence. Native
 FP16/BF16 operator differences were traced to precision policy; the validation
 record documents FP64 accuracy checks and the FP32-compute comparison contract.
 Pretrained model

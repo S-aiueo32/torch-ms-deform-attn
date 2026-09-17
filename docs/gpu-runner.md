@@ -130,6 +130,36 @@ the archived source SHA. `cpu-tests.json` records the separate CPU-only suite;
 mean the corresponding validation phase was not reached, even when wheels were
 downloaded or built successfully. Preserve failed attempts as well as successes.
 
+## Kernel Hub and Transformers workload
+
+The same controller can build the experimental Kernel Hub distribution and run
+its operator tests plus RT-DETR E2E checks:
+
+```bash
+gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn \
+  --ref feat/kernel-hub-transformers-e2e \
+  --field workload=kernel-hub --field operation=test \
+  --field torch_version=2.14.0 --field sanitizer=none \
+  --field gpu='NVIDIA L4' --field max_hourly_usd=0.50 \
+  --field timeout_minutes=60
+```
+
+Here `torch_version` selects the CUDA 12.6 container; the workload installs its
+own pinned PyTorch 2.10.0 / torchvision 0.25.0 environment. It requires one GPU,
+no sanitizer, and no benchmark or support-matrix options. The local controller
+equivalent is `--workload kernel-hub --torch-version 2.14.0`.
+
+`scripts/run_kernel_hub_checks.sh` uses the official kernel-builder 0.16.0 local
+development build (`create-pyproject`, then `setup.py build_kernel`). This is a
+real native adapter build and loader run, but not a Nix release build or proof
+of distribution portability. Builder artifacts are not uploaded to HF.
+
+The existing HF kernel revision is pinned in that script. Collected artifacts
+include source and binary hashes, builder metadata, individual test logs/E2E
+JSON reports, the overall `kernel-hub-summary.json`, and `runpod-state.json`.
+Require all requested runs to pass and the Pod state to be `deleted`. These
+results do not replace core CUDA release-validation evidence.
+
 ## Cleanup and costs
 
 The controller deletes the Pod in a `finally` block, handles cancellation signals,

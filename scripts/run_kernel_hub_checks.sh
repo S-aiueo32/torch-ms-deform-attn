@@ -24,8 +24,6 @@ python -c 'import torch; assert torch.cuda.is_available(); assert torch.version.
 
 # Official kernel-builder local development route: generate CMake/setup.py,
 # then build_kernel. This tests real builder glue without claiming Nix portability.
-apt-get update -qq
-apt-get install -y --no-install-recommends build-essential pkg-config libssl-dev curl git ca-certificates
 curl --fail --location --proto '=https' https://sh.rustup.rs -o "$msda_work/rustup.sh"
 sh "$msda_work/rustup.sh" -y --profile minimal --default-toolchain 1.94.0 --no-modify-path
 export PATH="$HOME/.cargo/bin:$PATH"

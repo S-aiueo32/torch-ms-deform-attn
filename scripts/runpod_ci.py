@@ -586,6 +586,7 @@ def run(api, args):
             CI_SSH_PUBLIC_KEY=public,
             CI_SSH_HOST_KEY_B64=host_private,
             CI_MAX_SECONDS=str(args.timeout_minutes * 60),
+            CI_WORKLOAD=getattr(args, "workload", "core"),
         ),
     }
     ssh = None

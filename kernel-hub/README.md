@@ -23,6 +23,9 @@ substitution fails the export. The manifest records HEAD and hashes of the
 actual source files, including any uncommitted changes. Export refuses to
 overwrite an existing directory.
 
+For a source archive without `.git`, pass `--revision FULL_SOURCE_SHA`; the
+Runpod controller supplies the exact commit it archived.
+
 Keep generated files out of upstream version control. Sync downstream by
 regenerating from a reviewed upstream revision; do not edit generated kernels.
 Changes found downstream should be applied upstream before the next export.

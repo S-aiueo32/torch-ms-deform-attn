@@ -23,6 +23,9 @@ the run; other unrelated HF kernels are left on their original implementations.
 
 ## Run on a CUDA host
 
+The repository's [Runpod workload](../../docs/gpu-runner.md#kernel-hub-and-transformers-workload)
+automates building, testing, artifact collection, and verified Pod deletion.
+
 First complete the Phase 1 builder run. `--kernel-dir` must refer to a local
 Kernel Builder artifact or repository containing a compatible `build/` variant,
 not the unbuilt export. Install the host's matching PyTorch/torchvision builds,

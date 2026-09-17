@@ -23,6 +23,42 @@ def inputs(spec, dtype=torch.float32):
 
 @unittest.skipUnless(torch.cuda.is_available() and _C.with_cuda, "Requires CUDA extension and GPU")
 class CUDAGraphTest(unittest.TestCase):
+    def test_metadata_modes_graph_capture(self):
+        stream = torch.cuda.Stream()
+        stream.wait_stream(torch.cuda.current_stream())
+        for check, dtype in itertools.product(
+            (False, True), (torch.float32, torch.float16, torch.bfloat16)
+        ):
+            with self.subTest(check=check, dtype=dtype), torch.cuda.stream(stream):
+                args = inputs((3, 5, 2, 4, 3, ((2, 3), (2, 2))), dtype)
+                differentiable = (args[0], args[3], args[4])
+
+                def run():
+                    output = ms_deform_attn(*args, 2, check_cuda_metadata=check)
+                    gradients = torch.autograd.grad(output.sum(), differentiable)
+                    return output, gradients
+
+                for _ in range(3):
+                    run()
+                stream.synchronize()
+                graph = torch.cuda.CUDAGraph()
+                with torch.cuda.graph(graph, stream=stream):
+                    actual, actual_grads = run()
+                graph.replay()
+                expected = ms_deform_attn_core_pytorch(
+                    args[0].float(), ((2, 3), (2, 2)), args[3].float(), args[4].float()
+                ).to(dtype)
+                expected_grads = torch.autograd.grad(expected.sum(), differentiable)
+                tolerance = (
+                    dict(atol=2e-4, rtol=1e-4)
+                    if dtype == torch.float32
+                    else dict(atol=0.02, rtol=0.02)
+                )
+                torch.testing.assert_close(actual, expected, **tolerance)
+                for actual_grad, expected_grad in zip(actual_grads, expected_grads):
+                    torch.testing.assert_close(actual_grad, expected_grad, **tolerance)
+        stream.synchronize()
+
     def test_opcheck(self):
         for dtype, noncontiguous, mask in itertools.product(
             (torch.float32, torch.float64),

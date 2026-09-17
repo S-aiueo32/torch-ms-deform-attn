@@ -71,7 +71,8 @@ at::Tensor ms_deform_attn_cuda_forward(const at::Tensor &value,
                                        const at::Tensor &level_start_index,
                                        const at::Tensor &sampling_loc,
                                        const at::Tensor &attn_weight,
-                                       const int im2col_step) {
+                                       const int im2col_step,
+                                       const bool check_cuda_metadata) {
   const auto indexing = check_inputs(value, spatial_shapes, level_start_index,
                                      sampling_loc, attn_weight, im2col_step);
   const c10::cuda::CUDAGuard device_guard(value.device());
@@ -87,6 +88,7 @@ at::Tensor ms_deform_attn_cuda_forward(const at::Tensor &value,
   const int num_point = sampling_loc.size(4);
 
   const int im2col_step_ = static_cast<int>(indexing[0]);
+  const bool use_int32 = indexing[6] != 0;
 
   // Every output element is assigned by the forward kernel.
   auto output =
@@ -111,7 +113,8 @@ at::Tensor ms_deform_attn_cuda_forward(const at::Tensor &value,
               attn_weight.data_ptr<scalar_t>() +
                   int64_t(n) * per_attn_weight_size,
               batch_n, spatial_size, num_heads, channels, num_levels, num_query,
-              num_point, columns.data_ptr<scalar_t>());
+              num_point, columns.data_ptr<scalar_t>(), use_int32,
+              check_cuda_metadata);
         }));
   }
 
@@ -124,7 +127,7 @@ std::vector<at::Tensor> ms_deform_attn_cuda_backward(
     const at::Tensor &value, const at::Tensor &spatial_shapes,
     const at::Tensor &level_start_index, const at::Tensor &sampling_loc,
     const at::Tensor &attn_weight, const at::Tensor &grad_output,
-    const int im2col_step) {
+    const int im2col_step, const bool check_cuda_metadata) {
   const auto indexing = check_inputs(value, spatial_shapes, level_start_index,
                                      sampling_loc, attn_weight, im2col_step);
   TORCH_CHECK(grad_output.device() == value.device() &&
@@ -151,6 +154,7 @@ std::vector<at::Tensor> ms_deform_attn_cuda_backward(
   const int num_point = sampling_loc.size(4);
 
   const int im2col_step_ = static_cast<int>(indexing[0]);
+  const bool use_int32 = indexing[6] != 0;
 
   auto grad_value = at::zeros_like(value);
   auto grad_sampling_loc = at::zeros_like(sampling_loc);
@@ -182,7 +186,8 @@ std::vector<at::Tensor> ms_deform_attn_cuda_backward(
               grad_sampling_loc.data_ptr<scalar_t>() +
                   int64_t(n) * per_sample_loc_size,
               grad_attn_weight.data_ptr<scalar_t>() +
-                  int64_t(n) * per_attn_weight_size);
+                  int64_t(n) * per_attn_weight_size,
+              use_int32, check_cuda_metadata);
         }));
   }
 

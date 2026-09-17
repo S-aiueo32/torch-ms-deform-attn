@@ -77,6 +77,8 @@ def ms_deform_attn(
     sampling_locations: Float[torch.Tensor, "N Q M L P 2"],
     attention_weights: Float[torch.Tensor, "N Q M L P"],
     im2col_step: int = 64,
+    *,
+    check_cuda_metadata: bool = False,
 ) -> Float[torch.Tensor, "N Q M*D"]:
     """Multi-scale deformable attention on CPU, CUDA, or MPS, with first-order autograd.
 
@@ -87,13 +89,18 @@ def ms_deform_attn(
         sampling_locations: [N, Q, M, L, P, 2], normalized (x, y).
         attention_weights: [N, Q, M, L, P], same dtype as value.
         im2col_step: Maximum CUDA batch chunk size; CPU/MPS do not chunk by it.
+        check_cuda_metadata: Validate CUDA spatial shapes and offsets on device
+            in forward and backward. Defaults to False; CPU/MPS always validate.
 
     All inputs must be on the same device. MPS excludes float64 and empty dimensions.
     Samples use bilinear interpolation with zero
     padding and align_corners=False. Weights are used as supplied, without
     normalization. Returns [N, Q, M * D]. Explicit low-precision inputs are computed
     in float32 and returned in the input dtype; under autocast the output stays float32.
-    Higher-order gradients are unsupported.
+    Each level requires positive height/width, a nonnegative start, and
+    start + height * width <= S. CUDA trusts these contents unless
+    check_cuda_metadata=True; invalid contents can cause incorrect results or
+    illegal memory accesses. Higher-order gradients are unsupported.
     """
     # Keep interpolation and gradient accumulation in float32 under AMP.
     # Casting here (outside the opaque operator) preserves gradients to low-precision inputs.
@@ -114,6 +121,7 @@ def ms_deform_attn(
                 sampling_locations,
                 attention_weights,
                 im2col_step,
+                check_cuda_metadata,
             )
     if device_type in ("cpu", "cuda", "mps") and value.dtype in (torch.float16, torch.bfloat16):
         if sampling_locations.dtype != value.dtype or attention_weights.dtype != value.dtype:
@@ -125,7 +133,14 @@ def ms_deform_attn(
             sampling_locations.float(),
             attention_weights.float(),
             im2col_step,
+            check_cuda_metadata,
         ).to(value.dtype)
     return _forward(
-        value, spatial_shapes, level_start_index, sampling_locations, attention_weights, im2col_step
+        value,
+        spatial_shapes,
+        level_start_index,
+        sampling_locations,
+        attention_weights,
+        im2col_step,
+        check_cuda_metadata,
     )

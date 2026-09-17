@@ -16,6 +16,7 @@
 
 #include "csrc/ms_deform_attn_cpu.h"
 #include "cuda/index_utils.h"
+#include "dispatcher.h"
 #ifdef WITH_MPS
 #include "mps/ms_deform_attn_mps.h"
 #endif
@@ -25,7 +26,7 @@
 
 at::Tensor forward(const at::Tensor &value, const at::Tensor &shapes,
                    const at::Tensor &starts, const at::Tensor &loc,
-                   const at::Tensor &weights, int step) {
+                   const at::Tensor &weights, int step, bool check_cuda_metadata) {
   if (value.is_mps()) {
 #ifdef WITH_MPS
     return ms_deform_attn_mps_forward(value, shapes, starts, loc, weights,
@@ -38,7 +39,7 @@ at::Tensor forward(const at::Tensor &value, const at::Tensor &shapes,
   if (value.is_cuda()) {
 #ifdef WITH_CUDA
     return ms_deform_attn_cuda_forward(value, shapes, starts, loc, weights,
-                                       step);
+                                       step, check_cuda_metadata);
 #else
     TORCH_CHECK(
         false,
@@ -51,7 +52,8 @@ at::Tensor forward(const at::Tensor &value, const at::Tensor &shapes,
 std::vector<at::Tensor>
 backward(const at::Tensor &value, const at::Tensor &shapes,
          const at::Tensor &starts, const at::Tensor &loc,
-         const at::Tensor &weights, const at::Tensor &grad, int step) {
+         const at::Tensor &weights, const at::Tensor &grad, int step,
+         bool check_cuda_metadata) {
   if (value.is_mps()) {
 #ifdef WITH_MPS
     return ms_deform_attn_mps_backward(value, shapes, starts, loc, weights,
@@ -64,7 +66,7 @@ backward(const at::Tensor &value, const at::Tensor &shapes,
   if (value.is_cuda()) {
 #ifdef WITH_CUDA
     return ms_deform_attn_cuda_backward(value, shapes, starts, loc, weights,
-                                        grad, step);
+                                        grad, step, check_cuda_metadata);
 #else
     TORCH_CHECK(
         false,
@@ -75,9 +77,19 @@ backward(const at::Tensor &value, const at::Tensor &shapes,
                                      step);
 }
 
+TORCH_LIBRARY(torch_ms_deform_attn, ops) {
+  ms_deform_attn::register_dispatcher(ops, &forward, &backward);
+}
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-  m.def("ms_deform_attn_forward", &forward);
-  m.def("ms_deform_attn_backward", &backward);
+  m.def("ms_deform_attn_forward", &forward, pybind11::arg("value"),
+        pybind11::arg("shapes"), pybind11::arg("starts"), pybind11::arg("loc"),
+        pybind11::arg("weights"), pybind11::arg("step"),
+        pybind11::arg("check_cuda_metadata") = false);
+  m.def("ms_deform_attn_backward", &backward, pybind11::arg("value"),
+        pybind11::arg("shapes"), pybind11::arg("starts"), pybind11::arg("loc"),
+        pybind11::arg("weights"), pybind11::arg("grad"), pybind11::arg("step"),
+        pybind11::arg("check_cuda_metadata") = false);
   m.attr("cpu_parallel_backend") = ms_deform_attn_cpu_parallel_backend();
   m.def("_cpu_parallel_worker_count",
         &ms_deform_attn_cpu_parallel_worker_count);

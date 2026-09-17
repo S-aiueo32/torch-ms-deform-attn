@@ -9,15 +9,36 @@ from .functional import ms_deform_attn
 
 # Preserve the HF entry points, including explicit FP16/BF16 calls.
 def ms_deform_attn_forward(
-    value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step
+    value,
+    spatial_shapes,
+    level_start_index,
+    sampling_loc,
+    attn_weight,
+    im2col_step,
+    *,
+    check_cuda_metadata=False,
 ):
     return ms_deform_attn(
-        value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step
+        value,
+        spatial_shapes,
+        level_start_index,
+        sampling_loc,
+        attn_weight,
+        im2col_step,
+        check_cuda_metadata=check_cuda_metadata,
     )
 
 
 def ms_deform_attn_backward(
-    value, spatial_shapes, level_start_index, sampling_loc, attn_weight, grad_output, im2col_step
+    value,
+    spatial_shapes,
+    level_start_index,
+    sampling_loc,
+    attn_weight,
+    grad_output,
+    im2col_step,
+    *,
+    check_cuda_metadata=False,
 ):
     dtype = value.dtype
     low_precision = dtype in (torch.float16, torch.bfloat16)
@@ -37,6 +58,7 @@ def ms_deform_attn_backward(
         attn_weight,
         grad_output,
         im2col_step,
+        check_cuda_metadata,
     )
     return [gradient.to(dtype) if low_precision else gradient for gradient in gradients]
 

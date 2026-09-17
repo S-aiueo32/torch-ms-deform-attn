@@ -13,6 +13,8 @@ BACKENDS = (
     "mmcv-source",
     "msda-triton-rziga",
     "pytorch-reference",
+    "upstream-native-control",
+    "upstream-before-perf",
 )
 
 
@@ -44,6 +46,15 @@ def summarize(report):
                         "incremental_peak_bytes",
                     )
                 },
+                **(
+                    {
+                        "profiled_cuda_activity_ms": statistics.median(
+                            row["profiled_cuda_activity_ms"] for row in rows
+                        )
+                    }
+                    if all("profiled_cuda_activity_ms" in row for row in rows)
+                    else {}
+                ),
             }
         )
     lookup = {
@@ -51,9 +62,30 @@ def summarize(report):
         for row in results
     }
     comparisons = []
+    previous_comparisons = []
     for row in results:
         if row["backend"] not in BACKENDS[:2]:
             continue
+        prefix = tuple(row[key] for key in ("case", "dtype", "policy", "mode"))
+        previous = lookup.get((*prefix, "upstream-before-perf"))
+        if previous is not None:
+            previous_repeats = {
+                item["repeat"]: item["wall_ms"]
+                for item in grouped[(*prefix, "upstream-before-perf")]
+            }
+            previous_comparisons.append(
+                {
+                    **row,
+                    "previous_wall_ms": previous["wall_ms"],
+                    "latency_ratio_to_previous": row["wall_ms"] / previous["wall_ms"],
+                    "repetition_ratios": [
+                        item["wall_ms"] / previous_repeats[item["repeat"]]
+                        for item in sorted(
+                            grouped[(*prefix, row["backend"])], key=lambda item: item["repeat"]
+                        )
+                    ],
+                }
+            )
         baseline = lookup.get((row["case"], row["dtype"], row["policy"], row["mode"], "hf-native"))
         if baseline is None:
             continue
@@ -72,6 +104,7 @@ def summarize(report):
     return {
         "results": results,
         "hf_comparisons": comparisons,
+        "previous_upstream_comparisons": previous_comparisons,
         "excluded": excluded,
         "setup_errors": report.get("setup_errors", {}),
         "note": "Flags require a fresh-process repeat before confirming regression.",
@@ -131,7 +164,7 @@ def markdown(summary):
     lines.extend(
         [
             "",
-            "Missing entries are not zero latency. Consult the JSON for incorrect/unsupported cases.",
+            "Missing entries are not zero latency. Consult the JSON for unselected, incorrect or unsupported cases.",
             "The JSON also retains IQRs, event intervals, HF ratios and investigation flags.",
             "",
         ]

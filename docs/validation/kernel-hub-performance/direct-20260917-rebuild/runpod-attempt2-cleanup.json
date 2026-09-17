@@ -1,0 +1,12 @@
+{
+  "owner": {
+    "CI_REPOSITORY": "S-aiueo32/torch-ms-deform-attn",
+    "CI_REPOSITORY_ID": "1365078845",
+    "CI_RUN_ID": "202609170018",
+    "CI_ATTEMPT": "2"
+  },
+  "created_at": "2026-09-17T12:58:28.927973+00:00",
+  "phase": "deleted",
+  "pod_id": "0tdspkp1czh4tz",
+  "source_sha": "2d604d2d9e2871ce2dc957278bbdae211e4b3fa8"
+}

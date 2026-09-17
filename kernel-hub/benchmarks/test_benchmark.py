@@ -58,9 +58,10 @@ class QualificationTest(unittest.TestCase):
                 "--output",
                 str(root / "result.json"),
                 "--repeats",
-                "1",
+                "2",
                 "--warmup",
                 "1",
+                "--native-control",
             ]
             frontend = types.ModuleType("msda_triton.frontend")
             frontend.triton_multiscale_deformable_attention = triton
@@ -104,9 +105,21 @@ class QualificationTest(unittest.TestCase):
                 contextlib.redirect_stdout(io.StringIO()),
             ):
                 self.assertEqual(benchmark.main(), 0)
+                argv[argv.index("--output") + 1] = str(root / "focused.json")
+                argv.extend(
+                    ["--backends", "torch-ms-deform-attn", "hf-native", "upstream-native-control"]
+                )
+                with patch.object(benchmark, "load_mmcv", side_effect=RuntimeError("unavailable")):
+                    self.assertEqual(benchmark.main(), 0)
+                focused = json.loads((root / "focused.json").read_text())
+                self.assertEqual(
+                    {r["backend"] for r in focused["results"]},
+                    {"torch-ms-deform-attn", "hf-native", "upstream-native-control"},
+                )
             report = json.loads((root / "result.json").read_text())
             qualified = [r for r in report["results"] if r["policy"] == "fp32-compute"]
-            self.assertEqual(len(qualified), 6 * 3 * 3)
+            self.assertEqual(len(qualified), 7 * 3 * 3 * 2)
+            self.assertEqual({r["repeat"] for r in qualified}, {0, 1})
             self.assertTrue(all(r["status"] == "passed" for r in qualified))
             self.assertTrue(
                 all("wall_ms" not in r for r in report["results"] if r["status"] != "passed")

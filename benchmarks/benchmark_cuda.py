@@ -56,12 +56,15 @@ def measure(run, args):
             for event in profile.events()
             if event.device_type == torch.autograd.DeviceType.CUDA
         ]
-        if not durations:
-            raise RuntimeError("Profiler returned no CUDA activities")
-        kernel["profiled_cuda_activity_ms"] = sum(durations) / 1000
+        if durations:
+            kernel["profiled_cuda_activity_ms"] = sum(durations) / 1000
+        else:
+            kernel["profile_warning"] = "Profiler returned no CUDA activities"
     return dict(
         wall_ms=wall.median * 1000,
         wall_iqr_ms=wall.iqr * 1000,
+        wall_sample_count=len(wall.raw_times),
+        wall_calls_per_sample=wall.number_per_run,
         event_interval_ms=statistics.median(events),
         event_interval_iqr_ms=quartiles[2] - quartiles[0],
         baseline_allocated_bytes=baseline,

@@ -1,0 +1,17 @@
+{
+  "source_sha": "4a818a3ffd6d2dbff7bd1c6d740d39ef0037503c",
+  "baseline_revision": "abfd4042216fa4f84c9c5c4e3e844a3143c70ad5",
+  "builder": "hf-kernel-builder 0.16.0 create-pyproject + CMake local_install",
+  "torch": "2.10.0+cu126",
+  "cuda": "12.6",
+  "gpu": "NVIDIA L4",
+  "status": "passed",
+  "focus_compile": false,
+  "phase1_only": true,
+  "runs": [
+    {
+      "name": "phase1",
+      "exit_code": 0
+    }
+  ]
+}

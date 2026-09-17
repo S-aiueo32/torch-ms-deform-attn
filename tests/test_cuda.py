@@ -1,5 +1,6 @@
 """CUDA regression tests; skipped unless a CUDA build and GPU are available."""
 
+import itertools
 import os
 import subprocess
 import sys
@@ -30,7 +31,7 @@ class CUDAAttentionTest(SamplingCases, unittest.TestCase):
         return value, shapes, starts, locations, weights
 
     def test_reference_forward_backward(self):
-        for dtype in (torch.float32, torch.float64):
+        for dtype, check in itertools.product((torch.float32, torch.float64), (False, True)):
             # Cover each specialized, generic, and multi-block reduction family.
             for index, channels in enumerate(
                 (
@@ -59,11 +60,13 @@ class CUDAAttentionTest(SamplingCases, unittest.TestCase):
                     2049,
                 )
             ):
-                with self.subTest(dtype=dtype, channels=channels):
+                with self.subTest(dtype=dtype, channels=channels, check=check):
                     # Rotate batch=1, remainder chunks, and step larger than batch.
                     batch, step = ((1, 1), (3, 2), (2, 64))[index % 3]
                     value, shapes, starts, loc, weights = self.inputs(dtype, channels, batch=batch)
-                    actual = ms_deform_attn(value, shapes, starts, loc, weights, step)
+                    actual = ms_deform_attn(
+                        value, shapes, starts, loc, weights, step, check_cuda_metadata=check
+                    )
                     expected = ms_deform_attn_core_pytorch(value, shapes, loc, weights)
                     # float32 reductions accumulate up to 2049 channels, and value
                     # gradients use atomics; double should retain double accuracy.
@@ -94,14 +97,16 @@ class CUDAAttentionTest(SamplingCases, unittest.TestCase):
         for dtype in (torch.float16, torch.bfloat16):
             if dtype == torch.bfloat16 and not torch.cuda.is_bf16_supported():
                 continue
-            for compile in (False, True):
-                with self.subTest(dtype=dtype, compile=compile):
+            for compile, check in itertools.product((False, True), (False, True)):
+                with self.subTest(dtype=dtype, compile=compile, check=check):
                     value, shapes, starts, loc, weights = self.inputs(dtype=dtype, batch=3)
                     loc = loc.detach().float().requires_grad_()
 
                     def run(v, s, i, locations, w):
                         with torch.autocast("cuda", dtype=dtype):
-                            return ms_deform_attn(v, s, i, locations, w, 2)
+                            return ms_deform_attn(
+                                v, s, i, locations, w, 2, check_cuda_metadata=check
+                            )
 
                     fn = torch.compile(run, fullgraph=True) if compile else run
                     actual = fn(value, shapes, starts, loc, weights)
@@ -118,9 +123,9 @@ class CUDAAttentionTest(SamplingCases, unittest.TestCase):
 
     def test_compile_dynamic(self):
         fn = torch.compile(ms_deform_attn, fullgraph=True, dynamic=True)
-        for batch in (3, 5):
+        for batch, check in itertools.product((3, 5), (False, True)):
             args = self.inputs(dtype=torch.float32, batch=batch)
-            actual = fn(*args, 2)
+            actual = fn(*args, 2, check_cuda_metadata=check)
             expected = ms_deform_attn_core_pytorch(args[0], args[1], args[3], args[4])
             torch.testing.assert_close(actual, expected)
             for a, e in zip(
@@ -182,20 +187,39 @@ class CUDAAttentionTest(SamplingCases, unittest.TestCase):
         # Device assertions invalidate the CUDA context; isolate each case.
         # Exercise the guard in each backward reduction family as well.
         cases = (
-            ([0, 1], 0, 2),
-            ([1, 1], -1, 3),
-            ([1, 1], 1, 64),
-            ([2**32 + 1, 1], 0, 71),
-            ([1, 2**63 - 1], 0, 1025),
-            ([1, 1], 2**32, 2048),
+            # (height/width, start, channels, value spatial size)
+            ([0, 1], 0, 2, 1),
+            ([1, 0], 0, 16, 1),
+            ([1, 1], -1, 3, 1),
+            ([1, 1], 1, 64, 1),
+            ([2**32 + 1, 1], 0, 71, 1),
+            ([1, 2**32 + 1], 0, 128, 1),
+            ([1, 2**63 - 1], 0, 1025, 1),
+            ([2**63 - 1, 1], 0, 32, 1),
+            ([1, 1], 2**32, 2048, 1),
+            ([-(2**63), 1], 0, 1, 1),
+            ([1, -(2**63)], 0, 3, 1),
+            ([1, 1], -(2**63), 64, 1),
+            ([1, 1], 2**63 - 1, 2048, 1),
+            # Each dimension is in range, but the area or end offset is not.
+            ([2, 2], 0, 32, 3),
+            ([2, 2], 1, 71, 4),
+            # A narrowed 32-bit area product would wrap to zero and pass.
+            ([65536, 65536], 0, 2, 65536),
         )
-        for shape, start, channels in cases:
+        for shape, start, channels, spatial_size in cases:
             for backward in (False, True):
-                with self.subTest(shape=shape, start=start, backward=backward):
+                with self.subTest(
+                    shape=shape,
+                    start=start,
+                    channels=channels,
+                    spatial_size=spatial_size,
+                    backward=backward,
+                ):
                     code = textwrap.dedent(f"""
                         import torch
                         from torch_ms_deform_attn import _C
-                        value = torch.ones(1, 1, 1, {channels}, device="cuda")
+                        value = torch.ones(1, {spatial_size}, 1, {channels}, device="cuda")
                         shapes = torch.tensor([{shape!r}], device="cuda")
                         starts = torch.tensor([{start!r}], device="cuda")
                         loc = torch.full((1, 1, 1, 1, 1, 2), 0.5, device="cuda")
@@ -203,9 +227,9 @@ class CUDAAttentionTest(SamplingCases, unittest.TestCase):
                         args = (value, shapes, starts, loc, weight)
                         try:
                             if {backward!r}:
-                                _C.ms_deform_attn_backward(*args, torch.ones(1, 1, {channels}, device="cuda"), 1)
+                                _C.ms_deform_attn_backward(*args, torch.ones(1, 1, {channels}, device="cuda"), 1, True)
                             else:
-                                _C.ms_deform_attn_forward(*args, 1)
+                                _C.ms_deform_attn_forward(*args, 1, True)
                             torch.cuda.synchronize()
                         except RuntimeError as error:
                             if "device-side assert" in str(error):

@@ -31,7 +31,7 @@ def export(destination, revision=None):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(transform(data.decode()).encode() if transform else data)
 
-    for name in ("LICENSE", "NOTICE"):
+    for name in ("LICENSE", "NOTICE", "csrc/dispatcher.h"):
         write(name)
     for source in sorted((ROOT / "csrc/cuda").glob("*")):
         if source.is_file():

@@ -138,7 +138,7 @@ def main():
     hf = get_kernel(
         "kernels-community/deformable-detr", revision=os.environ["MSDA_HF_BASELINE_REVISION"]
     )
-    local = get_local_kernel(os.environ["MSDA_KERNEL_DIR"])
+    local = get_local_kernel(Path(os.environ["MSDA_KERNEL_DIR"]))
     report["hf_revision"] = os.environ["MSDA_HF_BASELINE_REVISION"]
     backends = {
         "torch-ms-deform-attn": ms_deform_attn,

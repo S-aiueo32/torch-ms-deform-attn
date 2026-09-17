@@ -17,7 +17,7 @@ Run through the existing ownership-aware Runpod controller:
 gh workflow run cuda.yml --ref feat/kernel-hub-benchmarks \
   -f workload=kernel-hub -f kernel_hub_suite=benchmark \
   -f torch_version=2.8.0 -f gpu='NVIDIA L4' \
-  -f max_hourly_usd=0.50 -f timeout_minutes=45
+  -f max_hourly_usd=0.50 -f capacity_wait_minutes=15 -f timeout_minutes=45
 ```
 
 The container selector above supplies CUDA 12.6; the workload pins PyTorch
@@ -25,6 +25,10 @@ The container selector above supplies CUDA 12.6; the workload pins PyTorch
 downloads and Builder configuration run before GPU rental. Compilation, Triton
 JIT and warmup are excluded from measurement; the Pod is deleted on completion
 or failure. This suite runs operator benchmarks, not the Phase 2 model matrix.
+Capacity waiting polls the selected GPU every 30 seconds without creating a
+Pod and consumes the overall timeout. Price/authentication errors are not
+retried. `gpu-startup.json` records whitelisted readiness observations without
+Pod environment or SSH credentials if a created host fails to become ready.
 
 ## Comparison contract
 

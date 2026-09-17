@@ -156,6 +156,9 @@ For operator correctness and precision diagnostics without the model matrix,
 use `--field kernel_hub_suite=phase1` (controller: `--kernel-hub-suite phase1`).
 `phase1-numerics.json` records both raw native-HF differences and errors against
 an independent FP64 grid-sample reference.
+For the [Phase 3 operator comparison](../kernel-hub/benchmarks/README.md), use
+`--field kernel_hub_suite=benchmark`. This produces `benchmark-kernel-hub.json`
+and a pinned competitor source manifest; it does not run the model matrix.
 The summary records whether this focused subset was selected; it cannot be used
 as evidence that the full matrix passed.
 

@@ -63,6 +63,11 @@ the [measurement report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/
 
 ## GPU benchmarks
 
+The [Phase 3 Kernel Hub comparison](../kernel-hub/benchmarks/README.md) adds
+pinned HF, MMCV-source, and Triton competitors alongside the canonical package,
+its HF adapter, and the PyTorch reference. It separates native low-precision
+arithmetic from FP32-compute comparisons and records correctness before timing.
+
 ### Run GPU benchmarks
 
 Requires a visible CUDA GPU and a [CUDA-enabled extension](installation.md#select-cpu-or-cuda):

@@ -155,9 +155,11 @@ Set `MSDA_CPU_FIXTURE_REPORT` to a JSON output path to record passing matrix
 cases. A complete fixture matrix has 20 passing cases; use the test exit status
 as well as the count. Optional validation dependencies require Python 3.11+.
 
-Transformers 5.17.0 requires `0.16.0 <= kernels < 0.17.0`, hence the explicit
-pin. PyTorch 2.5.1 failed full-graph inference in Transformers' decorator code;
-the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for compilation checks.
+Transformers 5.17.0 requires `0.16.0 <= kernels < 0.17.0`. The environment pins
+kernels 0.16.2, the latest compatible patch release, together with matching
+kernels-data 0.16.2. PyTorch 2.5.1 failed full-graph inference in Transformers'
+decorator code; the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for
+compilation checks.
 
 The [L4 evidence](../../docs/validation/kernel-hub/README.md) records a full
 post-dispatcher run at `2e7cdb5`: Phase 1 passed and 19/20 RT-DETR cases passed.

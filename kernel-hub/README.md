@@ -46,10 +46,11 @@ Changes found downstream should be applied upstream before the next export.
 - No CPU/MPS dispatch is registered in the HF native binding. The CPU test
   shim described below is only a test fixture.
 
-The configuration is validated with builder 0.16.0. `flake.nix` currently follows
-the builder's main branch: generate and retain `flake.lock` before validating a
-publishable Nix build. The recorded L4 run uses the pinned builder's local CMake
-development route with PyTorch 2.10.0 and CUDA 12.6.
+The configuration is validated with builder 0.16.1. `flake.nix` pins the same
+released builder line; generate and retain `flake.lock` before validating a
+publishable Nix build. The recorded L4 evidence predates this patch-level update
+and used builder 0.16.0's local CMake development route with PyTorch 2.10.0 and
+CUDA 12.6.
 
 ## Validation
 

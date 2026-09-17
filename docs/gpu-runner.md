@@ -168,7 +168,7 @@ environment variables or temporary credentials.
 The summary records whether this focused subset was selected; it cannot be used
 as evidence that the full matrix passed.
 
-`scripts/run_kernel_hub_checks.sh` uses the official kernel-builder 0.16.0 local
+`scripts/run_kernel_hub_checks.sh` uses the official kernel-builder 0.16.1 local
 development build (`create-pyproject`, then CMake build and `local_install`).
 The workflow caches the pinned builder on the CPU runner and generates the
 project before renting a GPU. `--prepared-kernel` transfers that generated tree

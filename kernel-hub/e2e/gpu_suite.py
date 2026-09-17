@@ -18,7 +18,7 @@ def main():
     if os.environ.get("LOCAL_KERNELS"):
         raise RuntimeError("Baseline resolution must not use local overrides")
     baseline_module = get_kernel("kernels-community/deformable-detr", revision=revision)
-    baseline = Path(baseline_module.__file__).resolve().parent
+    baseline = Path(baseline_module.__file__).parent.resolve()
     module = get_local_kernel(candidate)
     if not hasattr(module, "_registrations"):
         raise RuntimeError("Builder output is not the upstream adapter")

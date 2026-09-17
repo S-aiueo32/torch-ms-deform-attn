@@ -145,7 +145,9 @@ def run_model(model, pixels, labels, *, training, amp_dtype=None, execute=None):
 
 
 def artifact_hashes(module):
-    directory = Path(module.__file__).resolve().parent
+    # HF snapshot files are symlinks into a shared blobs directory. Preserve
+    # their containing snapshot directory when finding sibling package files.
+    directory = Path(module.__file__).parent.resolve()
     return {
         path.relative_to(directory).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(directory.rglob("*"))
@@ -359,8 +361,8 @@ def main():
         report["gpu"] = torch.cuda.get_device_name()
         for training in (False, True):
             for backend in (None, "inductor"):
-                report["cases"].append(
-                    run_case(
+                try:
+                    case = run_case(
                         args.kernel_dir,
                         training=training,
                         backend=backend,
@@ -368,7 +370,17 @@ def main():
                         amp=args.autocast,
                         baseline_kernel_dir=args.baseline_kernel_dir,
                     )
-                )
+                except Exception:
+                    case = {
+                        "training": training,
+                        "compile_backend": backend,
+                        "error": traceback.format_exc(),
+                    }
+                report["cases"].append(case)
+                args.report.parent.mkdir(parents=True, exist_ok=True)
+                args.report.write_text(json.dumps(report, indent=2) + "\n")
+        if any("error" in case for case in report["cases"]):
+            raise RuntimeError("E2E cases failed; inspect per-case errors in the report")
         report["status"] = "passed"
     except Exception:
         report["error"] = traceback.format_exc()

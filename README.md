@@ -31,26 +31,33 @@ examples, verification, and rebuilding after changing PyTorch.
 
 ## Support matrix
 
-Validated Linux x86_64 combinations are listed below. Python versions are shown
-separately for CPU and CUDA because the tested environments differ.
+Tested combinations on Linux x86_64. **✅ Verified · ➖ Unverified**
 
-| PyTorch | CPU: Python / backend | CUDA runtime: Python / toolkit |
-| --- | --- | --- |
-| 2.4.0 | 3.10 / serial; 3.11 / OpenMP | 3.11 / CUDA 12.4 |
-| 2.5.0 | 3.10 / serial | — |
-| 2.5.1 | 3.11 / OpenMP | 3.11 / CUDA 12.4 |
-| 2.7.1 | 3.12 / OpenMP | 3.11 / CUDA 12.6 |
-| 2.8.0 | 3.12 / OpenMP | 3.11 / CUDA 12.6 |
-| 2.9.1 | 3.12 / OpenMP | — |
-| 2.10.0 | 3.12 / OpenMP | — |
-| 2.11.0 | 3.12 / OpenMP | — |
-| 2.12.1 | 3.12 / OpenMP | — |
-| 2.13.0 | 3.12 / OpenMP | — |
-| 2.14.0 | 3.12 / OpenMP | 3.12 / CUDA 12.6 |
+| PyTorch | Python | CPU | CUDA |
+| --- | --- | :---: | :---: |
+| 2.4.0 | 3.10 | ✅ | ➖ |
+| 2.4.0 | 3.11 | ✅ | ✅ |
+| 2.5.0 | 3.10 | ✅ | ➖ |
+| 2.5.1 | 3.11 | ✅ | ✅ |
+| 2.7.1 | 3.11 | ✅ | ✅ |
+| 2.7.1 | 3.12 | ✅ | ➖ |
+| 2.8.0 | 3.11 | ✅ | ✅ |
+| 2.8.0 | 3.12 | ✅ | ➖ |
+| 2.9.1 | 3.12 | ✅ | ➖ |
+| 2.10.0 | 3.12 | ✅ | ➖ |
+| 2.11.0 | 3.12 | ✅ | ➖ |
+| 2.12.1 | 3.12 | ✅ | ➖ |
+| 2.13.0 | 3.12 | ✅ | ➖ |
+| 2.14.0 | 3.12 | ✅ | ✅ |
 
-**— means unverified.** Other Python/PyTorch combinations, CUDA toolkits,
-macOS and Windows are best effort. The dependency range permits more versions
-than this tested matrix. MPS is unsupported.
+CUDA validation selects a CUDA build from
+[PyTorch's official version-specific builds](https://pytorch.org/get-started/previous-versions/)
+and uses a matching toolkit. Each ✅ covers that tested pair; exact CUDA versions
+are recorded in the [detailed matrix](docs/installation.md#prerequisites).
+
+Other Python/PyTorch combinations, CUDA toolkits, macOS and Windows are best
+effort. The dependency range permits more versions than this tested matrix.
+MPS is unsupported.
 
 The 2.4.0 and 2.8–2.14 rows describe current-source validation; the published
 `0.1.0rc2` requires PyTorch >=2.5. Results are tied to specific source revisions:

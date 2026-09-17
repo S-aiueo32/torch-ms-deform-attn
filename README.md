@@ -33,33 +33,46 @@ examples, verification, and rebuilding after changing PyTorch.
 
 Tested combinations on Linux x86_64. **✅ Verified · ➖ Unverified**
 
-| PyTorch | Python | CPU | CUDA |
-| --- | --- | :---: | :---: |
-| 2.4.0 | 3.10 | ✅ | ➖ |
-| 2.4.0 | 3.11 | ✅ | ✅ |
-| 2.5.0 | 3.10 | ✅ | ➖ |
-| 2.5.1 | 3.11 | ✅ | ✅ |
-| 2.7.1 | 3.11 | ✅ | ✅ |
-| 2.7.1 | 3.12 | ✅ | ➖ |
-| 2.8.0 | 3.11 | ✅ | ✅ |
-| 2.8.0 | 3.12 | ✅ | ➖ |
-| 2.9.1 | 3.12 | ✅ | ➖ |
-| 2.10.0 | 3.12 | ✅ | ➖ |
-| 2.11.0 | 3.12 | ✅ | ➖ |
-| 2.12.1 | 3.12 | ✅ | ➖ |
-| 2.13.0 | 3.12 | ✅ | ➖ |
-| 2.14.0 | 3.12 | ✅ | ✅ |
+### CPU
+
+| PyTorch | Tested Python | Status |
+| --- | --- | :---: |
+| 2.4.0 | 3.10, 3.11 | ✅ |
+| 2.5.0 | 3.10 | ✅ |
+| 2.5.1 | 3.11 | ✅ |
+| 2.7.1 | 3.11, 3.12 | ✅ |
+| 2.8.0 | 3.11, 3.12 | ✅ |
+| 2.9.1 | 3.12 | ✅ |
+| 2.10.0 | 3.12 | ✅ |
+| 2.11.0 | 3.12 | ✅ |
+| 2.12.1 | 3.12 | ✅ |
+| 2.13.0 | 3.12 | ✅ |
+| 2.14.0 | 3.12 | ✅ |
+
+### GPU (CUDA)
+
+| PyTorch | Tested Python | Status |
+| --- | --- | :---: |
+| 2.4.0 | 3.11 | ✅ |
+| 2.5.1 | 3.11 | ✅ |
+| 2.7.1 | 3.11 | ✅ |
+| 2.8.0 | 3.11 | ✅ |
+| 2.14.0 | 3.12 | ✅ |
+
+➖ Other GPU combinations, including PyTorch 2.9–2.13, are unverified.
 
 CUDA validation selects a CUDA build from
 [PyTorch's official version-specific builds](https://pytorch.org/get-started/previous-versions/)
 and uses a matching toolkit. Each ✅ covers that tested pair; exact CUDA versions
 are recorded in the [detailed matrix](docs/installation.md#prerequisites).
 
+### Scope
+
 Other Python/PyTorch combinations, CUDA toolkits, macOS and Windows are best
 effort. The dependency range permits more versions than this tested matrix.
 MPS is unsupported.
 
-The 2.4.0 and 2.8–2.14 rows describe current-source validation; the published
+The 2.4.0 and 2.8–2.14 entries describe current-source validation; the published
 `0.1.0rc2` requires PyTorch >=2.5. Results are tied to specific source revisions:
 see the [2.4.0 evidence](docs/validation/2026-09-17-pytorch240/README.md),
 [2.8–2.14 evidence](docs/validation/2026-09-17-newer-pytorch/README.md), and

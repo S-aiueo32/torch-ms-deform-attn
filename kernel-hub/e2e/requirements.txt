@@ -1,5 +1,5 @@
 transformers==5.17.0
-kernels==0.16.0
+kernels==0.16.2
 kernels-data==0.16.2
 scipy==1.17.1
 # Install the host's matching torch/torchvision pair separately.

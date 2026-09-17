@@ -79,13 +79,13 @@ jobs:
         if: inputs.operation == 'test' && inputs.workload == 'kernel-hub'
         with:
           path: ~/.cargo/bin/kernel-builder
-          key: kernel-builder-0.16.0-ubuntu-x86_64
+          key: kernel-builder-0.16.1-ubuntu-x86_64
       - name: Validate Kernel Builder configuration before renting a GPU
         if: inputs.operation == 'test' && inputs.workload == 'kernel-hub'
         run: |
           if ! command -v kernel-builder; then
             rustup toolchain install 1.94.0 --profile minimal
-            cargo +1.94.0 install hf-kernel-builder --version 0.16.0 --locked
+            cargo +1.94.0 install hf-kernel-builder --version 0.16.1 --locked
           fi
           python3 kernel-hub/export.py "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
           kernel-builder create-pyproject "$RUNNER_TEMP/kernel-hub-preflight" --unique-id "$GITHUB_SHA"
@@ -96,7 +96,7 @@ jobs:
         if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && steps.builder-cache.outputs.cache-hit != 'true'
         with:
           path: ~/.cargo/bin/kernel-builder
-          key: kernel-builder-0.16.0-ubuntu-x86_64
+          key: kernel-builder-0.16.1-ubuntu-x86_64
       - name: Start Runpod GPU, test CUDA, and delete Pod
         if: inputs.operation == 'test'
         env:

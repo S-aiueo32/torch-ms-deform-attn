@@ -7,15 +7,17 @@ the upstream CPU extension importable.
 import hashlib
 import importlib.metadata
 import importlib.util
+import io
 import json
 import os
 import shutil
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
 
 import torch
-from rt_detr import align_proposals, run_case, run_model, tiny_model
+from rt_detr import align_proposals, run_case, run_model, save_debug_artifact, tiny_model
 
 from torch_ms_deform_attn import _C
 
@@ -23,6 +25,22 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class ProposalAlignmentTest(unittest.TestCase):
+    def test_debug_artifact_preserves_nested_fixture_and_graphs(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "case.tar.gz"
+            value = torch.arange(6.0, requires_grad=True).reshape(2, 3)
+            payload = {"pixels": value, "labels": [{"boxes": value * 2}], "graphs": ["graph"]}
+            save_debug_artifact(path, payload)
+            with tarfile.open(path) as archive:
+                self.assertEqual(archive.getnames(), ["case.pt"])
+                loaded = torch.load(
+                    io.BytesIO(archive.extractfile("case.pt").read()), weights_only=True
+                )
+            torch.testing.assert_close(loaded["pixels"], value)
+            torch.testing.assert_close(loaded["labels"][0]["boxes"], value * 2)
+            self.assertEqual(loaded["graphs"], ["graph"])
+            self.assertFalse(loaded["pixels"].requires_grad)
+
     def test_only_permutation_is_normalized(self):
         expected = {
             "proposals": torch.tensor([[[0.0, 1.0], [2.0, 3.0]]]),

@@ -1,0 +1,21 @@
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+  _warn_once(
+W0917 07:30:25.342000 8628 torch/_inductor/utils.py:1679] [0/0] Not enough SMs to use max_autotune_gemm mode
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/workspace/ci/source/kernel-hub/e2e/rt_detr.py", line 445, in <module>
+    main()
+  File "/workspace/ci/source/kernel-hub/e2e/rt_detr.py", line 434, in main
+    raise RuntimeError("E2E cases failed; inspect per-case errors in the report")
+RuntimeError: E2E cases failed; inspect per-case errors in the report

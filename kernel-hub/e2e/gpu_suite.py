@@ -76,7 +76,7 @@ def main():
             ("fp16", True),
             ("bf16", True),
         ):
-            if args.focus_compile and not (amp and dtype == "bf16"):
+            if args.focus_compile and not amp:
                 continue
             name = f"e2e-{dtype}" + ("-amp" if amp else "")
             command = [
@@ -95,9 +95,10 @@ def main():
             ]
             if amp:
                 command.append("--autocast")
+            if amp and dtype == "bf16":
+                command.append("--compile-reference")
             if args.focus_compile:
                 command.append("--compiled-training-only" if amp else "--compiled-only")
-                command.append("--compile-reference")
             runs.append((name, command))
             if args.diagnostic_controls and not amp and not args.focus_compile:
                 diagnostic = command.copy()

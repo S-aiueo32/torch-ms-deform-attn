@@ -1,0 +1,2989 @@
+{
+  "status": "failed",
+  "model": "RTDetrForObjectDetection",
+  "weights": "random seed 123",
+  "scope": "CUDA local Kernel Hub artifact; tiny full detector; no dataset accuracy claim",
+  "python": "3.11.16",
+  "torch": "2.10.0+cu126",
+  "versions": {
+    "transformers": "5.17.0",
+    "kernels": "0.16.0"
+  },
+  "kernel_dir": "/workspace/ci/kernel-hub.fZWWhEqq/candidate",
+  "cases": [
+    {
+      "training": true,
+      "compile_backend": "inductor",
+      "error": "Traceback (most recent call last):\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 428, in main\n    case = run_case(\n           ^^^^^^^^^\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 349, in run_case\n    torch.testing.assert_close(\n  File \"/workspace/ci/kernel-hub.fZWWhEqq/venv/lib/python3.11/site-packages/torch/testing/_comparison.py\", line 1600, in assert_close\n    raise error_metas[0].to_error(msg)\nAssertionError: logits: Tensor-likes are not close!\n\nMismatched elements: 6 / 60 (10.0%)\nGreatest absolute difference: 2.75537109375 at index (1, 4, 0) (up to 0.02 allowed)\nGreatest relative difference: 8.81556224822998 at index (1, 4, 1) (up to 0.05 allowed)\n",
+      "diagnostics": {
+        "candidate_vs_hf": {
+          "logits": {
+            "max_absolute_error": 2.75537109375,
+            "close": false
+          },
+          "boxes": {
+            "max_absolute_error": 0.8750143647193909,
+            "close": false
+          },
+          "proposals": {
+            "max_absolute_error": 5.41634464263916,
+            "close": false
+          },
+          "loss": {
+            "max_absolute_error": 0.001262664794921875,
+            "close": true
+          },
+          "input_grad": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.0.convolution.weight": {
+            "max_absolute_error": 5.4836273193359375e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.1.convolution.weight": {
+            "max_absolute_error": 3.2186508178710938e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.2.convolution.weight": {
+            "max_absolute_error": 6.496906280517578e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.shortcut.convolution.weight": {
+            "max_absolute_error": 3.0994415283203125e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 3.159046173095703e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 2.86102294921875e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 2.7418136596679688e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 4.0531158447265625e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 9.5367431640625e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 1.3113021850585938e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 6.556510925292969e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 4.172325134277344e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.0.weight": {
+            "max_absolute_error": 4.76837158203125e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.1.weight": {
+            "max_absolute_error": 6.2757753767073154e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.1.bias": {
+            "max_absolute_error": 2.5033950805664062e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.0.weight": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.1.weight": {
+            "max_absolute_error": 2.0171046344330534e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.1.bias": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.0.weight": {
+            "max_absolute_error": 2.6226043701171875e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.1.weight": {
+            "max_absolute_error": 1.7565034795552492e-05,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.1.bias": {
+            "max_absolute_error": 1.2576580047607422e-05,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.k_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.k_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.v_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.v_proj.bias": {
+            "max_absolute_error": 4.172325134277344e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.q_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.q_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.o_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.o_proj.bias": {
+            "max_absolute_error": 1.2576580047607422e-05,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn_layer_norm.weight": {
+            "max_absolute_error": 1.164057721325662e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn_layer_norm.bias": {
+            "max_absolute_error": 9.557976454743766e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc1.weight": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc1.bias": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc2.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc2.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.final_layer_norm.weight": {
+            "max_absolute_error": 2.142795665349695e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.final_layer_norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.conv.weight": {
+            "max_absolute_error": 9.5367431640625e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.norm.weight": {
+            "max_absolute_error": 3.129680408164859e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.norm.weight": {
+            "max_absolute_error": 6.516347639262676e-08,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.norm.bias": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.norm.weight": {
+            "max_absolute_error": 3.181133934049285e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.norm.weight": {
+            "max_absolute_error": 8.964161679614335e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 9.484836027695565e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 6.274909480907809e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 3.913953605660936e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 9.628067232370086e-10,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 2.0315837900852785e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 1.1561169799279014e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.norm.weight": {
+            "max_absolute_error": 1.870066625997424e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.norm.bias": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.conv.weight": {
+            "max_absolute_error": 3.814697265625e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.norm.weight": {
+            "max_absolute_error": 9.689480066299438e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.norm.bias": {
+            "max_absolute_error": 1.055002212524414e-05,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 7.550902125785797e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 4.372577677713707e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 6.924528861418366e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 3.635883331298828e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 3.217587618564721e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 3.635883331298828e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 1.379776222165674e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 1.049041748046875e-05,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 4.063292635692051e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 1.049041748046875e-05,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.norm.weight": {
+            "max_absolute_error": 2.111755748046562e-08,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.norm.bias": {
+            "max_absolute_error": 3.5762786865234375e-07,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.norm.weight": {
+            "max_absolute_error": 1.3563123957283096e-09,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.norm.weight": {
+            "max_absolute_error": 1.017006923120789e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.norm.weight": {
+            "max_absolute_error": 4.892854121862911e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.norm.bias": {
+            "max_absolute_error": 1.7285346984863281e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 1.82152604111252e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 6.677254305031965e-10,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 4.475680270843441e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 2.4437904357910156e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 5.120448065554228e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 2.4437904357910156e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 1.704891872122971e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 1.7285346984863281e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 2.0843046399932064e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 1.7285346984863281e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.norm.weight": {
+            "max_absolute_error": 1.8861129547076416e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.conv.weight": {
+            "max_absolute_error": 3.5762786865234375e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.norm.weight": {
+            "max_absolute_error": 7.70334736444056e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 4.984030965715647e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 2.0608581507985946e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 6.3374727687914856e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 7.152557373046875e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 6.535174179589376e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 7.152557373046875e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 2.8826891096400686e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 5.007063919038046e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-06,
+            "close": true
+          },
+          "grad:model.enc_output.0.weight": {
+            "max_absolute_error": 1.9073486328125e-06,
+            "close": true
+          },
+          "grad:model.enc_output.0.bias": {
+            "max_absolute_error": 0.0078125,
+            "close": true
+          },
+          "grad:model.enc_output.1.weight": {
+            "max_absolute_error": 6.927984941285104e-08,
+            "close": true
+          },
+          "grad:model.enc_output.1.bias": {
+            "max_absolute_error": 4.76837158203125e-06,
+            "close": true
+          },
+          "grad:model.enc_score_head.weight": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.enc_score_head.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.0.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.1.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.0.weight": {
+            "max_absolute_error": 3.814697265625e-06,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.1.weight": {
+            "max_absolute_error": 6.977468729019165e-06,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.1.bias": {
+            "max_absolute_error": 0.00025451183319091797,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.0.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.1.weight": {
+            "max_absolute_error": 1.5437035472132266e-07,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.1.bias": {
+            "max_absolute_error": 0.0001710653305053711,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.0.weight": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.1.weight": {
+            "max_absolute_error": 2.4960609152913094e-06,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.1.bias": {
+            "max_absolute_error": 0.0001430511474609375,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.k_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.k_proj.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.v_proj.weight": {
+            "max_absolute_error": 4.57763671875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.v_proj.bias": {
+            "max_absolute_error": 0.015625,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.q_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.q_proj.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.o_proj.weight": {
+            "max_absolute_error": 4.1961669921875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.o_proj.bias": {
+            "max_absolute_error": 0.171875,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0005796551704406738,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0006926506757736206,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.sampling_offsets.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.sampling_offsets.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.attention_weights.weight": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.attention_weights.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.value_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.value_proj.bias": {
+            "max_absolute_error": 0.00048828125,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.output_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.output_proj.bias": {
+            "max_absolute_error": 0.000732421875,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0005794167518615723,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn_layer_norm.bias": {
+            "max_absolute_error": 0.00044433772563934326,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc1.weight": {
+            "max_absolute_error": 7.2479248046875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc1.bias": {
+            "max_absolute_error": 2.574920654296875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc2.weight": {
+            "max_absolute_error": 6.103515625e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc2.bias": {
+            "max_absolute_error": 0.00048828125,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.final_layer_norm.weight": {
+            "max_absolute_error": 0.0009042471647262573,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.final_layer_norm.bias": {
+            "max_absolute_error": 0.0004987716674804688,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.k_proj.weight": {
+            "max_absolute_error": 6.556510925292969e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.k_proj.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.v_proj.weight": {
+            "max_absolute_error": 3.814697265625e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.v_proj.bias": {
+            "max_absolute_error": 2.288818359375e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.q_proj.weight": {
+            "max_absolute_error": 5.364418029785156e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.q_proj.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.o_proj.weight": {
+            "max_absolute_error": 2.09808349609375e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.o_proj.bias": {
+            "max_absolute_error": 0.00030517578125,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0006320923566818237,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0002815164625644684,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.sampling_offsets.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.sampling_offsets.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.attention_weights.weight": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.attention_weights.bias": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.value_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.value_proj.bias": {
+            "max_absolute_error": 0.00018310546875,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.output_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.output_proj.bias": {
+            "max_absolute_error": 0.000274658203125,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0006318986415863037,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn_layer_norm.bias": {
+            "max_absolute_error": 0.00028147920966148376,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc1.weight": {
+            "max_absolute_error": 5.626678466796875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc1.bias": {
+            "max_absolute_error": 1.9550323486328125e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc2.weight": {
+            "max_absolute_error": 3.0517578125e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc2.bias": {
+            "max_absolute_error": 0.00030517578125,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.final_layer_norm.weight": {
+            "max_absolute_error": 0.000912979245185852,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.final_layer_norm.bias": {
+            "max_absolute_error": 0.00030034780502319336,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.1.bias": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.0.weight": {
+            "max_absolute_error": 0.0009765625,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.0.bias": {
+            "max_absolute_error": 0.00030517578125,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.1.weight": {
+            "max_absolute_error": 0.00244140625,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.1.bias": {
+            "max_absolute_error": 0.00048828125,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.2.weight": {
+            "max_absolute_error": 3.337860107421875e-06,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.2.weight": {
+            "max_absolute_error": 3.814697265625e-06,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          }
+        },
+        "candidate_compiled_vs_eager": {
+          "logits": {
+            "max_absolute_error": 2.75537109375,
+            "close": false
+          },
+          "boxes": {
+            "max_absolute_error": 0.8750143647193909,
+            "close": false
+          },
+          "proposals": {
+            "max_absolute_error": 5.41634464263916,
+            "close": false
+          },
+          "loss": {
+            "max_absolute_error": 0.001262664794921875,
+            "close": true
+          },
+          "input_grad": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.0.convolution.weight": {
+            "max_absolute_error": 5.4836273193359375e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.1.convolution.weight": {
+            "max_absolute_error": 3.2186508178710938e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.2.convolution.weight": {
+            "max_absolute_error": 6.496906280517578e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.shortcut.convolution.weight": {
+            "max_absolute_error": 3.0994415283203125e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 3.159046173095703e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 2.86102294921875e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 2.7418136596679688e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 4.0531158447265625e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 9.5367431640625e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 1.3113021850585938e-06,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 6.556510925292969e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 4.172325134277344e-07,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.0.weight": {
+            "max_absolute_error": 4.76837158203125e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.1.weight": {
+            "max_absolute_error": 6.2757753767073154e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.1.bias": {
+            "max_absolute_error": 2.5033950805664062e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.0.weight": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.1.weight": {
+            "max_absolute_error": 2.0171046344330534e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.1.bias": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.0.weight": {
+            "max_absolute_error": 2.6226043701171875e-06,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.1.weight": {
+            "max_absolute_error": 1.7565034795552492e-05,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.1.bias": {
+            "max_absolute_error": 1.2576580047607422e-05,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.k_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.k_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.v_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.v_proj.bias": {
+            "max_absolute_error": 4.172325134277344e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.q_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.q_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.o_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.o_proj.bias": {
+            "max_absolute_error": 1.2576580047607422e-05,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn_layer_norm.weight": {
+            "max_absolute_error": 1.164057721325662e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn_layer_norm.bias": {
+            "max_absolute_error": 9.557976454743766e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc1.weight": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc1.bias": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc2.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc2.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.final_layer_norm.weight": {
+            "max_absolute_error": 2.142795665349695e-07,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.final_layer_norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.conv.weight": {
+            "max_absolute_error": 9.5367431640625e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.norm.weight": {
+            "max_absolute_error": 3.129680408164859e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.norm.weight": {
+            "max_absolute_error": 6.516347639262676e-08,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.norm.bias": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.norm.weight": {
+            "max_absolute_error": 3.181133934049285e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.norm.weight": {
+            "max_absolute_error": 8.964161679614335e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 9.484836027695565e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 6.274909480907809e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 3.913953605660936e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 9.628067232370086e-10,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 2.0315837900852785e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 1.1561169799279014e-09,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.norm.weight": {
+            "max_absolute_error": 1.870066625997424e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.norm.bias": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.conv.weight": {
+            "max_absolute_error": 3.814697265625e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.norm.weight": {
+            "max_absolute_error": 9.689480066299438e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.norm.bias": {
+            "max_absolute_error": 1.055002212524414e-05,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 7.550902125785797e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 4.372577677713707e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 1.0728836059570312e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 6.924528861418366e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 3.635883331298828e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 3.217587618564721e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 3.635883331298828e-06,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 1.379776222165674e-07,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 1.049041748046875e-05,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 4.063292635692051e-08,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 1.049041748046875e-05,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.norm.weight": {
+            "max_absolute_error": 2.111755748046562e-08,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.norm.bias": {
+            "max_absolute_error": 3.5762786865234375e-07,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.norm.weight": {
+            "max_absolute_error": 1.3563123957283096e-09,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.norm.weight": {
+            "max_absolute_error": 1.017006923120789e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.norm.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.norm.weight": {
+            "max_absolute_error": 4.892854121862911e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.norm.bias": {
+            "max_absolute_error": 1.7285346984863281e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 1.82152604111252e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 6.677254305031965e-10,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 4.475680270843441e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 2.4437904357910156e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 5.120448065554228e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 2.4437904357910156e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 1.704891872122971e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 1.7285346984863281e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 2.0843046399932064e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 1.7285346984863281e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.norm.weight": {
+            "max_absolute_error": 1.8861129547076416e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.conv.weight": {
+            "max_absolute_error": 3.5762786865234375e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.norm.weight": {
+            "max_absolute_error": 7.70334736444056e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 4.984030965715647e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 2.0608581507985946e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 6.3374727687914856e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 7.152557373046875e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 6.535174179589376e-09,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 7.152557373046875e-07,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 2.8826891096400686e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-06,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 5.007063919038046e-08,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 1.1920928955078125e-06,
+            "close": true
+          },
+          "grad:model.enc_output.0.weight": {
+            "max_absolute_error": 1.9073486328125e-06,
+            "close": true
+          },
+          "grad:model.enc_output.0.bias": {
+            "max_absolute_error": 0.0078125,
+            "close": true
+          },
+          "grad:model.enc_output.1.weight": {
+            "max_absolute_error": 6.927984941285104e-08,
+            "close": true
+          },
+          "grad:model.enc_output.1.bias": {
+            "max_absolute_error": 4.76837158203125e-06,
+            "close": true
+          },
+          "grad:model.enc_score_head.weight": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.enc_score_head.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.0.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.1.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.0.weight": {
+            "max_absolute_error": 3.814697265625e-06,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.1.weight": {
+            "max_absolute_error": 6.977468729019165e-06,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.1.bias": {
+            "max_absolute_error": 0.00025451183319091797,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.0.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.1.weight": {
+            "max_absolute_error": 1.5437035472132266e-07,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.1.bias": {
+            "max_absolute_error": 0.0001710653305053711,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.0.weight": {
+            "max_absolute_error": 4.76837158203125e-07,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.1.weight": {
+            "max_absolute_error": 2.4960609152913094e-06,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.1.bias": {
+            "max_absolute_error": 0.0001430511474609375,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.k_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.k_proj.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.v_proj.weight": {
+            "max_absolute_error": 4.57763671875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.v_proj.bias": {
+            "max_absolute_error": 0.015625,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.q_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.q_proj.bias": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.o_proj.weight": {
+            "max_absolute_error": 4.1961669921875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.o_proj.bias": {
+            "max_absolute_error": 0.171875,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0005796551704406738,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0006926506757736206,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.sampling_offsets.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.sampling_offsets.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.attention_weights.weight": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.attention_weights.bias": {
+            "max_absolute_error": 1.1920928955078125e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.value_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.value_proj.bias": {
+            "max_absolute_error": 0.00048828125,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.output_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.output_proj.bias": {
+            "max_absolute_error": 0.000732421875,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0005794167518615723,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn_layer_norm.bias": {
+            "max_absolute_error": 0.00044433772563934326,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc1.weight": {
+            "max_absolute_error": 7.2479248046875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc1.bias": {
+            "max_absolute_error": 2.574920654296875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc2.weight": {
+            "max_absolute_error": 6.103515625e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc2.bias": {
+            "max_absolute_error": 0.00048828125,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.final_layer_norm.weight": {
+            "max_absolute_error": 0.0009042471647262573,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.final_layer_norm.bias": {
+            "max_absolute_error": 0.0004987716674804688,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.k_proj.weight": {
+            "max_absolute_error": 6.556510925292969e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.k_proj.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.v_proj.weight": {
+            "max_absolute_error": 3.814697265625e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.v_proj.bias": {
+            "max_absolute_error": 2.288818359375e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.q_proj.weight": {
+            "max_absolute_error": 5.364418029785156e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.q_proj.bias": {
+            "max_absolute_error": 2.980232238769531e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.o_proj.weight": {
+            "max_absolute_error": 2.09808349609375e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.o_proj.bias": {
+            "max_absolute_error": 0.00030517578125,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0006320923566818237,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0002815164625644684,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.sampling_offsets.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.sampling_offsets.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.attention_weights.weight": {
+            "max_absolute_error": 2.384185791015625e-07,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.attention_weights.bias": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.value_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.value_proj.bias": {
+            "max_absolute_error": 0.00018310546875,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.output_proj.weight": {
+            "max_absolute_error": 5.960464477539063e-08,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.output_proj.bias": {
+            "max_absolute_error": 0.000274658203125,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0006318986415863037,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn_layer_norm.bias": {
+            "max_absolute_error": 0.00028147920966148376,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc1.weight": {
+            "max_absolute_error": 5.626678466796875e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc1.bias": {
+            "max_absolute_error": 1.9550323486328125e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc2.weight": {
+            "max_absolute_error": 3.0517578125e-05,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc2.bias": {
+            "max_absolute_error": 0.00030517578125,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.final_layer_norm.weight": {
+            "max_absolute_error": 0.000912979245185852,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.final_layer_norm.bias": {
+            "max_absolute_error": 0.00030034780502319336,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.1.bias": {
+            "max_absolute_error": 1.7881393432617188e-07,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.0.weight": {
+            "max_absolute_error": 0.0009765625,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.0.bias": {
+            "max_absolute_error": 0.00030517578125,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.1.weight": {
+            "max_absolute_error": 0.00244140625,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.1.bias": {
+            "max_absolute_error": 0.00048828125,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.2.weight": {
+            "max_absolute_error": 3.337860107421875e-06,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.2.weight": {
+            "max_absolute_error": 3.814697265625e-06,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          }
+        },
+        "candidate_eager_vs_hf": {
+          "logits": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "boxes": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "proposals": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "loss": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "input_grad": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.0.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.embedder.embedder.2.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.shortcut.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.0.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.1.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.2.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.shortcut.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.layer.0.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.backbone.model.encoder.stages.3.layers.0.layer.1.convolution.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.0.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.1.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder_input_proj.2.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.k_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.k_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.v_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.v_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.q_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.q_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.o_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn.o_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.self_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.mlp.fc2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.final_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.aifi.0.layers.0.final_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.0.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.lateral_convs.1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.0.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.fpn_blocks.1.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.0.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.downsample_convs.1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.0.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.0.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.1.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv1.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.conv.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.encoder.pan_blocks.1.bottlenecks.2.conv2.norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_output.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_output.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_output.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_output.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_score_head.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_score_head.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.enc_bbox_head.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.0.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.1.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder_input_proj.2.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.k_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.k_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.v_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.v_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.q_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.q_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.o_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn.o_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.self_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.sampling_offsets.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.sampling_offsets.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.attention_weights.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.attention_weights.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.value_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.value_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.output_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn.output_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.encoder_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.mlp.fc2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.final_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.0.final_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.k_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.k_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.v_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.v_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.q_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.q_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.o_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn.o_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.self_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.sampling_offsets.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.sampling_offsets.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.attention_weights.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.attention_weights.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.value_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.value_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.output_proj.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn.output_proj.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.encoder_attn_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.mlp.fc2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.final_layer_norm.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.layers.1.final_layer_norm.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.query_pos_head.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.class_embed.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.0.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.0.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.0.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.1.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.1.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.2.weight": {
+            "max_absolute_error": 0.0,
+            "close": true
+          },
+          "grad:model.decoder.bbox_embed.1.layers.2.bias": {
+            "max_absolute_error": 0.0,
+            "close": true
+          }
+        }
+      }
+    }
+  ],
+  "numerics": "controlled",
+  "harness_sha256": "66ffd8128d0a2bdd9b667c0d706ec5ceb5c6d49aae5c29699ab271e41d64ec94",
+  "math_policy": {
+    "tf32": false,
+    "sdpa": "math",
+    "pattern_matcher": false
+  },
+  "gpu": "NVIDIA L4",
+  "error": "Traceback (most recent call last):\n  File \"/workspace/ci/source/kernel-hub/e2e/rt_detr.py\", line 449, in main\n    raise RuntimeError(\"E2E cases failed; inspect per-case errors in the report\")\nRuntimeError: E2E cases failed; inspect per-case errors in the report\n"
+}

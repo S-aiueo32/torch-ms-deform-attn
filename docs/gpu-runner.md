@@ -149,6 +149,12 @@ own pinned PyTorch 2.10.0 / torchvision 0.25.0 environment. It requires one GPU,
 no sanitizer, and no benchmark or support-matrix options. The local controller
 equivalent is `--workload kernel-hub --torch-version 2.14.0`.
 
+The default `kernel_hub_suite=full` runs operator tests and the entire E2E matrix.
+For the two compiled AMP training regressions only, add
+`--field kernel_hub_suite=compile-amp` (controller: `--kernel-hub-suite compile-amp`).
+The summary records whether this focused subset was selected; it cannot be used
+as evidence that the full matrix passed.
+
 `scripts/run_kernel_hub_checks.sh` uses the official kernel-builder 0.16.0 local
 development build (`create-pyproject`, then CMake build and `local_install`).
 The workflow caches the pinned builder on the CPU runner and generates the

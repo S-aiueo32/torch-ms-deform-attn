@@ -35,7 +35,7 @@ then install the separately pinned integration dependencies:
 python -m pip install -r kernel-hub/e2e/requirements.txt
 python kernel-hub/e2e/rt_detr.py \
   --kernel-dir /path/to/built/kernel \
-  --dtype fp32 --report /path/to/results/fp32.json
+  --dtype fp32 --numerics controlled --report /path/to/results/fp32.json
 ```
 
 Each invocation runs eager/compiled inference and eager/compiled training.
@@ -98,13 +98,40 @@ explicit validation settings, not changes to the distributed kernel or to error
 tolerances. They may affect performance and should not be used silently in a
 benchmark.
 
+`--numerics controlled` additionally disables TF32 for convolution/matmul,
+selects the math SDPA backend for both models, and disables Inductor's pattern
+matcher. This pins more of the surrounding model's numerical policy while
+retaining the compiled model and native MSDA calls.
+
+The AOT backward assumption is `backward_pass_autocast="off"`, matching this
+runner's backward outside autocast. See the
+[PyTorch compiler autograd guidance](https://docs.pytorch.org/docs/main/user_guide/torch_compiler/torch.compiler_backward.html).
+
 Compiled reports additionally compare the candidate against its own eager
 execution and compare that eager result against HF. The `proposals` tensor
 records initial decoder reference points, upstream of MSDA, to reveal changes
 in proposal selection/order. All per-tensor differences survive failed cases.
 Use `--compiled-training-only` to reproduce training failures without rerunning
-the entire matrix. The Runpod workload runs the eager-numerics matrix plus
-default-numerics FP32/FP16/BF16 training controls on the same GPU.
+the entire matrix, or `--compiled-only` for both compiled inference/training.
+The full GPU suite uses `controlled` for FP32/AMP and `eager` for explicit
+FP16/BF16. Pass `--diagnostic-controls` to `gpu_suite.py` to additionally run
+default-numerics FP32/FP16/BF16 training controls. Controls can deliberately
+reproduce failures, so they are not enabled in normal validation.
+
+For BF16 AMP the suite also uses `--compile-reference`: the historical HF ops
+receive shape-only FakeTensor registrations so the reference model can run
+under the same compiler. Their CUDA arithmetic is unchanged. The report retains
+both sides' raw eager/compiled differences and the compiled-to-compiled result.
+This is an explicit reference adaptation, not a claim that the unmodified HF
+artifact supports compilation. `--compile-reference` is also available for
+other precisions when isolating replacement from compiler behavior.
+
+Top-k ties can reorder decoder queries. Output rows are matched using only their
+initial proposals, with `atol`/`rtol` capped at `1e-5` for the proposal-set check.
+Changed proposals fail; predictions are never used to choose a permutation.
+Loss and all gradient tensors are compared without any permutation or relaxed
+tolerance. Reports retain raw comparisons and the applied query permutation.
+This establishes proposal-matched detector parity, not identical output row order.
 
 ## Local CPU fixture tests
 
@@ -129,8 +156,8 @@ Transformers 5.17.0 requires `0.16.0 <= kernels < 0.17.0`, hence the explicit
 pin. PyTorch 2.5.1 failed full-graph inference in Transformers' decorator code;
 the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for compilation checks.
 
-The [L4 real-artifact run](../../docs/validation/kernel-hub/README.md) passed
-14/20 cases, including all eager inference/training modes. Compiled numerical
-differences and strict low-precision operator parity remain unresolved; the full
-regression gate has not passed. Pretrained model
+The [L4 evidence](../../docs/validation/kernel-hub/README.md) records the initial
+14/20 run and passing rechecks of its six compiled failures under the explicit
+policies above. A single final-revision full matrix has not been run, and strict
+low-precision operator parity remains open. Pretrained model
 accuracy, RF-DETR and PP-DocLayoutV2 remain separate follow-up coverage.

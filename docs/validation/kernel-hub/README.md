@@ -3,6 +3,13 @@
 Recorded on 2026-09-17. **CUDA E2E is partially validated; the full Phase 1/2
 regression gates have not passed.**
 
+The six initially failing compiled cases now have passing, source-bound
+rechecks under explicit numerical policies and query-identity comparison.
+BF16 AMP was also checked against a compiled HF reference. This is **not** a
+claim that default Inductor matches eager element-for-element, nor that a
+single final-revision full matrix has passed. The strict Phase 1 FP16 native
+gradient comparison remains open. See the investigation below for each change.
+
 ## NVIDIA L4 / real Kernel Hub artifacts
 
 [Run 35191748862](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35191748862)
@@ -33,12 +40,13 @@ contained MSDA in captured graphs.
 used explicit FP32 interpolation in the baseline MSDA layer; reports retain its
 original dtype error. They do not establish unmodified baseline AMP parity.*
 
-Unresolved differences, with the original tolerances retained:
+Differences recorded in the initial run, with the original tolerances retained:
 
 - FP32 compiled logits: maximum reported mismatch 0.0005014 in inference and
   0.0001178 in training (`atol=2e-5`, `rtol=2e-4`).
 - FP16 compiled training logits: reported mismatches up to 2.75. Proposal
-  ordering is a hypothesis to investigate, not an established cause.
+  ordering was initially a hypothesis; the investigation below distinguishes
+  changed proposals from a permutation of the same proposals.
 - BF16 compiled training gradients: reported mismatches up to 0.0525
   (`atol=0.02`, `rtol=0.05`).
 - Phase 1's published-HF direct operator comparison passed FP32/FP64 but failed
@@ -48,9 +56,9 @@ Unresolved differences, with the original tolerances retained:
   as did autocast and device/dtype validation.
 
 Compiled-candidate versus eager-baseline comparison does not isolate compiler
-numerics from kernel replacement. Next isolate candidate eager/compiled and
-baseline eager/compiled behavior, including proposal indices, before changing
-any tolerance. No pretrained dataset accuracy claim is made.
+numerics from kernel replacement. The investigation below isolates candidate
+eager/compiled and baseline eager/compiled behavior, including proposal identity,
+without changing tolerances. No pretrained dataset accuracy claim is made.
 
 Evidence: [suite summary](run-35191748862/kernel-hub-summary.json),
 [individual reports and logs](run-35191748862/),
@@ -60,6 +68,84 @@ Evidence: [suite summary](run-35191748862/kernel-hub-summary.json),
 [verified Pod deletion](run-35191748862/runpod-state.json).
 The overall run correctly failed. No Pod remains from this run.
 Earlier setup failures and fixes are recorded in [Runpod attempts](runpod-attempts.md).
+
+## Compiler-numerics investigation
+
+[Run 35193235122](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35193235122)
+at source `2cc2998` added comparisons against the candidate's own eager execution
+and recorded initial decoder proposals. The original tolerances were unchanged.
+The same failed tensors appeared when comparing compiled candidate to eager
+candidate as when comparing it to HF; eager candidate versus HF passed.
+
+With default compiler settings, explicit FP16 training changed proposals before
+MSDA (maximum difference 4.17578125), along with logits (2.451416015625).
+Inductor's `emulate_precision_casts` and `emulate_divison_rounding` settings
+removed the proposal difference and reduced the logit difference to 0.009765625,
+within the original tolerance. Explicit BF16 compiled training also passed;
+its candidate-versus-eager logits were identical and the maximum checked
+gradient difference was 0.00390625, within tolerance.
+
+The eager-numerics matrix passed 16/20. FP32 and AMP training still required
+investigation. FP16 AMP's proposal difference (5.41634464263916) also occurred
+upstream of MSDA. This identifies model/compiler numerics as a contributor;
+it is not evidence that all default-mode kernel replacements are equivalent.
+
+See [per-case diagnostics](run-35193235122/),
+[suite summary](run-35193235122/kernel-hub-summary.json), and
+[verified Pod deletion](run-35193235122/runpod-state.json).
+
+[Run 35195362147](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35195362147)
+at `a5b226c` fixed the math policy further: TF32 disabled, math SDPA selected,
+and Inductor pattern matching disabled. Both FP32 compiled cases passed with
+the original tolerances. Maximum checked absolute differences were
+`9.5367431640625e-07` in inference and `6.103515625e-05` in training (241
+parameter gradients checked). AMP training still failed. This combined control
+does not isolate which individual optimization caused the FP32 discrepancy.
+See [reports](run-35195362147/) and [Pod deletion](run-35195362147/runpod-state.json).
+
+[Run 35196661730](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35196661730)
+at `138e4fd` corrected AOT's backward autocast assumption and checked query
+identity by initial proposals. FP16 AMP passed: queries 4 and 5 in the second
+image had exchanged places, while the selected proposal set was unchanged.
+Only output rows were aligned; loss and all gradients passed unchanged.
+BF16 AMP still had the same gradient discrepancy, so changing the backward
+autocast assumption alone did not resolve that case.
+See [reports](run-35196661730/) and [Pod deletion](run-35196661730/runpod-state.json).
+
+[Run 35197412721](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35197412721)
+at `a433fa0` passed the focused BF16 AMP compiled training check. The historical
+HF artifact received shape-only FakeTensor registrations, with no change to its
+CUDA arithmetic, and its model was compiled with the same backend, numerical
+settings and backward-autocast assumption. The existing FP32 reference
+interpolation adaptation for HF's mixed-AMP dtype error remained in place.
+Candidate versus compiled HF maximum error was `9.5367431640625e-07` across
+outputs, loss, input gradients and 241 parameter gradients.
+
+The raw compiled-versus-eager comparison also happened to pass in this run
+(maximum error `0.001313924789428711`). Thus this run does **not** prove that
+compiling the baseline itself removed the previously reported `0.0634765625`
+gradient discrepancy. It establishes substitution parity under matched
+compilation; the earlier run-to-run eager/compiled variation remains recorded.
+
+See [passing report](run-35197412721/e2e-bf16-amp.json),
+[source manifest](run-35197412721/UPSTREAM.json),
+[suite summary](run-35197412721/kernel-hub-summary.json), and
+[verified Pod deletion](run-35197412721/runpod-state.json).
+
+The confirmed rechecks are:
+
+| Originally failing case | Passing run | Comparison conditions |
+| --- | --- | --- |
+| FP32 compiled inference/training | 35195362147 | Controlled math policy; original tolerances |
+| Explicit FP16/BF16 compiled training | 35193235122 | Eager rounding policy; original tolerances |
+| FP16 AMP compiled training | 35196661730 | Controlled math; matching initial proposals before output-row comparison |
+| BF16 AMP compiled training | 35197412721 | Controlled math; compiled HF reference with shape-only registration |
+
+No runtime numerical behavior of the distributed MSDA adapter was changed by
+this investigation. Fixes concern compiler policy, AOT assumptions and a
+comparison that previously conflated model/compiler numerics with replacement
+of the kernel. Pretrained accuracy and performance under these policies still
+require separate validation.
 
 ## Earlier CPU fixture
 

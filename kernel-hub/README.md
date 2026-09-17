@@ -86,7 +86,9 @@ The [L4 validation record](../docs/validation/kernel-hub/README.md) confirms nat
 build/loading, reference-based eager/compiled layer gradients, autocast and
 invalid device/dtype checks. FP32/FP64 published-HF operator comparisons passed;
 strict FP16 gradient parity failed. The [Phase 2 RT-DETR runner](e2e/README.md)
-passed 14/20 CUDA E2E cases, with compiled numerical differences remaining.
+initially passed 14/20 CUDA E2E cases. All six compiled failures now have passing
+individual rechecks under documented compiler and comparison policies; a full
+matrix at the final revision has not been rerun.
 The full regression gates, wider PyTorch coverage and reproducible Nix build
 remain open. Phase 3 benchmarking has not been run. Do not claim HF adoption
 or complete CUDA E2E compatibility.

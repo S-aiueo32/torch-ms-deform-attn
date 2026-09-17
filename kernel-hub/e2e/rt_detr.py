@@ -127,6 +127,7 @@ def run_model(model, pixels, labels, *, training, amp_dtype=None, execute=None):
     result = {
         "logits": output.intermediate_logits[:, -1].detach(),
         "boxes": output.intermediate_reference_points[:, -1].detach(),
+        "proposals": output.init_reference_points.detach(),
     }
     if training:
         result["loss"] = loss.detach()
@@ -189,6 +190,8 @@ def run_case(
     dtype="fp32",
     amp=False,
     baseline_kernel_dir=None,
+    numerics="default",
+    diagnostics=None,
 ):
     torch.manual_seed(123)
     torch.set_num_threads(1)
@@ -246,6 +249,17 @@ def run_case(
             training=training,
             amp_dtype=scalar_type if amp else None,
         )
+    eager_candidate = (
+        run_model(
+            candidate,
+            candidate_pixels,
+            labels,
+            training=training,
+            amp_dtype=scalar_type if amp else None,
+        )
+        if backend
+        else None
+    )
     graphs = []
     execute = None
     if backend:
@@ -264,6 +278,15 @@ def run_case(
                     ),
                 }
             )
+            if backend == "inductor" and numerics == "eager":
+                return compiler(
+                    graph,
+                    inputs,
+                    config_patches={
+                        "emulate_precision_casts": True,
+                        "emulate_divison_rounding": True,
+                    },
+                )
             return compiler(graph, inputs)
 
         # RT-DETR has a data-dependent finite-value check during training.
@@ -299,6 +322,26 @@ def run_case(
     if actual.keys() != expected.keys():
         raise AssertionError("Gradient coverage differs from the reference")
     atol, rtol = (2e-5, 2e-4) if dtype == "fp32" else (2e-2, 5e-2)
+    if diagnostics is not None:
+
+        def comparison(left, right):
+            return {
+                name: {
+                    "max_absolute_error": (left[name].float() - right[name].float())
+                    .abs()
+                    .max()
+                    .item(),
+                    "close": torch.allclose(
+                        left[name].float(), right[name].float(), atol=atol, rtol=rtol
+                    ),
+                }
+                for name in left
+            }
+
+        diagnostics["candidate_vs_hf"] = comparison(actual, expected)
+        if eager_candidate is not None:
+            diagnostics["candidate_compiled_vs_eager"] = comparison(actual, eager_candidate)
+            diagnostics["candidate_eager_vs_hf"] = comparison(eager_candidate, expected)
     errors = {}
     for name in actual:
         value, target = actual[name].float(), expected[name].float()
@@ -309,6 +352,7 @@ def run_case(
     return {
         "training": training,
         "compile_backend": backend,
+        "numerics": numerics,
         "dtype": dtype,
         "autocast": amp,
         "replaced_layers": replaced,
@@ -338,6 +382,8 @@ def main():
     )
     parser.add_argument("--dtype", choices=["fp32", "fp16", "bf16"], default="fp32")
     parser.add_argument("--autocast", action="store_true")
+    parser.add_argument("--numerics", choices=["default", "eager"], default="default")
+    parser.add_argument("--compiled-training-only", action="store_true")
     args = parser.parse_args()
     report = {
         "status": "failed",
@@ -351,6 +397,7 @@ def main():
         },
         "kernel_dir": str(args.kernel_dir.resolve()),
         "cases": [],
+        "numerics": args.numerics,
         "harness_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
     }
     try:
@@ -359,8 +406,9 @@ def main():
         if args.autocast and args.dtype == "fp32":
             raise ValueError("Autocast requires fp16 or bf16")
         report["gpu"] = torch.cuda.get_device_name()
-        for training in (False, True):
-            for backend in (None, "inductor"):
+        for training in (True,) if args.compiled_training_only else (False, True):
+            for backend in ("inductor",) if args.compiled_training_only else (None, "inductor"):
+                diagnostics = {}
                 try:
                     case = run_case(
                         args.kernel_dir,
@@ -369,6 +417,8 @@ def main():
                         dtype=args.dtype,
                         amp=args.autocast,
                         baseline_kernel_dir=args.baseline_kernel_dir,
+                        numerics=args.numerics,
+                        diagnostics=diagnostics,
                     )
                 except Exception:
                     case = {
@@ -376,6 +426,7 @@ def main():
                         "compile_backend": backend,
                         "error": traceback.format_exc(),
                     }
+                case["diagnostics"] = diagnostics
                 report["cases"].append(case)
                 args.report.parent.mkdir(parents=True, exist_ok=True)
                 args.report.write_text(json.dumps(report, indent=2) + "\n")

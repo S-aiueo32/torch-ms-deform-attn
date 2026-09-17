@@ -78,12 +78,22 @@ def main():
                 str(baseline),
                 "--dtype",
                 dtype,
+                "--numerics",
+                "eager",
                 "--report",
                 str(output / f"{name}.json"),
             ]
             if amp:
                 command.append("--autocast")
             runs.append((name, command))
+            if not amp:
+                diagnostic = command.copy()
+                diagnostic[diagnostic.index("--numerics") + 1] = "default"
+                diagnostic[diagnostic.index("--report") + 1] = str(
+                    output / f"diagnostic-{dtype}.json"
+                )
+                diagnostic.append("--compiled-training-only")
+                runs.append((f"diagnostic-{dtype}", diagnostic))
         for name, command in runs:
             print(f"Running {name}", flush=True)
             with (output / f"{name}.log").open("w") as log:

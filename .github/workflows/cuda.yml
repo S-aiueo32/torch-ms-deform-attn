@@ -8,10 +8,10 @@ on:
         default: core
         options: [core, kernel-hub]
       kernel_hub_suite:
-        description: Full Kernel Hub matrix or focused compiled AMP training
+        description: Full Kernel Hub matrix, compiled AMP training, or operator checks
         type: choice
         default: full
-        options: [full, compile-amp]
+        options: [full, compile-amp, phase1]
       torch_version:
         description: PyTorch version (2.4/2.5 use CUDA 12.4; newer versions use CUDA 12.6)
         type: choice

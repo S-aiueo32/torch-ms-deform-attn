@@ -785,7 +785,9 @@ def parse_args(argv=None):
     )
     run_parser.add_argument("--gpu-count", type=int, choices=(1, 2), default=1)
     run_parser.add_argument("--workload", choices=("core", "kernel-hub"), default="core")
-    run_parser.add_argument("--kernel-hub-suite", choices=("full", "compile-amp"), default="full")
+    run_parser.add_argument(
+        "--kernel-hub-suite", choices=("full", "compile-amp", "phase1"), default="full"
+    )
     run_parser.add_argument("--prepared-kernel", type=Path)
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)

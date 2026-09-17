@@ -6,6 +6,7 @@ msda_suite_args=()
 case "${2:-full}" in
     full) ;;
     compile-amp) msda_suite_args=(--focus-compile) ;;
+    phase1) msda_suite_args=(--phase1-only) ;;
     *) echo 'Unknown Kernel Hub suite' >&2; exit 2 ;;
 esac
 msda_source=$(pwd -P)

@@ -15,6 +15,7 @@ from kernels import get_kernel, get_local_kernel
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--focus-compile", action="store_true")
+    parser.add_argument("--phase1-only", action="store_true")
     parser.add_argument("--diagnostic-controls", action="store_true")
     args = parser.parse_args()
     output = Path(os.environ["MSDA_OUTPUT_DIR"])
@@ -47,6 +48,7 @@ def main():
         "gpu": torch.cuda.get_device_name(),
         "status": "failed",
         "focus_compile": args.focus_compile,
+        "phase1_only": args.phase1_only,
         "runs": [],
     }
     os.environ["LOCAL_KERNELS"] = f"kernels-community/deformable-detr={candidate}"
@@ -76,6 +78,8 @@ def main():
             ("fp16", True),
             ("bf16", True),
         ):
+            if args.phase1_only:
+                continue
             if args.focus_compile and not amp:
                 continue
             name = f"e2e-{dtype}" + ("-amp" if amp else "")

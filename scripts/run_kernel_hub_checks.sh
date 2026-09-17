@@ -47,10 +47,11 @@ if [[ "${2:-full}" == benchmark ]]; then
     cp "$msda_work/candidate/benchmark-sources/sources.json" "$msda_output/benchmark-sources.json"
     python -m pip freeze > "$msda_output/python-packages.txt"
     python "$msda_source/kernel-hub/e2e/gpu_suite.py" --phase1-only
+    python -m unittest discover -s tests -p test_cuda.py -v
     python -m unittest discover -s tests -p test_cuda_graphs.py -v
     python kernel-hub/benchmarks/benchmark.py \
         --sources "$msda_work/candidate/benchmark-sources" \
-        --native-control --profile-kernels \
+        --native-control --backends torch-ms-deform-attn kernel-hub-adapter hf-native upstream-native-control \
         --output "$msda_output/benchmark-kernel-hub.json"
     exit 0
 fi

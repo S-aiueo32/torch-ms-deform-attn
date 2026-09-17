@@ -2,38 +2,15 @@
 
 import torch
 
-from . import _C
+from . import _C  # noqa: F401 - loads the native dispatcher registrations
 
 
-def _native_op(name, schema):
-    """Register non-aliasing native kernels without custom_op's Python wrappers."""
-
-    def register(fn):
-        torch.library.define(name, schema)
-        torch.library.impl(name, "default", fn)
-        namespace, op = name.split("::")
-        return getattr(getattr(torch.ops, namespace), op).default
-
-    return register
+def _native_op(name):
+    namespace, op = name.split("::")
+    return getattr(getattr(torch.ops, namespace), op).default
 
 
-@_native_op(
-    "torch_ms_deform_attn::forward",
-    "(Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights, int step) -> Tensor",
-)
-def forward(
-    value: torch.Tensor,
-    shapes: torch.Tensor,
-    starts: torch.Tensor,
-    locations: torch.Tensor,
-    weights: torch.Tensor,
-    step: int,
-) -> torch.Tensor:
-    if value.is_cuda:
-        value, shapes, starts, locations, weights = (
-            t.contiguous() for t in (value, shapes, starts, locations, weights)
-        )
-    return _C.ms_deform_attn_forward(value, shapes, starts, locations, weights, step)
+forward = _native_op("torch_ms_deform_attn::forward")
 
 
 def _validate_fake_inputs(value, shapes, starts, locations, weights, step, grad=None):
@@ -92,27 +69,7 @@ def _forward_fake(value, shapes, starts, locations, weights, step):
     return value.new_empty((value.shape[0], locations.shape[1], value.shape[2] * value.shape[3]))
 
 
-@_native_op(
-    "torch_ms_deform_attn::backward",
-    "(Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights, Tensor grad, int step) -> (Tensor, Tensor, Tensor)",
-)
-def backward(
-    value: torch.Tensor,
-    shapes: torch.Tensor,
-    starts: torch.Tensor,
-    locations: torch.Tensor,
-    weights: torch.Tensor,
-    grad: torch.Tensor,
-    step: int,
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-    if value.is_cuda:
-        value, shapes, starts, locations, weights = (
-            t.contiguous() for t in (value, shapes, starts, locations, weights)
-        )
-    grad_value, grad_locations, grad_weights = _C.ms_deform_attn_backward(
-        value, shapes, starts, locations, weights, grad.contiguous(), step
-    )
-    return grad_value, grad_locations, grad_weights
+backward = _native_op("torch_ms_deform_attn::backward")
 
 
 @torch.library.register_fake(backward)

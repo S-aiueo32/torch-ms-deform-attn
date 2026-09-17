@@ -15,7 +15,7 @@ from kernels import get_kernel, get_local_kernel
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "benchmarks"))
 from benchmark_cuda import measure  # noqa: E402
-from environment import environment  # noqa: E402
+from environment import cpu_scheduling, environment  # noqa: E402
 
 from torch_ms_deform_attn import _C, ms_deform_attn, ms_deform_attn_core_pytorch  # noqa: E402
 
@@ -115,12 +115,31 @@ def main():
     parser.add_argument("--threads", type=int, default=1)
     parser.add_argument("--profile-kernels", action="store_true")
     parser.add_argument("--native-control", action="store_true")
+    parser.add_argument(
+        "--backends",
+        nargs="+",
+        choices=(
+            "torch-ms-deform-attn",
+            "kernel-hub-adapter",
+            "hf-native",
+            "mmcv-source",
+            "msda-triton-rziga",
+            "pytorch-reference",
+            "upstream-native-control",
+        ),
+    )
     args = parser.parse_args()
+    if args.backends and "upstream-native-control" in args.backends:
+        args.native_control = True
     if min(args.warmup, args.repeats, args.threads, args.min_run_time) <= 0:
         parser.error("measurement parameters must be positive")
     torch.set_num_threads(args.threads)
     torch.manual_seed(args.seed)
     rng = random.Random(args.seed)
+
+    def selected(name):
+        return args.backends is None or name in args.backends
+
     report = {
         "environment": environment(args.seed, args.warmup),
         "sources": json.loads((args.sources / "sources.json").read_text()),
@@ -152,26 +171,28 @@ def main():
         backends["upstream-native-control"] = extension_function(
             _C.ms_deform_attn_forward, _C.ms_deform_attn_backward
         )
-    try:
-        mmcv = load_mmcv(args.sources)
-        backends["mmcv-source"] = extension_function(mmcv.forward, mmcv.backward, inplace=True)
-    except Exception as exc:
-        report["setup_errors"]["mmcv-source"] = str(exc)
-        save()
-    try:
-        # The public frontend silently falls back to grid_sample on errors.
-        # Call its strict Triton frontend so fallback cannot be timed as Triton.
-        from msda_triton.frontend import triton_multiscale_deformable_attention
+    if selected("mmcv-source"):
+        try:
+            mmcv = load_mmcv(args.sources)
+            backends["mmcv-source"] = extension_function(mmcv.forward, mmcv.backward, inplace=True)
+        except Exception as exc:
+            report["setup_errors"]["mmcv-source"] = str(exc)
+            save()
+    if selected("msda-triton-rziga"):
+        try:
+            # The public frontend silently falls back to grid_sample on errors.
+            # Call its strict Triton frontend so fallback cannot be timed as Triton.
+            from msda_triton.frontend import triton_multiscale_deformable_attention
 
-        def triton(value, shapes, starts, locations, weights):
-            return triton_multiscale_deformable_attention(
-                value, shapes, locations, weights, "zeros", False
-            ).flatten(2)
+            def triton(value, shapes, starts, locations, weights):
+                return triton_multiscale_deformable_attention(
+                    value, shapes, locations, weights, "zeros", False
+                ).flatten(2)
 
-        backends["msda-triton-rziga"] = triton
-    except Exception as exc:
-        report["setup_errors"]["msda-triton-rziga"] = str(exc)
-        save()
+            backends["msda-triton-rziga"] = triton
+        except Exception as exc:
+            report["setup_errors"]["msda-triton-rziga"] = str(exc)
+            save()
     required_failed = bool(report["setup_errors"])
     for case in args.cases:
         for dtype in (torch.float32, torch.float16, torch.bfloat16):
@@ -189,6 +210,7 @@ def main():
             )
             del oracle_out, oracle_inputs
             implementations = {**backends, "pytorch-reference": reference}
+            implementations = {name: fn for name, fn in implementations.items() if selected(name)}
             variants = []
             for backend, fn in implementations.items():
                 # Public upstream/adapter already implement this policy internally.
@@ -253,6 +275,7 @@ def main():
             del truth
             data = grad = tensors = None
     report["status"] = "failed" if required_failed else "passed"
+    report["cpu_scheduling_end"] = cpu_scheduling()
     save()
     return int(required_failed)
 

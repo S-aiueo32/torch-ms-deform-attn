@@ -238,7 +238,7 @@ __device__ void ms_deform_attn_col2im_bilinear_gm(
   gpuAtomicAdd(grad_sampling_loc + 1, height * grad_h_weight * top_grad_value);
 }
 
-template <typename scalar_t>
+template <typename scalar_t, typename index_t>
 __global__ void __launch_bounds__(CUDA_NUM_THREADS)
     ms_deformable_im2col_gpu_kernel(const int64_t n, const scalar_t *data_value,
                                     const int64_t *data_spatial_shapes,
@@ -251,7 +251,9 @@ __global__ void __launch_bounds__(CUDA_NUM_THREADS)
                                     const int num_query, const int num_point,
                                     scalar_t *data_col) {
   CUDA_KERNEL_LOOP(index, n) {
-    int64_t _temp = index;
+    // The launch selects int only when every output index fits. Pointer
+    // offsets below remain 64-bit even on this faster decomposition path.
+    index_t _temp = static_cast<index_t>(index);
     const int c_col = _temp % channels;
     _temp /= channels;
     const int64_t sampling_index = _temp;
@@ -906,11 +908,18 @@ void ms_deformable_im2col_cuda(cudaStream_t stream, const scalar_t *data_value,
       static_cast<int64_t>(batch_size) * num_query * num_heads * channels;
   const int64_t num_actual_kernels = num_kernels;
   const int num_threads = CUDA_NUM_THREADS;
-  ms_deformable_im2col_gpu_kernel<scalar_t>
-      <<<GET_BLOCKS(num_actual_kernels, num_threads), num_threads, 0, stream>>>(
-          num_kernels, data_value, data_spatial_shapes, data_level_start_index,
-          data_sampling_loc, data_attn_weight, batch_size, spatial_size,
-          num_heads, channels, num_levels, num_query, num_point, data_col);
+  const auto launch = [&](auto index_type) {
+    ms_deformable_im2col_gpu_kernel<scalar_t, decltype(index_type)>
+        <<<GET_BLOCKS(num_actual_kernels, num_threads), num_threads, 0, stream>>>(
+            num_kernels, data_value, data_spatial_shapes, data_level_start_index,
+            data_sampling_loc, data_attn_weight, batch_size, spatial_size,
+            num_heads, channels, num_levels, num_query, num_point, data_col);
+  };
+  if (num_kernels <= std::numeric_limits<int>::max()) {
+    launch(int{});
+  } else {
+    launch(int64_t{});
+  }
 
   C10_CUDA_KERNEL_LAUNCH_CHECK();
 }

@@ -45,6 +45,15 @@ def summarize(report):
                         "incremental_peak_bytes",
                     )
                 },
+                **(
+                    {
+                        "profiled_cuda_activity_ms": statistics.median(
+                            row["profiled_cuda_activity_ms"] for row in rows
+                        )
+                    }
+                    if all("profiled_cuda_activity_ms" in row for row in rows)
+                    else {}
+                ),
             }
         )
     lookup = {

@@ -3,6 +3,7 @@
 import os
 import platform
 import subprocess
+from pathlib import Path
 
 import torch
 
@@ -16,6 +17,18 @@ def command(args):
         ).strip()
     except (OSError, subprocess.SubprocessError):
         return None
+
+
+def cpu_scheduling():
+    result = {
+        "affinity": sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None
+    }
+    for name in ("cpu.max", "cpu.stat"):
+        try:
+            result[name] = (Path("/sys/fs/cgroup") / name).read_text().strip()
+        except OSError:
+            result[name] = None
+    return result
 
 
 def environment(seed, warmup):
@@ -33,6 +46,7 @@ def environment(seed, warmup):
         or command(["git", "rev-parse", "HEAD"]),
         source_dirty=command(["git", "status", "--porcelain"]),
         cpu=cpu,
+        cpu_scheduling=cpu_scheduling(),
         torch=torch.__version__,
         python=platform.python_version(),
         platform=platform.platform(),

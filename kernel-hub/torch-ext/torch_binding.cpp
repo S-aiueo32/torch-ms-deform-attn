@@ -2,6 +2,7 @@
 #include <limits>
 
 #include "cuda/ms_deform_attn_cuda.h"
+#include "dispatcher.h"
 #include "registration.h"
 
 namespace {
@@ -14,6 +15,8 @@ int checked_step(int64_t step) {
 
 // The dispatcher requires int64_t, while upstream kernels take an int step.
 TORCH_LIBRARY_EXPAND(TORCH_EXTENSION_NAME, ops) {
+  ms_deform_attn::register_dispatcher(ops, &ms_deform_attn_cuda_forward,
+                                     &ms_deform_attn_cuda_backward);
   ops.def("ms_deform_attn_forward(Tensor value, Tensor shapes, Tensor starts, "
           "Tensor locations, Tensor weights, int step) -> Tensor");
   ops.impl("ms_deform_attn_forward", c10::DispatchKey::CUDA,

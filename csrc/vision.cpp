@@ -16,6 +16,7 @@
 
 #include "csrc/ms_deform_attn_cpu.h"
 #include "cuda/index_utils.h"
+#include "dispatcher.h"
 #ifdef WITH_MPS
 #include "mps/ms_deform_attn_mps.h"
 #endif
@@ -73,6 +74,10 @@ backward(const at::Tensor &value, const at::Tensor &shapes,
   }
   return ms_deform_attn_cpu_backward(value, shapes, starts, loc, weights, grad,
                                      step);
+}
+
+TORCH_LIBRARY(torch_ms_deform_attn, ops) {
+  ms_deform_attn::register_dispatcher(ops, &forward, &backward);
 }
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {

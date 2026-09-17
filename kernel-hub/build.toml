@@ -9,7 +9,7 @@ upstream = "https://github.com/S-aiueo32/torch-ms-deform-attn"
 repo-id = "kernels-community/deformable-detr"
 
 [torch]
-src = ["torch-ext/torch_binding.cpp"]
+src = ["torch-ext/torch_binding.cpp", "csrc/dispatcher.h"]
 include = ["csrc"]
 
 [kernel.msda]

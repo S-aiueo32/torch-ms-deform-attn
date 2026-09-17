@@ -1,8 +1,8 @@
 # Phase 3: MSDA comparison
 
-Status: [L4 measurement in progress](../../docs/validation/kernel-hub-benchmarks/README.md).
-Five implementations have initial CUDA results; Triton setup and a fresh-process
-repeat remain in progress. See the evidence above before interpreting timings.
+Status: [Six-implementation L4 results and repeat comparison](../../docs/validation/kernel-hub-benchmarks/README.md).
+All common-policy correctness checks passed. Small/decoder eager training
+slowdowns remain an investigation item before the HF proposal.
 
 This harness compares the installed canonical package, its Kernel Hub adapter,
 the pinned published HF artifact, MMCV's MSDA CUDA source, PyTorch `grid_sample`,

@@ -56,6 +56,9 @@ run_checks() {
     "$cuda_checks_base_python" -m venv "$cuda_checks_temp/venv"
     export PATH="$cuda_checks_temp/venv/bin:$PATH"
     local cuda_checks_python="$cuda_checks_temp/venv/bin/python"
+    # Older CPython ensurepip bundles mishandle normalized package names from
+    # the PyTorch index (e.g. typing-extensions versus typing_extensions).
+    "$cuda_checks_python" -m pip install --no-cache-dir --upgrade pip
     "$cuda_checks_python" -m pip install --no-cache-dir \
         numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
     "$cuda_checks_python" -m pip install --no-cache-dir "torch==$CUDA_CHECKS_TORCH_VERSION" \

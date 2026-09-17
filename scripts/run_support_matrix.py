@@ -61,7 +61,15 @@ def main():
             output.mkdir()
             with (args.output / f"{label}-driver.log").open("w") as log:
                 result = subprocess.run(
-                    ["uv", "venv", "--seed", "--python", python, str(root / "base")],
+                    [
+                        "uv",
+                        "venv",
+                        "--seed",
+                        "--managed-python",
+                        "--python",
+                        python,
+                        str(root / "base"),
+                    ],
                     stdout=log,
                     stderr=subprocess.STDOUT,
                 )

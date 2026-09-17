@@ -12,6 +12,7 @@ status; the records below provide conditions, results and source-bound evidence.
 | Kernel correctness | [Correctness and sanitizers](kernel-correctness/README.md) | CPU builds, CUDA reduction/sampling, four sanitizers on 2.5.1 / 2.7.1 |
 | Execution and measurement | [Execution, builds and benchmarks](execution-and-benchmarks/README.md) | Two-GPU behavior, dynamic compile, near-knot precision, CPU backends and benchmark grids |
 | Kernel Hub / Transformers | [RT-DETR CPU and L4 validation](kernel-hub/README.md) | Full L4 run at `2ae90ab`: Phase 1 3/3, RT-DETR 20/20; CPU fixture 20/20; earlier BF16 AMP discrepancy archived and not reproduced |
+| Kernel Hub Nix distribution | [Locked Nix build](kernel-hub-nix/README.md) | PyTorch 2.11 / CUDA 12.6 / x86_64 build, ABI and loader checks passed; GPU validation of this artifact remains |
 | Kernel Hub benchmarks | [Phase 3 L4 measurements](kernel-hub-benchmarks/README.md) | Six implementations measured on L4; all common-policy correctness checks passed; fresh-process comparison identifies eager training slowdowns to investigate |
 | MSDA dispatch overhead | [L4 performance investigation](kernel-hub-performance/README.md) | Direct C++ registration, native control and pinned previous-source comparison; precision policy unchanged |
 

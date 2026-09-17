@@ -47,7 +47,9 @@ Local checks passed all 20 CPU fixture cases (five tests), 55 controller/evidenc
 tests, and Ruff. This establishes the documented synthetic RT-DETR contract
 under the recorded compiler/reference adaptations. Reproducible Nix distribution
 builds, broader PyTorch/GPU coverage, pretrained accuracy and HF adoption remain
-separate gates.
+separate gates. A subsequent [locked Nix distribution build](../kernel-hub-nix/README.md)
+passed for PyTorch 2.11 / CUDA 12.6 / x86_64, including ABI and loader checks;
+its exact artifact still needs GPU numerical validation.
 
 ## Earlier full regression after native dispatcher changes
 

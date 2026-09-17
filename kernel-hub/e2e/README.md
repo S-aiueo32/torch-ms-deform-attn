@@ -159,9 +159,11 @@ Transformers 5.17.0 requires `0.16.0 <= kernels < 0.17.0`, hence the explicit
 pin. PyTorch 2.5.1 failed full-graph inference in Transformers' decorator code;
 the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for compilation checks.
 
-The [L4 evidence](../../docs/validation/kernel-hub/README.md) records the initial
-14/20 run and passing rechecks of its six compiled failures under the explicit
-policies above. A single final-revision full matrix has not been run. Native
+The [L4 evidence](../../docs/validation/kernel-hub/README.md) records a full
+post-dispatcher run at `2e7cdb5`: Phase 1 passed and 19/20 RT-DETR cases passed.
+BF16 autocast compiled training still fails a bias-gradient comparison against
+compiled HF, so the full regression gate remains open. The earlier 14/20 run
+and passing focused rechecks are retained as historical evidence. Native
 FP16/BF16 operator differences were traced to precision policy; the validation
 record documents FP64 accuracy checks and the FP32-compute comparison contract.
 Pretrained model

@@ -3,10 +3,63 @@
 Recorded on 2026-09-17. **CUDA E2E is partially validated; the full Phase 1/2
 regression gates have not passed.**
 
-The corrected Phase 1 precision-contract suite passed on L4 at `4e21ffc`.
-The final-revision complete Phase 2 matrix remains outstanding.
+The latest full run at `2e7cdb5` passed Phase 1 and 19/20 RT-DETR cases on L4.
+BF16 autocast compiled training still fails its gradient comparison, so the
+full Phase 2 gate remains open. Earlier focused passes do not override this run.
 
 ## Full regression after native dispatcher changes
+
+[Run 35233588181](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35233588181)
+tested `2e7cdb5d36922b82f97b2f9b0155752c2a1b9efa` with the harness corrections
+below, using L4, PyTorch 2.10.0+cu126, Transformers 5.17.0 and kernels 0.16.0.
+The three Phase 1 tests passed. All 20 E2E cases executed; 19 passed.
+
+| Precision | Eager inference | Eager training | Inductor inference | Inductor training |
+| --- | --- | --- | --- | --- |
+| FP32 | Pass | Pass | Pass | Pass |
+| FP16 | Pass | Pass | Pass | Pass |
+| BF16 | Pass | Pass | Pass | Pass |
+| FP16 autocast | Pass | Pass | Pass | Pass |
+| BF16 autocast | Pass | Pass | Pass | **Gradient mismatch** |
+
+All runs retain the documented precision/reference adaptations and compiler
+policies. The failure is in
+`model.decoder.layers.0.self_attn.o_proj.bias`: one of 32 elements exceeds
+`atol=0.02, rtol=0.05`, with absolute error 0.0703125 and relative error
+0.09677419 at that element. The tensor's overall maximum absolute difference
+is 0.5; larger reference elements can satisfy the relative tolerance despite
+larger absolute errors. No tolerance was changed.
+
+The failed case's diagnostics show:
+
+- Eager candidate versus eager HF: every parameter gradient, logits, boxes and
+  loss match exactly; the maximum input-gradient difference is `2.98e-8`.
+- Compiled candidate versus compiled HF: maximum logit difference `0.0078125`
+  and loss difference `0.0006218`; the bias gradient above fails.
+- Both compiled models differ from their own eager execution. The same bias
+  tensor has maximum differences of 1.5 (candidate) and 1.4375 (HF).
+- Initial proposals match without a query permutation.
+
+These observations establish a remaining compiled BF16 AMP discrepancy; they
+do not isolate its cause or prove it harmless. The next diagnostic should
+compare the two compiled graphs and their MSDA inputs/intermediate outputs
+before changing numerical policy or implementation. A fresh full run is still
+required after resolving it. Nix distribution validation and HF adoption remain
+separate, uncompleted gates.
+
+Evidence: [suite summary](run-35233588181/kernel-hub-summary.json),
+[BF16 AMP cases and diagnostics](run-35233588181/e2e-bf16-amp.json),
+[Phase 1 log](run-35233588181/phase1.log),
+[source manifest](run-35233588181/UPSTREAM.json),
+[candidate hashes](run-35233588181/candidate-files.json),
+[baseline hashes](run-35233588181/baseline-files.json), and
+[verified Pod deletion](run-35233588181/runpod-state.json).
+
+Local checks of the corrected harness passed all 20 CPU fixture cases (four
+tests). Exporter tests passed 3/3; controller/evidence tests passed 55/55, as did
+Ruff and the PR's ordinary CI. CPU results do not replace the failed CUDA gate.
+
+### Initial attempt and harness correction
 
 [Run 35231276149](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35231276149)
 tested merged main `bf256ebadce5e61841d97bbae72b9c92353a0cac` on L4 with

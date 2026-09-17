@@ -91,5 +91,5 @@ confirm an apparent regression in a fresh process before calling it repeatable.
 CPU qualification test (in the Phase 2 validation environment):
 
 ```bash
-python -m unittest discover -s kernel-hub/benchmarks -p test_benchmark.py -v
+python -m pytest kernel-hub/benchmarks/test_benchmark.py -v
 ```

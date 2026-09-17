@@ -27,7 +27,7 @@ export PATH="$msda_work/venv/bin:$PATH"
 python -m pip install --no-cache-dir torch==2.10.0 torchvision==0.25.0 \
     --index-url https://download.pytorch.org/whl/cu126
 python -m pip install --no-cache-dir -r kernel-hub/e2e/requirements.txt \
-    'setuptools>=77' wheel ninja 'cmake>=3.26' numpy packaging
+    'setuptools>=77' wheel ninja 'cmake>=3.26' numpy packaging 'pytest>=8,<10'
 python -c 'import torch; assert torch.cuda.is_available(); assert torch.version.cuda == "12.6"; print(torch.__version__, torch.cuda.get_device_name())'
 
 # Configuration generation runs on the CPU controller before GPU rental.
@@ -47,8 +47,8 @@ if [[ "${2:-full}" == benchmark ]]; then
     cp "$msda_work/candidate/benchmark-sources/sources.json" "$msda_output/benchmark-sources.json"
     python -m pip freeze > "$msda_output/python-packages.txt"
     python "$msda_source/kernel-hub/e2e/gpu_suite.py" --phase1-only
-    python -m unittest discover -s tests -p test_cuda.py -v
-    python -m unittest discover -s tests -p test_cuda_graphs.py -v
+    python -m pytest tests/test_cuda.py -v
+    python -m pytest tests/test_cuda_graphs.py -v
     python kernel-hub/benchmarks/benchmark.py \
         --sources "$msda_work/candidate/benchmark-sources" \
         --cases decoder encoder --dtypes float32 float16 --modes forward forward_backward \

@@ -70,7 +70,7 @@ shell syntax checks run in the Runpod controller workflow.
 After installing the package, run from the repository root:
 
 ```bash
-uv run --locked python -m unittest discover -s tests -v
+uv run --locked pytest -v
 ```
 
 Tests compare outputs and all three gradients against the PyTorch reference,
@@ -82,7 +82,7 @@ Pinned upstream module fixtures are included in normal test discovery; see
 tests run separately, from an installed development environment:
 
 ```bash
-uv run --locked python -m unittest discover -s build_tests -v
+uv run --locked pytest build_tests -v
 uv run --locked python scripts/validate_cpu_builds.py --output /tmp/msda-build-results
 ```
 
@@ -169,7 +169,7 @@ checks are separate from the GPU-free CUDA package build.
 The controller tests can also run locally without renting a GPU:
 
 ```bash
-uv run --locked python -m unittest discover -s scripts/tests -v
+uv run --locked pytest scripts/tests -v
 bash -n scripts/runpod_bootstrap.sh scripts/run_cuda_checks.sh scripts/test_runpod_bootstrap.sh
 # Requires Docker:
 bash scripts/test_runpod_bootstrap.sh

@@ -1,4 +1,4 @@
-"""CPU extension regression tests: python -m unittest discover -s tests -v."""
+"""CPU extension regression tests: pytest -v."""
 
 import json
 import os

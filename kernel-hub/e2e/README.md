@@ -139,7 +139,7 @@ Run these separately from the core suite with the E2E dependencies and a CPU
 build of `torch-ms-deform-attn` installed against the same PyTorch:
 
 ```bash
-python -m unittest discover -s kernel-hub/e2e -p test_rt_detr.py -v
+python -m pytest kernel-hub/e2e/test_rt_detr.py -v
 ```
 
 The fixture exports the real Python adapter, then supplies a **test-only**

@@ -57,7 +57,7 @@ CUDA 12.6.
 Local Python-glue checks (requires an installed upstream CPU extension):
 
 ```bash
-uv run --locked python -m unittest discover -s build_tests -p test_kernel_hub_export.py -v
+uv run --locked pytest build_tests/test_kernel_hub_export.py -v
 ```
 
 These substitute the CPU native extension for the builder-generated native
@@ -69,7 +69,7 @@ On a Linux NVIDIA host with Kernel Builder/Nix installed, export the tree,
 enter its builder testshell, and run:
 
 ```bash
-python -m unittest discover -s tests -p test_kernel.py -v
+python -m pytest tests/test_kernel.py -v
 ```
 
 The tests require CUDA and `LOCAL_KERNELS` as configured by the builder's

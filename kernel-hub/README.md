@@ -46,11 +46,37 @@ Changes found downstream should be applied upstream before the next export.
 - No CPU/MPS dispatch is registered in the HF native binding. The CPU test
   shim described below is only a test fixture.
 
-The configuration is validated with builder 0.16.1. `flake.nix` pins the same
-released builder line; generate and retain `flake.lock` before validating a
-publishable Nix build. The recorded L4 evidence predates this patch-level update
-and used builder 0.16.0's local CMake development route with PyTorch 2.10.0 and
-CUDA 12.6.
+The configuration is validated with builder 0.16.1. `flake.nix` selects that
+release; `flake.lock` fixes its transitive dependencies and is included in the
+export. The full L4 regression used builder 0.16.1's local CMake
+development route with PyTorch 2.10.0 and CUDA 12.6.
+
+## Nix distribution build
+
+On an x86_64 Linux Nix host, run from the upstream checkout:
+
+```bash
+bash scripts/run_kernel_hub_nix.sh /tmp/msda-nix-build
+```
+
+The [Nix build workflow](../.github/workflows/kernel-hub-nix.yml) runs the same
+script. It builds `redistributable.torch211-cxx11-cu126-x86_64-linux` using the
+Hugging Face binary cache and retains the builder's ABI and `get_kernel` checks.
+Builder 0.16.1's Nix version set starts at PyTorch 2.11, so this artifact is a
+different PyTorch variant from the previous 2.10 CMake regression.
+
+The script exports upstream sources, uses a deterministic Git commit for the
+builder's namespace identity, and builds with `--no-update-lock-file`.
+The committed `kernel-hub/flake.lock` is required; dependencies are never
+silently updated by the build script.
+The `evidence/` directory contains the lock, upstream and export revisions,
+exported source archive, derivation, build log, store metadata, and the
+`distribution.tar.gz` artifact with a SHA-256 checksum. A successful build
+writes `status.txt`; failed attempts still retain their available evidence.
+
+This step builds one distribution variant without a GPU. CUDA Phase 1 and
+RT-DETR validation must subsequently load this exact artifact. It does not
+publish to the Hub or validate all supported build variants.
 
 ## Validation
 

@@ -16,11 +16,8 @@ df -h /
 python3 kernel-hub/export.py "$output/source" --revision "$source_sha"
 cd "$output/source"
 
-# Bootstrap once when introducing the lock; retain it as a reviewable artifact.
-# Subsequent builds use the committed lock and refuse dependency updates.
-if [ ! -f flake.lock ]; then
-  nix flake lock
-fi
+# Use the committed lock and refuse dependency updates.
+test -f flake.lock
 cp flake.lock UPSTREAM.json "$output/evidence/"
 git init --quiet
 git add .
@@ -41,6 +38,6 @@ cp -rL "$output/result/." "$output/distribution/"
 test -d "$output/distribution/$variant"
 find "$output/distribution" -name '*.so' -print -quit | grep -q .
 tar -C "$output/distribution" -czf "$output/evidence/distribution.tar.gz" .
-sha256sum "$output/evidence/distribution.tar.gz" > "$output/evidence/distribution.sha256"
+(cd "$output/evidence" && sha256sum distribution.tar.gz > distribution.sha256)
 nix path-info --json "$output/result" > "$output/evidence/store-path.json"
 printf 'passed\n' > "$output/evidence/status.txt"

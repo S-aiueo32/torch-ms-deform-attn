@@ -24,7 +24,9 @@ class EvidenceTest(unittest.TestCase):
         allowed = Case("test_cuda.CUDAAttentionTest.test_noncurrent_device")
         self.assertEqual(unexpected_skips([(allowed, "Requires two GPUs")]), [])
         self.assertEqual(
-            unexpected_skips([(Case("test_mps.MPSTest.test_autocast"), "Requires Metal GPU/build")]),
+            unexpected_skips(
+                [(Case("test_mps.MPSTest.test_autocast"), "Requires Metal GPU/build")]
+            ),
             [],
         )
         self.assertTrue(unexpected_skips([(allowed, "Requires CUDA extension and GPU")]))

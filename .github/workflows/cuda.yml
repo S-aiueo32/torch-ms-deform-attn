@@ -3,10 +3,10 @@ on:
   workflow_dispatch:
     inputs:
       torch_version:
-        description: PyTorch/toolkit pair (2.4.0/cu124, 2.5.1/cu124, or 2.7.1/cu126)
+        description: PyTorch version (2.4/2.5 use CUDA 12.4; newer versions use CUDA 12.6)
         type: choice
         default: '2.5.1'
-        options: ['2.4.0', '2.5.1', '2.7.1']
+        options: ['2.4.0', '2.5.1', '2.7.1', '2.8.0', '2.14.0']
       sanitizer:
         description: Optional CUDA kernel memory/synchronization check
         type: choice

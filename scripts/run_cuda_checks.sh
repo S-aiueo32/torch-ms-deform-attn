@@ -38,10 +38,10 @@ run_checks() {
     export CUDA_CHECKS_TORCH_VERSION=${CUDA_CHECKS_TORCH_VERSION:-2.5.1}
     case "$CUDA_CHECKS_TORCH_VERSION" in
         2.4.0|2.5.1) export CUDA_CHECKS_TOOLKIT=12.4; cuda_checks_index=cu124 ;;
-        2.7.1) export CUDA_CHECKS_TOOLKIT=12.6; cuda_checks_index=cu126 ;;
+        2.7.1|2.8.0|2.14.0) export CUDA_CHECKS_TOOLKIT=12.6; cuda_checks_index=cu126 ;;
         *) echo 'Unsupported validation PyTorch version' >&2; exit 2 ;;
     esac
-    local cuda_checks_base_python=${CUDA_CHECKS_PYTHON:-python3.11}
+    local cuda_checks_base_python=${CUDA_CHECKS_PYTHON:-python3}
     "$cuda_checks_base_python" --version
     export CUDA_CHECKS_SOURCE_SHA=${CUDA_CHECKS_SOURCE_SHA:-$(git rev-parse HEAD)}
     export CUDA_CHECKS_SANITIZER="$cuda_checks_sanitizer"

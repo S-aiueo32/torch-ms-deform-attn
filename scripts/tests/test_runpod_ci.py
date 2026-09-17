@@ -275,7 +275,13 @@ class ControllerTest(unittest.TestCase):
 
     def test_selected_torch_version_and_source_sha_reach_remote(self):
         self.prepare_run()
-        for version, toolkit in (("2.4.0", "12.4"), ("2.5.1", "12.4"), ("2.7.1", "12.6")):
+        for version, toolkit in (
+            ("2.4.0", "12.4"),
+            ("2.5.1", "12.4"),
+            ("2.7.1", "12.6"),
+            ("2.8.0", "12.6"),
+            ("2.14.0", "12.6"),
+        ):
             with self.subTest(torch_version=version):
                 self.args.torch_version = version
                 self.args.state_dir = self.root / f"state-{version}"

@@ -13,6 +13,13 @@ jobs:
           - {os: ubuntu-latest, python: '3.10', torch: '2.5.0', openmp: '0', backend: serial}
           - {os: ubuntu-latest, python: '3.11', torch: '2.5.1', openmp: '1', backend: openmp}
           - {os: ubuntu-latest, python: '3.12', torch: '2.7.1', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.8.0', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.9.1', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.10.0', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.11.0', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.12.1', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.13.0', openmp: '1', backend: openmp}
+          - {os: ubuntu-latest, python: '3.12', torch: '2.14.0', openmp: '1', backend: openmp}
     name: ${{ matrix.os }} / Python ${{ matrix.python }} / torch ${{ matrix.torch }} / ${{ matrix.backend }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20

@@ -11,6 +11,7 @@ status; the records below provide conditions, results and source-bound evidence.
 | PyTorch version compatibility | [PyTorch 2.8–2.14](pytorch-versions/README.md) | Linux CPU versions; GPU-free builds and L4 sanitizers on 2.8.0 / 2.14.0 |
 | Kernel correctness | [Correctness and sanitizers](kernel-correctness/README.md) | CPU builds, CUDA reduction/sampling, four sanitizers on 2.5.1 / 2.7.1 |
 | Execution and measurement | [Execution, builds and benchmarks](execution-and-benchmarks/README.md) | Two-GPU behavior, dynamic compile, near-knot precision, CPU backends and benchmark grids |
+| Kernel Hub / Transformers | [RT-DETR CPU fixture](kernel-hub/README.md) | 20 integration cases; CUDA artifacts and published-HF comparison remain unverified |
 
 ## Reading the evidence
 

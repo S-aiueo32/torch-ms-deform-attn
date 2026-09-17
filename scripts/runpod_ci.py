@@ -633,6 +633,12 @@ def run(api, args):
             + (" benchmark" if args.benchmark else "")
         )
         matrix_cases = getattr(args, "matrix_cases", None)
+        if getattr(args, "workload", "core") == "kernel-hub":
+            remote = (
+                f"cd /workspace/ci/source && CUDA_CHECKS_SOURCE_SHA={source_sha} "
+                f"timeout --signal=TERM --kill-after=30s {remaining - 30}s "
+                "bash scripts/run_kernel_hub_checks.sh /workspace/ci/results"
+            )
         if matrix_cases:
             # uv provisions standard CPython versions without changing system Python.
             workload = (
@@ -763,6 +769,7 @@ def parse_args(argv=None):
         help="Run up to nine pairs on one Pod, using --torch-version's toolkit image",
     )
     run_parser.add_argument("--gpu-count", type=int, choices=(1, 2), default=1)
+    run_parser.add_argument("--workload", choices=("core", "kernel-hub"), default="core")
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
     run_parser.add_argument(
@@ -777,6 +784,11 @@ def parse_args(argv=None):
     )
     run_parser.add_argument("--timeout-minutes", type=int, default=45)
     args = parser.parse_args(argv)
+    if getattr(args, "workload", "core") == "kernel-hub":
+        if args.matrix_cases or args.benchmark or args.sanitizer != "none" or args.gpu_count != 1:
+            parser.error("kernel-hub requires one GPU, sanitizer=none, no matrix and no benchmark")
+        if TORCH_CONFIGS[args.torch_version][1] != "12.6":
+            parser.error("kernel-hub requires a CUDA 12.6 image")
     if getattr(args, "matrix_cases", None):
         from run_support_matrix import parse_case, toolkit
 

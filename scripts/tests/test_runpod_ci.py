@@ -302,6 +302,26 @@ class ControllerTest(unittest.TestCase):
                 self.assertFalse(api.pods)
                 self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
 
+    def test_kernel_hub_workload_retains_cleanup_and_source_binding(self):
+        self.prepare_run()
+        self.args.torch_version = "2.14.0"
+        self.args.workload = "kernel-hub"
+        api = FakeAPI()
+        with (
+            mock.patch.object(ci, "wait_for_ssh", return_value=["ssh"]),
+            mock.patch.object(ci, "stream_command", return_value=1) as command,
+            mock.patch.object(ci, "collect_artifacts") as collect,
+        ):
+            with self.assertRaisesRegex(ci.ControllerError, "exit status 1"):
+                ci.run(api, self.args)
+        remote = command.call_args.args[0][-1]
+        self.assertIn("run_kernel_hub_checks.sh", remote)
+        self.assertIn(f"CUDA_CHECKS_SOURCE_SHA={'a' * 40}", remote)
+        self.assertIn("timeout --signal=TERM --kill-after=30s", remote)
+        collect.assert_called_once()
+        self.assertFalse(api.pods)
+        self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
+
     def test_two_gpu_request_and_remote_requirement(self):
         self.prepare_run()
         self.args.gpu_count = 2

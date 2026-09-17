@@ -7,6 +7,7 @@ import tempfile
 import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import torch
 
@@ -63,6 +64,18 @@ class ExportTest(unittest.TestCase):
                 exporter.export(tmp)
         with self.assertRaises(ValueError):
             exporter.replace_once("changed", "original", "replacement")
+
+    def test_archive_revision_without_git(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch.object(exporter.subprocess, "check_output") as git:
+                destination = Path(tmp) / "kernel"
+                exporter.export(destination, revision="a" * 40)
+            git.assert_not_called()
+            self.assertEqual(
+                json.loads((destination / "UPSTREAM.json").read_text())["revision"], "a" * 40
+            )
+            with self.assertRaisesRegex(ValueError, "full Git commit SHA"):
+                exporter.export(Path(tmp) / "invalid", revision="main")
 
 
 if __name__ == "__main__":

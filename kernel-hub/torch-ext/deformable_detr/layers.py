@@ -8,6 +8,9 @@ MultiScaleDeformableAttentionFunction = MSDeformAttnFunction
 
 
 class MultiScaleDeformableAttention(nn.Module):
+    can_torch_compile = True
+    has_backward = True
+
     def forward(
         self,
         value,

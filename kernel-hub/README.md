@@ -80,8 +80,10 @@ Missing CUDA is an error, not a successful skipped validation.
 Phase 1 remains open until a real builder/loader/CUDA run passes and numerical
 comparison against a pinned existing HF artifact is recorded. Also outstanding:
 execution of the included GPU autocast and invalid device/dtype checks, PyTorch version coverage,
-and a reproducible builder lock. Phase 2 real-model E2E and Phase 3 benchmarking
-have not been run. Do not claim HF adoption or end-to-end compatibility yet.
+and a reproducible builder lock. A [Phase 2 RT-DETR E2E runner](e2e/README.md)
+now covers Transformers' integration path; its CPU fixture tests do not replace
+the pending real CUDA artifact run. Phase 3 benchmarking has not been run.
+Do not claim HF adoption or CUDA end-to-end compatibility yet.
 
 ## References
 

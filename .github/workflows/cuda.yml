@@ -2,6 +2,11 @@ name: CUDA correctness
 on:
   workflow_dispatch:
     inputs:
+      workload:
+        description: Core CUDA suite or Kernel Hub build and Transformers E2E
+        type: choice
+        default: core
+        options: [core, kernel-hub]
       torch_version:
         description: PyTorch version (2.4/2.5 use CUDA 12.4; newer versions use CUDA 12.6)
         type: choice
@@ -41,6 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
+      WORKLOAD: ${{ inputs.workload }}
       TORCH_VERSION: ${{ inputs.torch_version }}
       GPU: ${{ inputs.gpu }}
       SANITIZER: ${{ inputs.sanitizer }}
@@ -68,6 +74,7 @@ jobs:
             --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
             --output-dir "$RUNNER_TEMP/runpod-results" \
             --gpu "$GPU" --sanitizer "$SANITIZER" --torch-version "$TORCH_VERSION" \
+            --workload "$WORKLOAD" \
             --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES"
       - name: Retry cleanup after failure or cancellation
         if: always() && inputs.operation == 'test'
@@ -79,6 +86,13 @@ jobs:
             --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
             --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
             --state-dir "$RUNNER_TEMP/runpod-state"
+      - name: Preserve Pod cleanup state
+        if: always() && inputs.operation == 'test'
+        run: |
+          if [ -f "$RUNNER_TEMP/runpod-state/state.json" ]; then
+            mkdir -p "$RUNNER_TEMP/runpod-results"
+            cp "$RUNNER_TEMP/runpod-state/state.json" "$RUNNER_TEMP/runpod-results/runpod-state.json"
+          fi
       - name: Upload CUDA logs and wheel
         if: always() && inputs.operation == 'test'
         uses: actions/upload-artifact@v4

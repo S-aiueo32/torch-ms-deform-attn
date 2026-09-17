@@ -1,0 +1,36 @@
+/workspace/ci/kernel-hub.bfI6VhI3/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.bfI6VhI3/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.bfI6VhI3/venv/lib/python3.11/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+  _warn_once(
+W0917 06:57:24.047000 2908 torch/_inductor/utils.py:1679] [0/0] Not enough SMs to use max_autotune_gemm mode
+/workspace/ci/kernel-hub.bfI6VhI3/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.bfI6VhI3/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+W0917 06:57:58.399000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:58.401000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:58.403000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:58.405000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:58.406000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:58.407000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:58.699000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:59.835000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:59.837000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:59.838000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:59.839000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:59.840000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:59.841000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:57:59.899000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 06:58:00.167000 2908 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+Traceback (most recent call last):
+  File "/workspace/ci/source/kernel-hub/e2e/rt_detr.py", line 394, in <module>
+    main()
+  File "/workspace/ci/source/kernel-hub/e2e/rt_detr.py", line 383, in main
+    raise RuntimeError("E2E cases failed; inspect per-case errors in the report")
+RuntimeError: E2E cases failed; inspect per-case errors in the report

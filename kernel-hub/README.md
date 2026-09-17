@@ -46,10 +46,10 @@ Changes found downstream should be applied upstream before the next export.
 - No CPU/MPS dispatch is registered in the HF native binding. The CPU test
   shim described below is only a test fixture.
 
-The builder configuration follows edition 5. `flake.nix` currently follows
-the builder's main branch: generate and retain `flake.lock` on the Linux build
-host before recording reproducible build evidence. CUDA, PyTorch and compiler
-compatibility have not yet been established for this adapter.
+The configuration is validated with builder 0.16.0. `flake.nix` currently follows
+the builder's main branch: generate and retain `flake.lock` before validating a
+publishable Nix build. The recorded L4 run uses the pinned builder's local CMake
+development route with PyTorch 2.10.0 and CUDA 12.6.
 
 ## Validation
 
@@ -82,13 +82,14 @@ The layer tests load via `kernels.get_kernel` and compare eager and
 compiled layer outputs/gradients against an independent grid-sample reference.
 Missing CUDA is an error, not a successful skipped validation.
 
-Phase 1 remains open until a real builder/loader/CUDA run passes and numerical
-comparison against a pinned existing HF artifact is recorded. Also outstanding:
-execution of the included GPU autocast and invalid device/dtype checks, PyTorch version coverage,
-and a reproducible builder lock. A [Phase 2 RT-DETR E2E runner](e2e/README.md)
-now covers Transformers' integration path; its CPU fixture tests do not replace
-the pending real CUDA artifact run. Phase 3 benchmarking has not been run.
-Do not claim HF adoption or CUDA end-to-end compatibility yet.
+The [L4 validation record](../docs/validation/kernel-hub/README.md) confirms native
+build/loading, reference-based eager/compiled layer gradients, autocast and
+invalid device/dtype checks. FP32/FP64 published-HF operator comparisons passed;
+strict FP16 gradient parity failed. The [Phase 2 RT-DETR runner](e2e/README.md)
+passed 14/20 CUDA E2E cases, with compiled numerical differences remaining.
+The full regression gates, wider PyTorch coverage and reproducible Nix build
+remain open. Phase 3 benchmarking has not been run. Do not claim HF adoption
+or complete CUDA E2E compatibility.
 
 ## References
 

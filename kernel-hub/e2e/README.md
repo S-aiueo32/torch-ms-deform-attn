@@ -110,6 +110,8 @@ Transformers 5.17.0 requires `0.16.0 <= kernels < 0.17.0`, hence the explicit
 pin. PyTorch 2.5.1 failed full-graph inference in Transformers' decorator code;
 the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for compilation checks.
 
-Phase 2's CUDA completion gate remains the real-artifact run and pinned-HF
-comparison above. CPU fixture results cannot satisfy it. Pretrained model
+The [L4 real-artifact run](../../docs/validation/kernel-hub/README.md) passed
+14/20 cases, including all eager inference/training modes. Compiled numerical
+differences and strict low-precision operator parity remain unresolved; the full
+regression gate has not passed. Pretrained model
 accuracy, RF-DETR and PP-DocLayoutV2 remain separate follow-up coverage.

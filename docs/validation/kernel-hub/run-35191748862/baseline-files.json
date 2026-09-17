@@ -1,0 +1,9 @@
+{
+  "metadata.json": "ecf6cccd8dc285fdd2df49a2da5dd115e201432e85d95055db454975a3fc7811",
+  "layers.py": "1f79b2a5b0ed79a82fcc6e564ec7260f4e417c984d6f295b3c9af4cdbde4f360",
+  "__init__.py": "fcff6b98a8e383384ea94de97928d4222d2ef466b102630471a41be643461bdd",
+  "_ops.py": "13e94b1243860b618297357b7c6c85a99205654ac2d15ff4a3d4085fd5c88d27",
+  "metadata.json.sigstore": "20618029b6d30d558eff414299bdf13660b4fcf338df3d4333cee91a959dcf4b",
+  "_deformable_detr_cuda_5129df0.abi3.so": "1a5053e022f3e5840ca9f40d361b5356ef0beeefdd8686029378dd4a7284b959",
+  "deformable_detr/__init__.py": "0c560f96b857c188c4a8297ff27d1299619957c3459a5e433e132329fbfdf066"
+}

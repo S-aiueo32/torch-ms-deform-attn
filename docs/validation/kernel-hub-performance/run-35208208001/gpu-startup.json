@@ -1,0 +1,67 @@
+[
+  {
+    "time": "2026-09-17T10:05:22.330340+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:05:32.778764+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:05:43.264719+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:05:53.684597+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:06:04.099471+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:06:14.484706+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:06:24.876009+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:06:35.284629+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:06:45.675032+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:06:56.064570+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:07:06.788200+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:07:17.194917+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T10:07:29.222736+00:00",
+    "status": "RUNNING",
+    "stage": "ready"
+  }
+]

@@ -62,9 +62,30 @@ def summarize(report):
         for row in results
     }
     comparisons = []
+    previous_comparisons = []
     for row in results:
         if row["backend"] not in BACKENDS[:2]:
             continue
+        prefix = tuple(row[key] for key in ("case", "dtype", "policy", "mode"))
+        previous = lookup.get((*prefix, "upstream-before-perf"))
+        if previous is not None:
+            previous_repeats = {
+                item["repeat"]: item["wall_ms"]
+                for item in grouped[(*prefix, "upstream-before-perf")]
+            }
+            previous_comparisons.append(
+                {
+                    **row,
+                    "previous_wall_ms": previous["wall_ms"],
+                    "latency_ratio_to_previous": row["wall_ms"] / previous["wall_ms"],
+                    "repetition_ratios": [
+                        item["wall_ms"] / previous_repeats[item["repeat"]]
+                        for item in sorted(
+                            grouped[(*prefix, row["backend"])], key=lambda item: item["repeat"]
+                        )
+                    ],
+                }
+            )
         baseline = lookup.get((row["case"], row["dtype"], row["policy"], row["mode"], "hf-native"))
         if baseline is None:
             continue
@@ -83,6 +104,7 @@ def summarize(report):
     return {
         "results": results,
         "hf_comparisons": comparisons,
+        "previous_upstream_comparisons": previous_comparisons,
         "excluded": excluded,
         "setup_errors": report.get("setup_errors", {}),
         "note": "Flags require a fresh-process repeat before confirming regression.",

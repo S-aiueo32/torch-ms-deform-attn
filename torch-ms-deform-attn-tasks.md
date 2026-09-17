@@ -178,7 +178,7 @@ L4 / Python 3.11 / PyTorch 2.5.1 / CUDA 12.4では、36テスト中2件skipとme
 - [x] ninja有無、build option変更後の再ビルドで古いobjectが残らないことを確認する。
 - [ ] native thread-pool backendを対応範囲に残すなら、そのPyTorch buildで実行結果を記録する。
 
-**対応メモ（2026-09-15）:** native thread-pool の実PyTorchビルドは未検証であり、対応保証の対象にせずbest effortと明記。その他の実ビルド・自動fallback・失敗経路の記録は `docs/validation/2026-09-15-p2/` を参照。
+**対応メモ（2026-09-15）:** native thread-pool の実PyTorchビルドは未検証であり、対応保証の対象にせずbest effortと明記。その他の実ビルド・自動fallback・失敗経路の記録は `docs/validation/execution-and-benchmarks/` を参照。
 
 **完了条件:** 分岐ごとに期待backendまたは説明的エラーが確認できる。コンパイラをmockしたunit testだけで実バイナリのリンク・ロード成功を保証したことにしない。
 
@@ -318,4 +318,4 @@ Ninja有無、設定切替による再ビルドと失敗経路を確認済み。
 実PyTorchビルドのみ未検証で、best effortと明記した。
 
 詳細、検証対象ソース、GPU削除記録、計測JSONは
-[検証サマリ](docs/validation/2026-09-15-p2/README.md)を参照。
+[検証サマリ](docs/validation/execution-and-benchmarks/README.md)を参照。

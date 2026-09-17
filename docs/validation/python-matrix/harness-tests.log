@@ -1,0 +1,94 @@
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+CUDA checks and verified Pod cleanup completed
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Pod cleanup failed; the separate cleanup job must retry
+Verified Pod ownedpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Verified Pod ownedpod is deleted
+Pod listing was unavailable; deletion of the recorded Pod was verified
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Verified Pod ownedpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Cleanup complete for tda-gha-123-456-1 (0 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Verified Pod oldpod is deleted
+Stale owned-Pod cleanup completed
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+CUDA checks and verified Pod cleanup completed
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+CUDA checks and verified Pod cleanup completed
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+CUDA checks and verified Pod cleanup completed
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+CUDA checks and verified Pod cleanup completed
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+CUDA checks and verified Pod cleanup completed
+Requesting 1 x A5000 Pod (limit $0.50/hour)
+Artifact collection failed; cleanup will continue
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+Requesting 2 x A5000 Pod (limit $1/hour)
+Verified Pod newpod is deleted
+Cleanup complete for tda-gha-123-456-1 (1 Pod identifiers checked)
+CUDA checks and verified Pod cleanup completed
+GPU A5000: Secure Cloud catalog price $0.27/hour; capacity HIGH
+GPU A5000: Secure Cloud catalog price $0.54/hour; capacity HIGH
+usage: python3 -m unittest [-h] {run,cleanup,reap,check} ...
+python3 -m unittest: error: matrix-cases requires at most nine distinct pairs
+usage: python3 -m unittest [-h] {run,cleanup,reap,check} ...
+python3 -m unittest: error: matrix-cases requires one GPU, sanitizer=none and no benchmark
+usage: python3 -m unittest [-h] {run,cleanup,reap,check} ...
+python3 -m unittest: error: matrix-cases requires one GPU, sanitizer=none and no benchmark
+usage: python3 -m unittest [-h] {run,cleanup,reap,check} ...
+python3 -m unittest: error: matrix-cases must match the selected image's CUDA toolkit
+usage: python3 -m unittest [-h] {run,cleanup,reap,check} ...
+python3 -m unittest: error: Expected supported TORCH:PYTHON pair
+usage: python3 -m unittest [-h] {run,cleanup,reap,check} ...
+python3 -m unittest: error: Expected supported TORCH:PYTHON pair
+usage: python3 -m unittest [-h] {run,cleanup,reap,check} ...
+python3 -m unittest: error: Pair is outside PyTorch's Python compatibility range
+Starting torch-2.4.0-python-3.10
+Finished torch-2.4.0-python-3.10: exit 1
+Starting torch-2.4.0-python-3.11
+Finished torch-2.4.0-python-3.11: exit 0
+----------------------------------------------------------------------
+Ran 46 tests in 0.060s
+
+OK

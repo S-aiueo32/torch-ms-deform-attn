@@ -632,6 +632,21 @@ def run(api, args):
             f"{remaining - 30}s bash scripts/run_cuda_checks.sh {args.sanitizer} /workspace/ci/results"
             + (" benchmark" if args.benchmark else "")
         )
+        matrix_cases = getattr(args, "matrix_cases", None)
+        if matrix_cases:
+            # uv provisions standard CPython versions without changing system Python.
+            workload = (
+                "python3 -m venv /workspace/ci/uv && "
+                "/workspace/ci/uv/bin/pip install uv==0.12.5 && "
+                "PATH=/workspace/ci/uv/bin:$PATH python3 scripts/run_support_matrix.py "
+                "--output /workspace/ci/results --cases "
+                + " ".join(shlex.quote(case) for case in matrix_cases)
+            )
+            remote = (
+                f"cd /workspace/ci/source && CUDA_CHECKS_SOURCE_SHA={source_sha} "
+                f"timeout --signal=TERM --kill-after=30s {remaining - 30}s bash -c "
+                + shlex.quote(workload)
+            )
         with (args.output_dir / "controller.log").open("wb") as output:
             result = stream_command(ssh + [remote], output, deadline, tee=True)
         if result:
@@ -741,6 +756,12 @@ def parse_args(argv=None):
         )
         subparser.add_argument("--max-hourly-usd", type=money, default=Decimal("0.50"))
     run_parser.add_argument("--torch-version", choices=tuple(TORCH_CONFIGS), default="2.5.1")
+    run_parser.add_argument(
+        "--matrix-cases",
+        nargs="+",
+        metavar="TORCH:PYTHON",
+        help="Run up to nine pairs on one Pod, using --torch-version's toolkit image",
+    )
     run_parser.add_argument("--gpu-count", type=int, choices=(1, 2), default=1)
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
@@ -756,6 +777,19 @@ def parse_args(argv=None):
     )
     run_parser.add_argument("--timeout-minutes", type=int, default=45)
     args = parser.parse_args(argv)
+    if getattr(args, "matrix_cases", None):
+        from run_support_matrix import parse_case, toolkit
+
+        try:
+            cases = [parse_case(case) for case in args.matrix_cases]
+        except argparse.ArgumentTypeError as error:
+            parser.error(str(error))
+        if len(cases) > 9 or len(set(cases)) != len(cases):
+            parser.error("matrix-cases requires at most nine distinct pairs")
+        if any(toolkit(version) != TORCH_CONFIGS[args.torch_version][1] for version, _ in cases):
+            parser.error("matrix-cases must match the selected image's CUDA toolkit")
+        if args.benchmark or args.sanitizer != "none" or args.gpu_count != 1:
+            parser.error("matrix-cases requires one GPU, sanitizer=none and no benchmark")
     if hasattr(args, "gpu") and args.gpu not in GPU_IDS:
         args.gpu = next(alias for alias, identifier in GPU_IDS.items() if identifier == args.gpu)
     if hasattr(args, "repository") and not re.fullmatch(

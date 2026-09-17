@@ -1,0 +1,124 @@
+Using CPython 3.10.21
+Creating virtual environment with seed packages at: /tmp/msda-matrix-a02olnvb/base
+ + packaging==26.3
+ + pip==26.2.1
+ + setuptools==84.0.0
+ + wheel==0.48.0
+Activate with: source /tmp/msda-matrix-a02olnvb/base/bin/activate
+Python 3.10.21
+Source SHA: 12cd60774870b2849628cd24e9705ef68348d91f
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Tue_Oct_29_23:50:19_PDT_2024
+Cuda compilation tools, release 12.6, V12.6.85
+Build cuda_12.6.r12.6/compiler.35059454_0
+Collecting numpy
+  Downloading numpy-2.2.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.8/16.8 MB 92.3 MB/s eta 0:00:00
+Requirement already satisfied: setuptools>=77 in /tmp/torch-ms-deform-attn-cuda.1BWrg2ap/venv/lib/python3.10/site-packages (79.0.1)
+Collecting packaging>=24.2
+  Downloading packaging-26.3-py3-none-any.whl (129 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 kB 256.2 MB/s eta 0:00:00
+Collecting wheel
+  Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+Collecting ninja
+  Downloading ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (183 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 183.4/183.4 kB 430.3 MB/s eta 0:00:00
+Collecting build
+  Downloading build-1.6.1-py3-none-any.whl (31 kB)
+Collecting pyproject_hooks
+  Downloading pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+Collecting tomli>=1.1.0
+  Downloading tomli-2.4.1-py3-none-any.whl (14 kB)
+Installing collected packages: tomli, pyproject_hooks, packaging, numpy, ninja, wheel, build
+Successfully installed build-1.6.1 ninja-1.13.2 numpy-2.2.6 packaging-26.3 pyproject_hooks-1.3.3 tomli-2.4.1 wheel-0.48.0
+
+[notice] A new release of pip is available: 23.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Looking in indexes: https://download.pytorch.org/whl/cu126
+Collecting torch==2.9.1
+  Obtaining dependency information for torch==2.9.1 from https://download-r2.pytorch.org/whl/cu126/torch-2.9.1%2Bcu126-cp310-cp310-manylinux_2_28_x86_64.whl.metadata
+  Downloading https://download-r2.pytorch.org/whl/cu126/torch-2.9.1%2Bcu126-cp310-cp310-manylinux_2_28_x86_64.whl.metadata (30 kB)
+Collecting nvidia-cufile-cu12==1.11.1.6
+  Downloading https://pypi.nvidia.com/nvidia-cufile-cu12/nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 15.6 MB/s eta 0:00:00
+Collecting nvidia-cuda-nvrtc-cu12==12.6.77
+  Downloading https://pypi.nvidia.com/nvidia-cuda-nvrtc-cu12/nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl (23.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.7/23.7 MB 103.3 MB/s eta 0:00:00
+Collecting networkx>=2.5.1
+  Obtaining dependency information for networkx>=2.5.1 from https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl.metadata
+  Downloading networkx-3.4.2-py3-none-any.whl.metadata (6.3 kB)
+Collecting nvidia-cublas-cu12==12.6.4.1
+  Downloading https://pypi.nvidia.com/nvidia-cublas-cu12/nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (393.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 393.1/393.1 MB 103.4 MB/s eta 0:00:00
+Collecting nvidia-nvtx-cu12==12.6.77
+  Downloading https://pypi.nvidia.com/nvidia-nvtx-cu12/nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (89 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 89.3/89.3 kB 168.9 MB/s eta 0:00:00
+Collecting nvidia-cudnn-cu12==9.10.2.21
+  Downloading https://pypi.nvidia.com/nvidia-cudnn-cu12/nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 706.8/706.8 MB 107.2 MB/s eta 0:00:00
+Collecting jinja2
+  Obtaining dependency information for jinja2 from https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata
+  Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Discarding https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl (from https://download.pytorch.org/whl/cu126/jinja2/): Requested jinja2 from https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl (from torch==2.9.1) has inconsistent Name: expected 'jinja2', but metadata has 'Jinja2'
+  Obtaining dependency information for jinja2 from https://download.pytorch.org/whl/Jinja2-3.1.4-py3-none-any.whl.metadata
+  Downloading https://download.pytorch.org/whl/Jinja2-3.1.4-py3-none-any.whl.metadata (2.6 kB)
+Discarding https://download.pytorch.org/whl/Jinja2-3.1.4-py3-none-any.whl#sha256=bc5dd2abb727a5319567b7a813e6a2e7318c39f4f487cfe6c89c6f9c7d25197d (from https://download.pytorch.org/whl/cu126/jinja2/): Requested jinja2 from https://download.pytorch.org/whl/Jinja2-3.1.4-py3-none-any.whl#sha256=bc5dd2abb727a5319567b7a813e6a2e7318c39f4f487cfe6c89c6f9c7d25197d (from torch==2.9.1) has inconsistent Name: expected 'jinja2', but metadata has 'Jinja2'
+  Downloading https://download.pytorch.org/whl/Jinja2-3.1.3-py3-none-any.whl (133 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 133.2/133.2 kB 64.1 MB/s eta 0:00:00
+Collecting sympy>=1.13.3
+  Obtaining dependency information for sympy>=1.13.3 from https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl.metadata
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting fsspec>=0.8.5
+  Obtaining dependency information for fsspec>=0.8.5 from https://files.pythonhosted.org/packages/fd/3c/6a2bf344106328fd04963664a60b9bb6496fc25df8e962fcdc1367285fb9/fsspec-2026.7.0-py3-none-any.whl.metadata
+  Downloading fsspec-2026.7.0-py3-none-any.whl.metadata (10 kB)
+Collecting nvidia-cufft-cu12==11.3.0.4
+  Downloading https://pypi.nvidia.com/nvidia-cufft-cu12/nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (200.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 200.2/200.2 MB 89.8 MB/s eta 0:00:00
+Collecting nvidia-curand-cu12==10.3.7.77
+  Downloading https://pypi.nvidia.com/nvidia-curand-cu12/nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (56.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 56.3/56.3 MB 110.3 MB/s eta 0:00:00
+Collecting nvidia-nvjitlink-cu12==12.6.85
+  Downloading https://pypi.nvidia.com/nvidia-nvjitlink-cu12/nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (19.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 19.7/19.7 MB 111.0 MB/s eta 0:00:00
+Collecting nvidia-cuda-runtime-cu12==12.6.77
+  Downloading https://pypi.nvidia.com/nvidia-cuda-runtime-cu12/nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (897 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 897.7/897.7 kB 127.4 MB/s eta 0:00:00
+Collecting nvidia-cusolver-cu12==11.7.1.2
+  Downloading https://pypi.nvidia.com/nvidia-cusolver-cu12/nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (158.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 158.2/158.2 MB 114.5 MB/s eta 0:00:00
+Collecting nvidia-cuda-cupti-cu12==12.6.80
+  Downloading https://pypi.nvidia.com/nvidia-cuda-cupti-cu12/nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.9/8.9 MB 110.7 MB/s eta 0:00:00
+Collecting nvidia-cusparselt-cu12==0.7.1
+  Downloading https://pypi.nvidia.com/nvidia-cusparselt-cu12/nvidia_cusparselt_cu12-0.7.1-py3-none-manylinux2014_x86_64.whl (287.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 287.2/287.2 MB 104.0 MB/s eta 0:00:00
+Collecting nvidia-nvshmem-cu12==3.3.20
+  Downloading https://pypi.nvidia.com/nvidia-nvshmem-cu12/nvidia_nvshmem_cu12-3.3.20-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (124.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 124.7/124.7 MB 100.3 MB/s eta 0:00:00
+Collecting typing-extensions>=4.10.0
+  Obtaining dependency information for typing-extensions>=4.10.0 from https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl.metadata
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Discarding https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl#sha256=481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8 (from https://download.pytorch.org/whl/cu126/typing-extensions/) (requires-python:>=3.9): Requested typing-extensions>=4.10.0 from https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl#sha256=481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8 (from torch==2.9.1) has inconsistent Name: expected 'typing-extensions', but metadata has 'typing_extensions'
+  Downloading typing_extensions-4.16.0.tar.gz (113 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 113.6/113.6 kB 3.0 MB/s eta 0:00:00
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'error'
+  error: subprocess-exited-with-error
+
+  × pip subprocess to install build dependencies did not run successfully.
+  │ exit code: 1
+  ╰─> [3 lines of output]
+      Looking in indexes: https://download.pytorch.org/whl/cu126
+      ERROR: Could not find a version that satisfies the requirement flit_core<4,>=3.11 (from versions: none)
+      ERROR: No matching distribution found for flit_core<4,>=3.11
+      [end of output]
+
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
+
+× pip subprocess to install build dependencies did not run successfully.
+│ exit code: 1
+╰─> See above for output.
+
+note: This error originates from a subprocess, and is likely not a problem with pip.

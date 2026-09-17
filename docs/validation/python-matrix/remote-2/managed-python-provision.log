@@ -1,0 +1,15 @@
+Downloading cpython-3.13.15-linux-x86_64-gnu (download) (33.2MiB)
+Downloading cpython-3.11.16-linux-x86_64-gnu (download) (29.5MiB)
+Downloading cpython-3.14.7-linux-x86_64-gnu (download) (34.2MiB)
+Downloading cpython-3.12.14-linux-x86_64-gnu (download) (32.6MiB)
+ Downloaded cpython-3.12.14-linux-x86_64-gnu (download)
+ Downloaded cpython-3.13.15-linux-x86_64-gnu (download)
+ Downloaded cpython-3.11.16-linux-x86_64-gnu (download)
+ Downloaded cpython-3.14.7-linux-x86_64-gnu (download)
+Installed 5 versions in 2.09s
+ + cpython-3.10.21-linux-x86_64-gnu (python3.10)
+ + cpython-3.11.16-linux-x86_64-gnu (python3.11)
+ + cpython-3.12.14-linux-x86_64-gnu (python3.12)
+ + cpython-3.13.15-linux-x86_64-gnu (python3.13)
+ + cpython-3.14.7-linux-x86_64-gnu (python3.14)
+warning: `/home/ci/.local/bin` is not on your PATH. To use installed Python executables, run `export PATH="/home/ci/.local/bin:$PATH"` or `uv python update-shell`.

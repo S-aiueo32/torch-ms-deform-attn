@@ -37,8 +37,9 @@ run_checks() {
 
     export CUDA_CHECKS_TORCH_VERSION=${CUDA_CHECKS_TORCH_VERSION:-2.5.1}
     case "$CUDA_CHECKS_TORCH_VERSION" in
-        2.4.0|2.5.1) export CUDA_CHECKS_TOOLKIT=12.4; cuda_checks_index=cu124 ;;
-        2.7.1|2.8.0|2.14.0) export CUDA_CHECKS_TOOLKIT=12.6; cuda_checks_index=cu126 ;;
+        2.4.0|2.5.0|2.5.1) export CUDA_CHECKS_TOOLKIT=12.4; cuda_checks_index=cu124 ;;
+        2.7.1|2.8.0|2.9.1|2.10.0|2.11.0|2.12.1|2.13.0|2.14.0)
+            export CUDA_CHECKS_TOOLKIT=12.6; cuda_checks_index=cu126 ;;
         *) echo 'Unsupported validation PyTorch version' >&2; exit 2 ;;
     esac
     local cuda_checks_base_python=${CUDA_CHECKS_PYTHON:-python3}
@@ -55,6 +56,9 @@ run_checks() {
     "$cuda_checks_base_python" -m venv "$cuda_checks_temp/venv"
     export PATH="$cuda_checks_temp/venv/bin:$PATH"
     local cuda_checks_python="$cuda_checks_temp/venv/bin/python"
+    # Older CPython ensurepip bundles mishandle normalized package names from
+    # the PyTorch index (e.g. typing-extensions versus typing_extensions).
+    "$cuda_checks_python" -m pip install --no-cache-dir --upgrade pip
     "$cuda_checks_python" -m pip install --no-cache-dir \
         numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
     "$cuda_checks_python" -m pip install --no-cache-dir "torch==$CUDA_CHECKS_TORCH_VERSION" \
@@ -157,6 +161,10 @@ Path(sys.argv[1]).write_text(json.dumps({
 }, indent=2) + "\n")
 assert success, "CPU-only wheel on GPU test must pass without skips"
 PY
+    if [[ "${CUDA_CHECKS_CPU_SUITE:-0}" == 1 ]]; then
+        cp -- "$cuda_checks_source/scripts/cpu_test_report.py" "$cuda_checks_temp/"
+        "$cuda_checks_python" cpu_test_report.py --output "$cuda_checks_output/cpu-tests.json"
+    fi
     "$cuda_checks_python" - "$cuda_checks_output/cuda-completion.json" <<'PY'
 import json, os, sys
 from pathlib import Path

@@ -1,0 +1,22 @@
+Collecting uv==0.12.5
+  Downloading uv-0.12.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+Downloading uv-0.12.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (23.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.7/23.7 MB 73.0 MB/s eta 0:00:00
+Installing collected packages: uv
+Successfully installed uv-0.12.5
+Starting torch-2.11.0-python-3.12
+Finished torch-2.11.0-python-3.12: exit 0
+Starting torch-2.11.0-python-3.13
+Finished torch-2.11.0-python-3.13: exit 0
+Starting torch-2.11.0-python-3.14
+Finished torch-2.11.0-python-3.14: exit 0
+Starting torch-2.12.1-python-3.10
+Finished torch-2.12.1-python-3.10: exit 1
+Starting torch-2.12.1-python-3.11
+Finished torch-2.12.1-python-3.11: exit 0
+Starting torch-2.12.1-python-3.12
+Finished torch-2.12.1-python-3.12: exit 0
+Starting torch-2.12.1-python-3.13
+Finished torch-2.12.1-python-3.13: exit 0
+Starting torch-2.12.1-python-3.14
+Finished torch-2.12.1-python-3.14: exit 0

@@ -1,0 +1,9 @@
+{
+  "cpu-only-gpu-tests.json": "eaa77e8bfe78e8e382d7e67d00b99900df7eb6d7d55a68830c5c6146e975bd96",
+  "cpu-tests.json": "60e9bf4e0483fc18bf13bed2149b4c61f4ea37b2abe9536887a438519d98703c",
+  "cuda-checks.log": "b1d9bef4b099e682aaef8b5a3a07cc51230a9d3519c491f5979ba9d7aed9c2e5",
+  "cuda-completion.json": "8780edc2e8dfaac872c9b10ceb880993bc54e2abc3e614398ba3e3e3da9d989d",
+  "cuda-tests.json": "f70a5b2d3a709143f65dd02a3889a3b312e54d11319ab8318b02e8bd6a702a1b",
+  "driver.log": "a8e87ff65f6f2488304274b98371fa05957305cf1f9a071531074d99aac7c90c",
+  "nvidia-smi.txt": "f86629dda29f44c21f07ebd6b380575cc6e1485623db77d0e86ef89235bccf9e"
+}

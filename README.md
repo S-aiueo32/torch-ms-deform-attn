@@ -62,11 +62,12 @@ nondeterministic.
 Compatibility on Linux x86_64 with standard CPython (GIL enabled).
 
 - ✅ Verified with this library.
+- ⚠️ Tested, but the full suite failed; see the validation record for limitations.
 - ➖ Within PyTorch's Python compatibility range, but unverified with this library.
 - ❌ Outside PyTorch's Python compatibility range.
 
-An asterisk (*) marks experimental Python support in PyTorch; those combinations
-are also unverified with this library. Upstream compatibility follows
+An asterisk (*) marks experimental Python support in PyTorch. The icon records
+this library's validation status independently. Upstream compatibility follows
 [PyTorch's release matrix](https://github.com/pytorch/pytorch/blob/v2.14.0/RELEASE.md#release-compatibility-matrix)
 and [2.14.0 package metadata](https://pypi.org/project/torch/2.14.0/).
 
@@ -74,38 +75,42 @@ and [2.14.0 package metadata](https://pypi.org/project/torch/2.14.0/).
 
 | PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
 | --- | :---: | :---: | :---: | :---: | :---: |
-| 2.4.0 | ✅ | ✅ | ➖ | ❌ | ❌ |
-| 2.5.0 | ✅ | ➖ | ➖ | ➖* | ❌ |
-| 2.5.1 | ➖ | ✅ | ➖ | ➖* | ❌ |
-| 2.7.1 | ➖ | ✅ | ✅ | ➖ | ❌ |
-| 2.8.0 | ➖ | ✅ | ✅ | ➖ | ❌ |
-| 2.9.1 | ➖ | ➖ | ✅ | ➖ | ➖* |
-| 2.10.0 | ➖ | ➖ | ✅ | ➖ | ➖* |
-| 2.11.0 | ➖ | ➖ | ✅ | ➖ | ➖* |
-| 2.12.1 | ➖ | ➖ | ✅ | ➖ | ➖* |
-| 2.13.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
-| 2.14.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
+| 2.4.0 | ✅ | ✅ | ✅ | ❌ | ❌ |
+| 2.5.0 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
+| 2.5.1 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
+| 2.7.1 | ✅ | ✅ | ✅ | ✅ | ❌ |
+| 2.8.0 | ✅ | ✅ | ✅ | ✅ | ❌ |
+| 2.9.1 | ✅ | ✅ | ✅ | ✅ | ⚠️* |
+| 2.10.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
+| 2.11.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
+| 2.12.1 | ✅ | ✅ | ✅ | ✅ | ✅* |
+| 2.13.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 2.14.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### GPU (CUDA)
 
 | PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
 | --- | :---: | :---: | :---: | :---: | :---: |
-| 2.4.0 | ➖ | ✅ | ➖ | ❌ | ❌ |
-| 2.5.0 | ➖ | ➖ | ➖ | ➖* | ❌ |
-| 2.5.1 | ➖ | ✅ | ➖ | ➖* | ❌ |
-| 2.7.1 | ➖ | ✅ | ➖ | ➖ | ❌ |
-| 2.8.0 | ➖ | ✅ | ➖ | ➖ | ❌ |
-| 2.9.1 | ➖ | ➖ | ➖ | ➖ | ➖* |
-| 2.10.0 | ➖ | ➖ | ➖ | ➖ | ➖* |
-| 2.11.0 | ➖ | ➖ | ➖ | ➖ | ➖* |
-| 2.12.1 | ➖ | ➖ | ➖ | ➖ | ➖* |
-| 2.13.0 | ➖ | ➖ | ➖ | ➖ | ➖ |
-| 2.14.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
+| 2.4.0 | ✅ | ✅ | ✅ | ❌ | ❌ |
+| 2.5.0 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
+| 2.5.1 | ✅ | ✅ | ✅ | ⚠️* | ❌ |
+| 2.7.1 | ✅ | ✅ | ✅ | ✅ | ❌ |
+| 2.8.0 | ✅ | ✅ | ✅ | ✅ | ❌ |
+| 2.9.1 | ✅ | ✅ | ✅ | ✅ | ⚠️* |
+| 2.10.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
+| 2.11.0 | ✅ | ✅ | ✅ | ✅ | ✅* |
+| 2.12.1 | ✅ | ✅ | ✅ | ✅ | ✅* |
+| 2.13.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 2.14.0 | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 CUDA validation selects a CUDA build from
 [PyTorch's official version-specific builds](https://pytorch.org/get-started/previous-versions/)
 and uses a matching toolkit. Each ✅ covers that tested pair; exact CUDA versions
 are recorded in the [detailed matrix](docs/installation.md#prerequisites).
+
+PyTorch 2.5.0/2.5.1 on Python 3.13 and 2.9.1 on Python 3.14 reject
+`torch.compile` upstream. Their full suites fail; build and test results are in the
+[Python-version validation](docs/validation/python-matrix/README.md).
 
 ### Scope
 
@@ -115,10 +120,11 @@ This library requires Python >=3.10 even where PyTorch supports older Python.
 The dependency range permits more versions than this tested matrix.
 MPS is unsupported.
 
-The 2.4.0 and 2.8–2.14 entries describe current-source validation; the published
-`0.1.0rc2` requires PyTorch >=2.5. Results are tied to specific source revisions:
-see the [2.4.0 evidence](docs/validation/2026-09-17-pytorch240/README.md),
-[2.8–2.14 evidence](docs/validation/2026-09-17-newer-pytorch/README.md), and
+The tables combine current-source validation and historical release records.
+The published `0.1.0rc2` requires PyTorch >=2.5. Results are tied to source revisions:
+see the [Python-matrix evidence](docs/validation/python-matrix/README.md),
+[2.4.0 evidence](docs/validation/minimum-pytorch/README.md),
+[2.8–2.14 evidence](docs/validation/pytorch-versions/README.md), and
 [earlier validation records](docs/installation.md#prerequisites).
 
 ## Validation and documentation
@@ -135,6 +141,7 @@ uv run --locked python -m unittest discover -s tests -v
 - [API](docs/api.md): arguments, reference implementation, AMP, compilation, limitations.
 - [Upstream compatibility](docs/compatibility.md): pinned Deformable-DETR module and training-step checks.
 - [Development and CI](docs/development.md): tests, uv builds and PyPI publishing, workflow coverage.
+- [Validation records](docs/validation/README.md): verification targets, environments, results, and evidence.
 - [Benchmarks](docs/benchmarks.md): CPU/CUDA results and measurement commands.
 - [GPU runner](docs/gpu-runner.md): Runpod setup, CUDA checks, cleanup, and costs.
 

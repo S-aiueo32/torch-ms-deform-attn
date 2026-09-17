@@ -100,6 +100,40 @@ alongside the output artifacts. Do not copy the temporary SSH private keys into
 release evidence. The source SHA is resolved once before archiving, so later
 checkout changes do not change the code being tested.
 
+### Validate several Python versions on one Pod
+
+The local controller can reuse a Pod for up to nine pairs that share a CUDA
+toolkit. Select the container with `--torch-version`, then list the pairs:
+
+```bash
+python scripts/runpod_ci.py run \
+  --repository OWNER/REPO --repository-id NUMERIC_REPOSITORY_ID \
+  --run-id UNIQUE_NUMERIC_ID --attempt 1 --source . \
+  --state-dir /tmp/msda-matrix-state --output-dir /tmp/msda-matrix-results \
+  --gpu L4 --max-hourly-usd 0.50 --timeout-minutes 60 \
+  --torch-version 2.14.0 --matrix-cases 2.9.1:3.13 2.14.0:3.14
+```
+
+Matrix mode provisions standard, GIL-enabled managed CPython with uv, runs the
+full CUDA installed-wheel suite, then builds a fresh CPU-only wheel and runs its
+full suite too. Every pair has fresh build and virtual-environment directories.
+Failures do not prevent later pairs from running, but any failure makes the
+controller fail. The normal ownership, price checks, deadline, artifact
+collection and verified Pod deletion still apply. Up to nine pairs share the
+same deadline; this is not nine separate 60-minute allowances.
+
+Use the 2.5.1 container for PyTorch 2.4.0/2.5.0/2.5.1 with CUDA 12.4, and the
+2.14.0 container for the listed 2.7–2.14 versions with CUDA 12.6. Matrix mode
+requires one GPU, `sanitizer=none` and no benchmark. Its compatibility evidence
+does not add sanitizer or multi-GPU coverage.
+
+Artifacts are prefixed `torch-VERSION-python-VERSION-`. Strip that prefix into
+a separate directory per pair before running `verify_cuda_release.py` against
+the archived source SHA. `cpu-tests.json` records the separate CPU-only suite;
+`matrix-summary.json` records each attempted pair's exit status. Missing reports
+mean the corresponding validation phase was not reached, even when wheels were
+downloaded or built successfully. Preserve failed attempts as well as successes.
+
 ## Cleanup and costs
 
 The controller deletes the Pod in a `finally` block, handles cancellation signals,
@@ -184,7 +218,7 @@ with `--error-exitcode 1`; inspect the tool summary in its individual
 `sanitizer-TOOL.log`. Archive those logs with the exact source SHA and tool version
 alongside the release evidence described in T02. A historical memcheck pass is
 not racecheck/synccheck/initcheck evidence for another revision. All four tools passed on both PyTorch 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6
-with L4; see the [revision-bound P1 evidence](validation/2026-09-14-p1/README.md).
+with L4; see the [kernel correctness evidence](validation/kernel-correctness/README.md).
 
 Only named positive sampling/reduction tests run under sanitizers. Tests that
 intentionally trigger device assertions still run in isolated subprocesses in

@@ -1,0 +1,47 @@
+{
+  "source_sha": "12cd60774870b2849628cd24e9705ef68348d91f",
+  "success": true,
+  "python": "3.13.15",
+  "torch": "2.8.0+cu126",
+  "cuda": "12.6",
+  "gpu": [
+    "NVIDIA L4"
+  ],
+  "driver": "570.195.03",
+  "toolkit": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Tue_Oct_29_23:50:19_PDT_2024\nCuda compilation tools, release 12.6, V12.6.85\nBuild cuda_12.6.r12.6/compiler.35059454_0",
+  "build": {
+    "FORCE_CPU": "0",
+    "FORCE_CUDA": "1",
+    "FORCE_OPENMP": "1",
+    "MAX_JOBS": "2",
+    "TORCH_CUDA_ARCH_LIST": "auto"
+  },
+  "cpu_backend": "openmp",
+  "cuda_passed": [
+    "test_cuda.CUDAAttentionTest.test_amp_and_compile",
+    "test_cuda.CUDAAttentionTest.test_compile_dynamic",
+    "test_cuda.CUDAAttentionTest.test_deterministic_algorithms",
+    "test_cuda.CUDAAttentionTest.test_gradcheck",
+    "test_cuda.CUDAAttentionTest.test_invalid_inputs",
+    "test_cuda.CUDAAttentionTest.test_invalid_metadata_device_assert",
+    "test_cuda.CUDAAttentionTest.test_noncontiguous_and_stream",
+    "test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata",
+    "test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes",
+    "test_cuda.CUDAAttentionTest.test_partial_batch_chunk",
+    "test_cuda.CUDAAttentionTest.test_reference_forward_backward"
+  ],
+  "tests_run": 66,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    [
+      "test_cuda.CPUOnlyBuildTest.test_cuda_input_error",
+      "Requires GPU and CPU-only build"
+    ],
+    [
+      "test_cuda.CUDAAttentionTest.test_noncurrent_device",
+      "Requires two GPUs"
+    ]
+  ],
+  "unexpected_skips": []
+}

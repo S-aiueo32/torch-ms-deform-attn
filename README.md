@@ -70,6 +70,8 @@ CPU CI targets Linux with the Python/PyTorch combinations in the
 [support matrix](docs/installation.md#prerequisites). CUDA correctness
 and Compute Sanitizer memcheck have been recorded on an NVIDIA L4 with CUDA 12.4;
 see the [GPU validation record](docs/gpu-runner.md#run-tests).
+The current source also has [PyTorch 2.4.0 validation](docs/validation/2026-09-17-pytorch240/README.md)
+on Linux CPU and L4/CUDA 12.4, including all four Compute Sanitizer tools.
 The declared dependency range is broader than this tested configuration.
 
 - [Installation](docs/installation.md): requirements, backend selection, CPU parallelism.

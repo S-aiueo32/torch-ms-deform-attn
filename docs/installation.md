@@ -14,13 +14,18 @@ existing environment with your chosen PyTorch version.
 
 ## Current source compatibility
 
-The current checkout permits `torch>=2.4.0,<3` with Python 3.10+. The runtime
-and native code are unchanged. PyTorch 2.4 introduced `torch.library.custom_op`,
+The current checkout permits `torch>=2.4.0,<3` with Python 3.10+.
+PyTorch 2.4 introduced `torch.library.custom_op`,
 which this package requires; earlier versions cannot import the package.
 Local validation on macOS arm64 / Python 3.11 / PyTorch 2.4.0 passed the CPU
 OpenMP build, all 40 runnable tests (including AMP, FakeTensor, and dynamic
 `torch.compile` forward/backward), and 7 build-policy tests. The 26 GPU-dependent
-tests were skipped; CUDA with PyTorch 2.4.0 remains unverified.
+tests were skipped. Linux CPU serial (Python 3.10) and OpenMP (Python 3.11)
+also passed the installed-wheel suite and build-policy tests. CUDA builds
+require the current source's assertion compatibility fix for PyTorch 2.4.
+With that fix, the full CUDA 12.4 suite and all four Compute Sanitizer tools
+passed on an NVIDIA L4; see the
+[2.4.0 validation record](validation/2026-09-17-pytorch240/README.md).
 
 For a source install with PyTorch 2.4.0, run from the repository root:
 
@@ -46,7 +51,10 @@ that it is the newest available release.
 
 | Platform | Python | PyTorch | Backend/toolkit | Build / test evidence |
 | --- | --- | --- | --- | --- |
-| Linux | 3.10 | 2.5.0 | CPU serial (declared lower bounds) | RC CPU package job passed |
+| Linux | 3.10 | 2.4.0 | CPU serial (current source lower bounds) | [Installed-wheel tests passed](validation/2026-09-17-pytorch240/README.md) |
+| Linux | 3.11 | 2.4.0 | CPU OpenMP | [Installed-wheel tests passed](validation/2026-09-17-pytorch240/README.md) |
+| Linux | 3.11 | 2.4.0 | CUDA 12.4 | [L4 full suite and all four sanitizers passed](validation/2026-09-17-pytorch240/README.md) |
+| Linux | 3.10 | 2.5.0 | CPU serial (published RC lower bounds) | RC CPU package job passed |
 | Linux | 3.11 | 2.5.1 | CPU OpenMP | RC CPU package job passed |
 | Linux | 3.12 | 2.7.1 | CPU OpenMP | RC CPU package job passed |
 | Linux | 3.11 | 2.5.1 | CUDA 12.4 | RC L4 full suite and all four sanitizers passed |

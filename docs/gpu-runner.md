@@ -69,6 +69,10 @@ for 90 days. A failed remote test fails the Actions job. Each new run rents a
 fresh Pod; the workflow never substitutes a more expensive GPU model by itself.
 Only one CUDA workflow runs at a time.
 
+Use `torch_version=2.4.0` for the minimum supported PyTorch with CUDA 12.4.
+The other selectable pairs are 2.5.1/CUDA 12.4 and 2.7.1/CUDA 12.6. The local
+controller accepts the same selection through `--torch-version`.
+
 Validated on NVIDIA L4 with Python 3.11, PyTorch 2.5.1, and CUDA 12.4:
 36 tests completed with two expected skips (CPU-only build and a second GPU),
 and Compute Sanitizer memcheck reported zero errors. The same run saved the

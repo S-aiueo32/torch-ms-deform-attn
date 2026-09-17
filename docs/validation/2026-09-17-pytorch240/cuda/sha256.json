@@ -1,0 +1,12 @@
+{
+  "controller.log": "8394bf2b096f13dea8f5b8bbb9103c906a437b537f6da6ddc695afd7be1ad52a",
+  "nvidia-smi.txt": "991d22a69860fa911152ee2c0bfe4dbbd4812afebb0a117bc89093c2b56ccb32",
+  "cuda-tests.json": "ee792cf76b6adbf34e91d2f7e793ac60d2c6eb98a689d49fa87c4d269783e2ef",
+  "sanitizer-memcheck.log": "a342d15a163dbce1da6c6f4ac6d0648346bafb75d498666750ddab14c178d188",
+  "cuda-checks.log": "8394bf2b096f13dea8f5b8bbb9103c906a437b537f6da6ddc695afd7be1ad52a",
+  "sanitizer-synccheck.log": "5e1f527cf48cbc4ea5e807b0343b38f6db5ff60539b000ce557d4fb07c77f6a9",
+  "sanitizer-racecheck.log": "f285df133a04921492824598388d3a46f99475b98743c7e92060142e0f032e6a",
+  "cpu-only-gpu-tests.json": "fbecefa3316e1de30d977100ef4f80b05ca480623d66209404bf7ccb0ca24d71",
+  "sanitizer-initcheck.log": "e7d8920fa0f7c09fb0116357e606004871bbb46d812209e9b1c7c5eaf8404010",
+  "cuda-completion.json": "dcfc8f6c800d0cd0cffb6d89da75a4274ebb42a3c02d24bdd8f1079c2cebd97e"
+}

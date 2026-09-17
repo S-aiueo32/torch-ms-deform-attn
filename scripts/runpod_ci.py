@@ -394,7 +394,10 @@ def validate_price(pod, cap):
 
 
 def wait_for_ssh(api, args, state, deadline):
-    ssh_deadline = min(deadline, time.monotonic() + 15 * 60)
+    # Benchmark retries should fail promptly on a host that never boots.
+    minutes = 5 if getattr(args, "kernel_hub_suite", None) == "benchmark" else 15
+    ssh_deadline = min(deadline, time.monotonic() + minutes * 60)
+    print(f"Waiting up to {minutes} minutes for GPU SSH readiness", flush=True)
     price_deadline = time.monotonic() + 90
     while time.monotonic() < ssh_deadline:
         pod = api.get_pod(state["pod_id"])

@@ -1,0 +1,22 @@
+{
+  "revision": "86d64a54d210863b63ef7a15bfa1f74af6ba63b6",
+  "source_sha256": {
+    "LICENSE": "068413f8cf5e42e34d6e171e45a779df6dbea0a18249c0a223a3878e6de3cb27",
+    "NOTICE": "e5b302068f0703094eaf337e34c5d864063b8a5558fdd2786eb286943e565b56",
+    "csrc/dispatcher.h": "bb38cff9769b2faabc989a0b0b1ea5a6ffee24ba66bde5220bea4b1c46339969",
+    "csrc/cuda/index_utils.h": "9e209aff362bf2538cf29584ebf15b535e733a37cf482fcac166d62ee4e1d1a8",
+    "csrc/cuda/ms_deform_attn_cuda.cu": "3ea38bc64fc76daf5c9da86e711921d743a342157577d2967bfa3ed363652022",
+    "csrc/cuda/ms_deform_attn_cuda.h": "fd286d052f23acc73a76d590d21f4a8b19b42642719c27675146c249fca9cd4f",
+    "csrc/cuda/ms_deform_im2col_cuda.cuh": "2fdf17740f2025518c1ab06b17ca1ad94a9cac116b304844b1da81521b4f7b51",
+    "kernel-hub/torch-ext/deformable_detr/__init__.py": "529dbb0e9a0a662f3302732c4585d1e6f1d1c57aabf9b13905f4246549e761a7",
+    "kernel-hub/torch-ext/deformable_detr/layers.py": "b5c75a810fb6193f3957249f60c8e6b09e0d1404105a72f68176eee888d634b1",
+    "kernel-hub/torch-ext/torch_binding.cpp": "9a396e50e5ab5e6d7f63ea20206b71f3c03ce47468670df4b0f402c75d79248e",
+    "kernel-hub/build.toml": "47676ee76e53012c4168fd4a33a4931933cb8e3f4db73dc567aa4a4e7e941ae8",
+    "kernel-hub/flake.nix": "496ea96c1fa22c5ace7c706ec12c01b36c560d8500011323ef3bdd1fa58ed34f",
+    "kernel-hub/tests/test_kernel.py": "8632abdede398b40a0c89af9eb3d223a8594b3f0d0ab263504666377543dce92",
+    "kernel-hub/e2e/rt_detr.py": "b0bd0b73a807ab9ba7f8e10305955466795e9c08ed40b5a60282d0a999e109a9",
+    "kernel-hub/e2e/requirements.txt": "077dda52d8189bd5c5372ab0bbf2031f57c9763edeca4f2aca873ae80172aeb0",
+    "src/torch_ms_deform_attn/_ops.py": "f9d1a7a2416543caa6550c218d49b8ca43f10e6754c0345d2461699e01d8dd7d",
+    "src/torch_ms_deform_attn/functional.py": "ce1dadb71764bcc769db906ecea318e2c0e0298067a820e5a700645506bd0dde"
+  }
+}

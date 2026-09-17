@@ -41,10 +41,14 @@ The failed case's diagnostics show:
 - Initial proposals match without a query permutation.
 
 These observations establish a remaining compiled BF16 AMP discrepancy; they
-do not isolate its cause or prove it harmless. The next diagnostic should
-compare the two compiled graphs and their MSDA inputs/intermediate outputs
-before changing numerical policy or implementation. A fresh full run is still
-required after resolving it. Nix distribution validation and HF adoption remain
+do not isolate its cause or prove it harmless. Subsequent
+[L4 diagnostics](direct-20260918/README.md) compared captured MSDA inputs,
+outputs and backward results, including a rebuild with the failed run's exact
+namespace. The discrepancy did not recur: forward inputs/outputs matched
+exactly and native value-gradient differences were at most `7.45e-9`. This does
+not establish why the formal run failed. A fresh full run is still required;
+the runner now archives BF16 AMP fixtures and graphs for exact replay.
+Nix distribution validation and HF adoption remain
 separate, uncompleted gates.
 
 Evidence: [suite summary](run-35233588181/kernel-hub-summary.json),

@@ -13,6 +13,7 @@ BACKENDS = (
     "mmcv-source",
     "msda-triton-rziga",
     "pytorch-reference",
+    "upstream-native-control",
 )
 
 

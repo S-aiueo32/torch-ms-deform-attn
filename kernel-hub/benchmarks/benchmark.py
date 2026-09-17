@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT / "benchmarks"))
 from benchmark_cuda import measure  # noqa: E402
 from environment import environment  # noqa: E402
 
-from torch_ms_deform_attn import ms_deform_attn, ms_deform_attn_core_pytorch  # noqa: E402
+from torch_ms_deform_attn import _C, ms_deform_attn, ms_deform_attn_core_pytorch  # noqa: E402
 
 CASES = {
     "small": (1, 100, 4, 16, ((16, 16), (8, 8))),
@@ -107,13 +107,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--sources", type=Path, required=True)
-    parser.add_argument("--min-run-time", type=float, default=0.2)
+    parser.add_argument("--min-run-time", type=float, default=1.0)
     parser.add_argument("--warmup", type=int, default=5)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--seed", type=int, default=29)
     parser.add_argument("--cases", nargs="+", choices=CASES, default=list(CASES))
     parser.add_argument("--threads", type=int, default=1)
     parser.add_argument("--profile-kernels", action="store_true")
+    parser.add_argument("--native-control", action="store_true")
     args = parser.parse_args()
     if min(args.warmup, args.repeats, args.threads, args.min_run_time) <= 0:
         parser.error("measurement parameters must be positive")
@@ -145,6 +146,12 @@ def main():
         "kernel-hub-adapter": local.ms_deform_attn,
         "hf-native": extension_function(hf.ms_deform_attn_forward, hf.ms_deform_attn_backward),
     }
+    if args.native_control:
+        # Diagnostic only: same upstream CUDA kernels through legacy autograd,
+        # bypassing the public torch.library registration and functional API.
+        backends["upstream-native-control"] = extension_function(
+            _C.ms_deform_attn_forward, _C.ms_deform_attn_backward
+        )
     try:
         mmcv = load_mmcv(args.sources)
         backends["mmcv-source"] = extension_function(mmcv.forward, mmcv.backward, inplace=True)

@@ -5,7 +5,22 @@ import torch
 from . import _C
 
 
-@torch.library.custom_op("torch_ms_deform_attn::forward", mutates_args=())
+def _native_op(name, schema):
+    """Register non-aliasing native kernels without custom_op's Python wrappers."""
+
+    def register(fn):
+        torch.library.define(name, schema)
+        torch.library.impl(name, "default", fn)
+        namespace, op = name.split("::")
+        return getattr(getattr(torch.ops, namespace), op).default
+
+    return register
+
+
+@_native_op(
+    "torch_ms_deform_attn::forward",
+    "(Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights, int step) -> Tensor",
+)
 def forward(
     value: torch.Tensor,
     shapes: torch.Tensor,
@@ -71,13 +86,16 @@ def _validate_fake_inputs(value, shapes, starts, locations, weights, step, grad=
             torch._check(actual == expected, lambda: "Invalid grad_output shape")
 
 
-@forward.register_fake
+@torch.library.register_fake(forward)
 def _forward_fake(value, shapes, starts, locations, weights, step):
     _validate_fake_inputs(value, shapes, starts, locations, weights, step)
     return value.new_empty((value.shape[0], locations.shape[1], value.shape[2] * value.shape[3]))
 
 
-@torch.library.custom_op("torch_ms_deform_attn::backward", mutates_args=())
+@_native_op(
+    "torch_ms_deform_attn::backward",
+    "(Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights, Tensor grad, int step) -> (Tensor, Tensor, Tensor)",
+)
 def backward(
     value: torch.Tensor,
     shapes: torch.Tensor,
@@ -97,7 +115,7 @@ def backward(
     return grad_value, grad_locations, grad_weights
 
 
-@backward.register_fake
+@torch.library.register_fake(backward)
 def _backward_fake(value, shapes, starts, locations, weights, grad, step):
     _validate_fake_inputs(value, shapes, starts, locations, weights, step, grad)
     return (
@@ -119,5 +137,11 @@ def _autograd_backward(ctx, grad):
     return gv, None, None, gl, gw, None
 
 
-forward.register_autograd(_autograd_backward, setup_context=_setup_context)
-# Deliberately no autograd formula for backward: higher-order gradients are unsupported.
+torch.library.register_autograd(forward, _autograd_backward, setup_context=_setup_context)
+
+
+def _reject_higher_order(ctx, *grads):
+    raise RuntimeError("No autograd formula for backward: higher-order gradients are unsupported")
+
+
+torch.library.register_autograd(backward, _reject_higher_order)

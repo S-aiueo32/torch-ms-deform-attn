@@ -35,6 +35,9 @@ def parse_case(value):
         or parts[1] not in ("3.10", "3.11", "3.12", "3.13", "3.14")
     ):
         raise argparse.ArgumentTypeError("Expected supported TORCH:PYTHON pair")
+    maximum_python = 12 if parts[0] == "2.4.0" else 13 if parts[0] in VERSIONS[:5] else 14
+    if int(parts[1].split(".")[1]) > maximum_python:
+        raise argparse.ArgumentTypeError("Pair is outside PyTorch's Python compatibility range")
     return tuple(parts)
 
 

@@ -90,6 +90,36 @@ linker, load, and CPU checks across backend changes in a temporary checkout.
 CUDA tests run only when the installed extension has CUDA support and a GPU is
 available. A CPU-only test run does not validate CUDA execution.
 
+### Linux CPU validation with local Docker
+
+`scripts/run_cpu_checks.sh OUTPUT_DIR` builds an sdist and CPU-only OpenMP wheel,
+runs the build-policy tests, and tests the installed wheel outside the checkout.
+It requires Python, CPU PyTorch and a C++ compiler. For example:
+
+```bash
+mkdir -p build/cpu-validation
+git archive HEAD | docker run --rm -i --platform linux/amd64 \
+  -v "$PWD/build/cpu-validation:/results" \
+  -e CUDA_CHECKS_SOURCE_SHA="$(git rev-parse HEAD)" \
+  python:3.12-bookworm bash -c '
+    mkdir /tmp/source && tar -xf - -C /tmp/source && cd /tmp/source &&
+    python -m pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cpu &&
+    bash scripts/run_cpu_checks.sh /results
+  '
+```
+
+Change the image's Python version and the PyTorch pin together to test another
+cell. The JSON records the actual versions, source SHA, architecture, test
+counts and skip reasons; the log includes build-policy results. A nonzero exit
+status must not be recorded as a verified cell.
+
+On Apple Silicon, `linux/amd64` requires x86_64 translation. The local validation
+used [Colima](https://colima.run/docs/installation/) with its VZ/Rosetta option.
+Record this as emulated Linux x86_64 correctness evidence, not native speed or
+CUDA evidence. CUDA execution still requires an NVIDIA GPU; the
+[local Runpod controller](gpu-runner.md#validate-several-python-versions-on-one-pod)
+can test several pairs on one disposable host without GitHub Actions.
+
 ## Workflow coverage
 
 | Workflow | Coverage |

@@ -82,7 +82,12 @@ else:
 torch.save((out, grads, promoted_out, promoted_grads), sys.argv[3])
 """
         env = {key: val for key, val in os.environ.items() if key != "LOCAL_KERNELS"}
-        report = {"baseline_revision": revision, "cases": []}
+        report = {
+            "baseline_revision": revision,
+            "low_precision_contract": "FP32 computation; output and gradients cast to input dtype",
+            "native_low_precision_comparison": "diagnostic, not the FP32-compute accuracy oracle",
+            "cases": [],
+        }
         torch.manual_seed(29)
         for dtype in (torch.float32, torch.float64, torch.float16, torch.bfloat16):
             value = torch.randn(2, 20, 2, 8, dtype=dtype, device="cuda")
@@ -131,13 +136,23 @@ torch.save((out, grads, promoted_out, promoted_grads), sys.argv[3])
                     json.dumps(report, indent=2) + "\n"
                 )
             for name, checks in tensors.items():
-                for contract in (
-                    "candidate_vs_native_hf",
-                    "candidate_vs_fp32_hf",
-                    "candidate_vs_fp64_oracle",
-                ):
+                low_precision = dtype in (torch.float16, torch.bfloat16)
+                # Native HF rounds intermediate arithmetic and accumulation in
+                # FP16/BF16. Our documented contract promotes to FP32. Require
+                # agreement under that policy AND independent FP64 accuracy;
+                # retain raw native differences above rather than loosening tol.
+                contracts = ["candidate_vs_fp32_hf", "candidate_vs_fp64_oracle"]
+                if not low_precision:
+                    contracts.append("candidate_vs_native_hf")
+                for contract in contracts:
                     with self.subTest(dtype=dtype, tensor=name, comparison=contract):
                         self.assertTrue(checks[contract]["close"], checks[contract])
+                if low_precision:
+                    with self.subTest(dtype=dtype, tensor=name, comparison="accuracy_regression"):
+                        self.assertLessEqual(
+                            checks["candidate_vs_fp64_oracle"]["rms"],
+                            checks["native_hf_vs_fp64_oracle"]["rms"] + 1e-12,
+                        )
 
     def test_autocast_and_validation(self):
         for dtype in (torch.float16, torch.bfloat16):

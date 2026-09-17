@@ -152,6 +152,10 @@ equivalent is `--workload kernel-hub --torch-version 2.14.0`.
 The default `kernel_hub_suite=full` runs operator tests and the entire E2E matrix.
 For the two compiled AMP training regressions only, add
 `--field kernel_hub_suite=compile-amp` (controller: `--kernel-hub-suite compile-amp`).
+For operator correctness and precision diagnostics without the model matrix,
+use `--field kernel_hub_suite=phase1` (controller: `--kernel-hub-suite phase1`).
+`phase1-numerics.json` records both raw native-HF differences and errors against
+an independent FP64 grid-sample reference.
 The summary records whether this focused subset was selected; it cannot be used
 as evidence that the full matrix passed.
 

@@ -80,6 +80,7 @@ Results apply to the source revisions recorded in each validation report.
 | Measure operator performance | [Benchmarks](docs/benchmarks.md) |
 | Run GPU validation on Runpod | [GPU runner](docs/gpu-runner.md) |
 | Inspect recorded test results | [Validation evidence](docs/validation/README.md) |
+| Develop the experimental Hugging Face adapter | [Kernel Hub prototype](kernel-hub/README.md) |
 
 ## Attribution
 

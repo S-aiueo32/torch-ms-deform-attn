@@ -26,10 +26,23 @@ class ExportTest(unittest.TestCase):
             exporter.export(target)
             manifest = json.loads((target / "UPSTREAM.json").read_text())
             self.assertIn("csrc/cuda/ms_deform_attn_cuda.cu", manifest["source_sha256"])
+            self.assertIn("csrc/dispatcher.h", manifest["source_sha256"])
             for name in ("msda_hf_test_a", "msda_hf_test_b"):
                 with self.subTest(namespace=name):
-                    # Emulate only builder-generated _ops using the installed CPU extension.
+                    # Emulate the native namespace and builder-generated _ops on CPU.
                     # Loader, C++ binding and CUDA validation live in kernel-hub/tests.
+                    signature = "Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights"
+                    torch.library.define(f"{name}::forward", f"({signature}, int step) -> Tensor")
+                    torch.library.impl(f"{name}::forward", "CPU", _C.ms_deform_attn_forward)
+                    torch.library.define(
+                        f"{name}::backward",
+                        f"({signature}, Tensor grad, int step) -> (Tensor, Tensor, Tensor)",
+                    )
+                    torch.library.impl(
+                        f"{name}::backward",
+                        "CPU",
+                        lambda *args: tuple(_C.ms_deform_attn_backward(*args)),
+                    )
                     ops = types.ModuleType(f"{name}._ops")
                     ops.ops = _C
                     ops.add_op_namespace_prefix = lambda op, ns=name: f"{ns}::{op}"

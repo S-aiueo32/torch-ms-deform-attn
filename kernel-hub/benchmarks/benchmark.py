@@ -152,7 +152,6 @@ def main():
         report["setup_errors"]["mmcv-source"] = str(exc)
         save()
     try:
-        sys.path.insert(0, str(args.sources / "msda-triton/src"))
         # The public frontend silently falls back to grid_sample on errors.
         # Call its strict Triton frontend so fallback cannot be timed as Triton.
         from msda_triton.frontend import triton_multiscale_deformable_attention

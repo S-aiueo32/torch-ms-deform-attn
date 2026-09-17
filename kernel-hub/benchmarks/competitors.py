@@ -34,6 +34,7 @@ def prepare(destination):
                     str(relative).startswith("mmcv/ops/csrc/")
                     or str(relative).startswith("src/msda_triton/")
                     or relative.name in ("LICENSE", "LICENSES", "NOTICE")
+                    or (name == "msda-triton" and str(relative) in ("pyproject.toml", "README.md"))
                 ):
                     continue
                 content = archive.read(member)

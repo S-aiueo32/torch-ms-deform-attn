@@ -43,6 +43,7 @@ export MSDA_KERNEL_DIR="$msda_work/candidate"
 export MSDA_OUTPUT_DIR="$msda_output"
 if [[ "${2:-full}" == benchmark ]]; then
     FORCE_CUDA=1 python -m pip install --no-build-isolation --no-deps .
+    python -m pip install --no-deps "$msda_work/candidate/benchmark-sources/msda-triton"
     cp "$msda_work/candidate/benchmark-sources/sources.json" "$msda_output/benchmark-sources.json"
     python -m pip freeze > "$msda_output/python-packages.txt"
     python kernel-hub/benchmarks/benchmark.py \

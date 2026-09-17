@@ -1,0 +1,22 @@
+[
+  {
+    "time": "2026-09-17T09:41:26.230669+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:41:36.991529+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:41:47.548194+00:00",
+    "status": "RUNNING",
+    "stage": "no_direct_ssh_endpoint"
+  },
+  {
+    "time": "2026-09-17T09:42:00.356280+00:00",
+    "status": "RUNNING",
+    "stage": "ready"
+  }
+]

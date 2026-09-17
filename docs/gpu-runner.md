@@ -156,6 +156,15 @@ For operator correctness and precision diagnostics without the model matrix,
 use `--field kernel_hub_suite=phase1` (controller: `--kernel-hub-suite phase1`).
 `phase1-numerics.json` records both raw native-HF differences and errors against
 an independent FP64 grid-sample reference.
+For the [Phase 3 operator comparison](../kernel-hub/benchmarks/README.md), use
+`--field kernel_hub_suite=benchmark`. This produces `benchmark-kernel-hub.json`
+and a pinned competitor source manifest; it does not run the model matrix.
+Set `capacity_wait_minutes=15` to poll availability every 30 seconds before
+renting the selected GPU. This waiting is part of the overall timeout, creates
+no Pod, and does not retry price-limit or authentication errors. The controller
+equivalent is `--capacity-wait-minutes 15` (default 0, maximum 30).
+`gpu-startup.json` retains bounded SSH readiness diagnostics without Pod
+environment variables or temporary credentials.
 The summary records whether this focused subset was selected; it cannot be used
 as evidence that the full matrix passed.
 

@@ -7,6 +7,7 @@ case "${2:-full}" in
     full) ;;
     compile-amp) msda_suite_args=(--focus-compile) ;;
     phase1) msda_suite_args=(--phase1-only) ;;
+    benchmark) ;;
     *) echo 'Unknown Kernel Hub suite' >&2; exit 2 ;;
 esac
 msda_source=$(pwd -P)
@@ -40,4 +41,14 @@ cmake --build "$msda_work/cmake" --target local_install
 python -m pip freeze > "$msda_output/python-packages.txt"
 export MSDA_KERNEL_DIR="$msda_work/candidate"
 export MSDA_OUTPUT_DIR="$msda_output"
+if [[ "${2:-full}" == benchmark ]]; then
+    FORCE_CUDA=1 python -m pip install --no-build-isolation --no-deps .
+    python -m pip install --no-deps "$msda_work/candidate/benchmark-sources/msda-triton"
+    cp "$msda_work/candidate/benchmark-sources/sources.json" "$msda_output/benchmark-sources.json"
+    python -m pip freeze > "$msda_output/python-packages.txt"
+    python kernel-hub/benchmarks/benchmark.py \
+        --sources "$msda_work/candidate/benchmark-sources" \
+        --output "$msda_output/benchmark-kernel-hub.json"
+    exit 0
+fi
 python "$msda_source/kernel-hub/e2e/gpu_suite.py" "${msda_suite_args[@]}"

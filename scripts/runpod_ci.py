@@ -59,6 +59,10 @@ class ControllerError(RuntimeError):
     pass
 
 
+class CapacityUnavailable(ControllerError):
+    pass
+
+
 class APIError(ControllerError):
     def __init__(self, operation, status=None):
         self.status = status
@@ -161,7 +165,7 @@ class RunpodAPI:
             raise ControllerError("Requested GPU is unavailable on Runpod Secure Cloud")
         stock = result.get("availability")
         if stock not in ("HIGH", "MEDIUM", "LOW"):
-            raise ControllerError("No matching GPU capacity; no Pod was requested")
+            raise CapacityUnavailable("No matching GPU capacity; no Pod was requested")
         prices = result.get("price")
         price = money(prices.get("secure") if isinstance(prices, dict) else None) * count
         if price > cap:
@@ -393,9 +397,45 @@ def validate_price(pod, cap):
     return True
 
 
+def wait_for_capacity(api, args, deadline):
+    wait_until = min(deadline, time.monotonic() + getattr(args, "capacity_wait_minutes", 0) * 60)
+    count = getattr(args, "gpu_count", 1)
+    while True:
+        try:
+            if count == 1:
+                return api.quote(args.gpu, args.max_hourly_usd)
+            return api.quote(args.gpu, args.max_hourly_usd, count=count)
+        except CapacityUnavailable:
+            remaining = wait_until - time.monotonic()
+            if remaining <= 0:
+                raise
+            print(
+                f"Waiting for {args.gpu} capacity; no Pod rented ({remaining:.0f}s left)",
+                flush=True,
+            )
+            time.sleep(min(30, remaining))
+
+
 def wait_for_ssh(api, args, state, deadline):
-    ssh_deadline = min(deadline, time.monotonic() + 15 * 60)
+    # Benchmark retries should fail promptly on a host that never boots.
+    minutes = 5 if getattr(args, "kernel_hub_suite", None) == "benchmark" else 15
+    ssh_deadline = min(deadline, time.monotonic() + minutes * 60)
+    print(f"Waiting up to {minutes} minutes for GPU SSH readiness", flush=True)
     price_deadline = time.monotonic() + 90
+    observations = []
+
+    def record(pod, stage, **details):
+        # Whitelist fields: never serialize Pod env/temporary SSH credentials.
+        observations.append(
+            {
+                "time": utc_now().isoformat(),
+                "status": str(pod.get("status"))[:80],
+                "stage": stage,
+                **details,
+            }
+        )
+        (args.output_dir / "gpu-startup.json").write_text(json.dumps(observations, indent=2) + "\n")
+
     while time.monotonic() < ssh_deadline:
         pod = api.get_pod(state["pod_id"])
         if not owned_pod(pod, state["owner"], state["created_at"]):
@@ -410,22 +450,27 @@ def wait_for_ssh(api, args, state, deadline):
         try:
             command = ssh_command(args.state_dir, pod_name(state["owner"]), pod)
         except (KeyError, ValueError, TypeError):
+            record(pod, "no_direct_ssh_endpoint")
             time.sleep(10)
             continue
         try:
             result = subprocess.run(
                 command + ["test -d /workspace/ci/source && test -d /workspace/ci/results"],
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
                 env=child_environment(),
                 timeout=20,
             )
         except subprocess.TimeoutExpired:
+            record(pod, "ssh_connect_timeout")
             time.sleep(5)
             continue
         if result.returncode == 0:
+            record(pod, "ready")
             print("Pinned SSH host key verified; GPU host is ready", flush=True)
             return command
+        record(pod, "ssh_command_failed", returncode=result.returncode, error=result.stderr[-1000:])
         time.sleep(10)
     raise ControllerError("GPU SSH readiness timed out")
 
@@ -533,10 +578,7 @@ def run(api, args):
     if not bootstrap.is_file():
         raise ControllerError("Missing scripts/runpod_bootstrap.sh in the source checkout")
     count = getattr(args, "gpu_count", 1)
-    if count == 1:
-        api.quote(args.gpu, args.max_hourly_usd)
-    else:
-        api.quote(args.gpu, args.max_hourly_usd, count=count)
+    wait_for_capacity(api, args, deadline)
     public, host_private = generate_keys(args.state_dir, pod_name(owner))
     source_sha = subprocess.check_output(
         ["git", "-C", str(args.source), "rev-parse", "HEAD"],
@@ -786,7 +828,7 @@ def parse_args(argv=None):
     run_parser.add_argument("--gpu-count", type=int, choices=(1, 2), default=1)
     run_parser.add_argument("--workload", choices=("core", "kernel-hub"), default="core")
     run_parser.add_argument(
-        "--kernel-hub-suite", choices=("full", "compile-amp", "phase1"), default="full"
+        "--kernel-hub-suite", choices=("full", "compile-amp", "phase1", "benchmark"), default="full"
     )
     run_parser.add_argument("--prepared-kernel", type=Path)
     run_parser.add_argument("--source", type=Path, required=True)
@@ -802,6 +844,7 @@ def parse_args(argv=None):
         help="Benchmark the installed CUDA wheel after correctness tests",
     )
     run_parser.add_argument("--timeout-minutes", type=int, default=45)
+    run_parser.add_argument("--capacity-wait-minutes", type=int, default=0)
     args = parser.parse_args(argv)
     if getattr(args, "workload", "core") == "kernel-hub":
         if args.matrix_cases or args.benchmark or args.sanitizer != "none" or args.gpu_count != 1:
@@ -829,6 +872,8 @@ def parse_args(argv=None):
         parser.error("repository must be OWNER/REPOSITORY")
     if hasattr(args, "timeout_minutes") and not 5 <= args.timeout_minutes <= 60:
         parser.error("timeout-minutes must be between 5 and 60")
+    if hasattr(args, "capacity_wait_minutes") and not 0 <= args.capacity_wait_minutes <= 30:
+        parser.error("capacity-wait-minutes must be between 0 and 30")
     if hasattr(args, "max_hourly_usd") and args.max_hourly_usd <= 0:
         parser.error("max-hourly-usd must be positive")
     for field in ("state_dir", "output_dir", "source"):

@@ -203,7 +203,8 @@ def run_case(
         )
         if baseline_module is module:
             raise ValueError("Baseline and candidate resolved to the same kernel module")
-    if dtype != "fp32":
+    promoted_reference = dtype != "fp32" and baseline_module is None
+    if promoted_reference:
         reference_precision(reference)
     pixels = torch.randn(2, 3, 64, 64, device=device)
     labels = [
@@ -214,13 +215,35 @@ def run_case(
         for _ in range(2)
     ]
     candidate_pixels = pixels if amp else pixels.to(scalar_type)
-    expected = run_model(
-        reference,
-        candidate_pixels,
-        labels,
-        training=training,
-        amp_dtype=scalar_type if amp else None,
-    )
+    baseline_original_error = None
+    try:
+        expected = run_model(
+            reference,
+            candidate_pixels,
+            labels,
+            training=training,
+            amp_dtype=scalar_type if amp else None,
+        )
+    except RuntimeError as error:
+        # Some HF versions reject mixed AMP inputs. Record the original failure
+        # before comparing with explicit FP32 interpolation. Never recover from
+        # arbitrary CUDA/device errors or a failure of our candidate.
+        dtype_error = any(
+            message in str(error)
+            for message in ("expected scalar type", "not implemented for", "expected dtype")
+        )
+        if baseline_module is None or dtype == "fp32" or not dtype_error:
+            raise
+        baseline_original_error = str(error)
+        reference_precision(reference)
+        promoted_reference = True
+        expected = run_model(
+            reference,
+            candidate_pixels,
+            labels,
+            training=training,
+            amp_dtype=scalar_type if amp else None,
+        )
     graphs = []
     execute = None
     if backend:
@@ -295,7 +318,8 @@ def run_case(
         "compiled_graphs": graphs,
         "fullgraph": not training if backend else None,
         "reference": "HF kernel" if baseline_module else "Transformers grid_sample",
-        "reference_msda_fp32_adapter": dtype != "fp32",
+        "reference_msda_fp32_adapter": promoted_reference,
+        "baseline_original_error": baseline_original_error,
         "candidate_sha256": artifact_hashes(module),
         "baseline_sha256": artifact_hashes(baseline_module) if baseline_module else None,
     }

@@ -42,7 +42,7 @@ torch.save((out, grads), sys.argv[3])
 """
         env = {key: val for key, val in os.environ.items() if key != "LOCAL_KERNELS"}
         torch.manual_seed(29)
-        for dtype in (torch.float32, torch.float64):
+        for dtype in (torch.float32, torch.float64, torch.float16, torch.bfloat16):
             value = torch.randn(2, 20, 2, 8, dtype=dtype, device="cuda")
             shapes = torch.tensor([[4, 4], [2, 2]], device="cuda")
             starts = torch.tensor([0, 16], device="cuda")
@@ -61,9 +61,14 @@ torch.save((out, grads), sys.argv[3])
                 reference, ref_grads = torch.load(outputs, weights_only=True)
             actual = self.kernel.ms_deform_attn_forward(*args, 64)
             grads = self.kernel.ms_deform_attn_backward(*args, grad, 64)
-            torch.testing.assert_close(actual, reference)
+            tolerance = (
+                2e-2 if dtype == torch.bfloat16 else 2e-3 if dtype == torch.float16 else 1e-5
+            )
+            torch.testing.assert_close(actual, reference, atol=tolerance, rtol=tolerance)
             for actual_grad, reference_grad in zip(grads, ref_grads):
-                torch.testing.assert_close(actual_grad, reference_grad, atol=1e-5, rtol=1e-5)
+                torch.testing.assert_close(
+                    actual_grad, reference_grad, atol=tolerance, rtol=tolerance
+                )
 
     def test_autocast_and_validation(self):
         for dtype in (torch.float16, torch.bfloat16):

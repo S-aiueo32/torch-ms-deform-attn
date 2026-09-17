@@ -34,8 +34,10 @@ Changes found downstream should be applied upstream before the next export.
 
 - `layers.MultiScaleDeformableAttention.forward` preserves HF's seven-argument
   contract, including the unused `value_spatial_shapes_list` argument.
-- `ms_deform_attn_forward` / `ms_deform_attn_backward` preserve the low-level
-  API: contiguous CUDA FP32/FP64 tensors, with explicit backward.
+- `ms_deform_attn_forward` / `ms_deform_attn_backward` preserve the explicit
+  forward/backward API, including FP16/BF16 input compatibility. Low-precision
+  computation is promoted to FP32 and explicit low-precision gradients are
+  returned in the input dtype.
 - The layer and `ms_deform_attn` use upstream dtype, contiguous-input,
   FakeTensor and first-order autograd handling. Explicit FP16/BF16 inputs
   compute in FP32 and return the input dtype; autocast returns FP32.

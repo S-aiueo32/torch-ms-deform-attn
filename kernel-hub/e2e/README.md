@@ -64,10 +64,16 @@ Both models have identical weights and use the same surrounding-model precision.
 Comparing an entire half detector with an FP32 detector can change discrete
 proposal top-k selection before MSDA, obscuring the operator comparison.
 
-For low-precision cases, the reference MSDA evaluates interpolation in FP32 and
-casts the result back outside autocast, matching the candidate's documented
-computation policy. This is recorded as `reference_msda_fp32_adapter=true`.
-It does not claim that the unmodified HF baseline accepts FP16/BF16 tensors.
+For low-precision grid-sample reference cases, MSDA evaluates interpolation in
+FP32 and casts the result back outside autocast, matching the candidate's
+documented computation policy. This is recorded as
+`reference_msda_fp32_adapter=true`.
+
+With an HF baseline artifact, the runner first executes its unmodified layer.
+Only a specific dtype-unsupported error permits retrying with FP32 reference
+interpolation; the original exception is recorded as `baseline_original_error`.
+Other baseline errors and all candidate errors fail. A promoted-reference pass
+does not claim unmodified baseline support for that precision mode.
 
 Training uses Transformers' supervised detection criterion, including encoder
 proposals and auxiliary decoder losses. Hungarian matching and loss calculation

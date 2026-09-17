@@ -57,6 +57,16 @@ class ExportTest(unittest.TestCase):
                             expected = torch.autograd.grad(reference.sum(), args, retain_graph=True)
                             for a, b in zip(actual, expected):
                                 torch.testing.assert_close(a, b)
+                        explicit = module.ms_deform_attn_forward(
+                            value, shapes, starts, loc, weights, 64
+                        )
+                        torch.testing.assert_close(explicit, reference)
+                        gradients = module.ms_deform_attn_backward(
+                            value, shapes, starts, loc, weights, torch.ones_like(explicit), 64
+                        )
+                        self.assertIsInstance(gradients, list)
+                        for actual_grad, expected_grad in zip(gradients, expected):
+                            torch.testing.assert_close(actual_grad, expected_grad)
 
     def test_refuse_overwrite_and_changed_contract(self):
         with tempfile.TemporaryDirectory() as tmp:

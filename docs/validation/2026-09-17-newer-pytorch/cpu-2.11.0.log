@@ -1,0 +1,573 @@
+﻿2026-09-17T01:13:23.6108300Z Current runner version: '2.337.0'
+2026-09-17T01:13:23.6128253Z ##[group]Runner Image Provisioner
+2026-09-17T01:13:23.6128990Z Hosted Compute Agent
+2026-09-17T01:13:23.6129598Z Version: 20260828.587
+2026-09-17T01:13:23.6130145Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-17T01:13:23.6130769Z Build Date: 2026-08-28T16:44:25Z
+2026-09-17T01:13:23.6131339Z Worker ID: {db8a9ee7-c479-45ff-ac2e-7ebe7302cc2e}
+2026-09-17T01:13:23.6131915Z Azure Region: westus
+2026-09-17T01:13:23.6132420Z ##[endgroup]
+2026-09-17T01:13:23.6133482Z ##[group]Operating System
+2026-09-17T01:13:23.6133995Z Ubuntu
+2026-09-17T01:13:23.6134498Z 24.04.5
+2026-09-17T01:13:23.6134923Z LTS
+2026-09-17T01:13:23.6135437Z ##[endgroup]
+2026-09-17T01:13:23.6136147Z ##[group]Runner Image
+2026-09-17T01:13:23.6136613Z Image: ubuntu-24.04
+2026-09-17T01:13:23.6137145Z Version: 20260907.300.1
+2026-09-17T01:13:23.6138145Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-17T01:13:23.6139434Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+2026-09-17T01:13:23.6140196Z ##[endgroup]
+2026-09-17T01:13:23.6141113Z ##[group]GITHUB_TOKEN Permissions
+2026-09-17T01:13:23.6142679Z Contents: read
+2026-09-17T01:13:23.6143246Z Metadata: read
+2026-09-17T01:13:23.6143733Z ##[endgroup]
+2026-09-17T01:13:23.6145416Z Secret source: Actions
+2026-09-17T01:13:23.6146385Z Cache mode: write
+2026-09-17T01:13:23.6146978Z Prepare workflow directory
+2026-09-17T01:13:23.6539559Z Prepare all required actions
+2026-09-17T01:13:23.6577522Z Getting action download info
+2026-09-17T01:13:24.0059844Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-17T01:13:24.2416513Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-09-17T01:13:24.4510781Z Complete job name: ubuntu-latest / Python 3.12 / torch 2.11.0 / openmp
+2026-09-17T01:13:24.5142757Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-17T01:13:24.5150025Z ##[group]Run actions/checkout@v4
+2026-09-17T01:13:24.5150578Z with:
+2026-09-17T01:13:24.5150964Z   repository: S-aiueo32/torch-ms-deform-attn
+2026-09-17T01:13:24.5153994Z   token: ***
+2026-09-17T01:13:24.5154342Z   ssh-strict: true
+2026-09-17T01:13:24.5154690Z   ssh-user: git
+2026-09-17T01:13:24.5155040Z   persist-credentials: true
+2026-09-17T01:13:24.5155423Z   clean: true
+2026-09-17T01:13:24.5155977Z   sparse-checkout-cone-mode: true
+2026-09-17T01:13:24.5156394Z   fetch-depth: 1
+2026-09-17T01:13:24.5156725Z   fetch-tags: false
+2026-09-17T01:13:24.5157067Z   show-progress: true
+2026-09-17T01:13:24.5157420Z   lfs: false
+2026-09-17T01:13:24.5157786Z   submodules: false
+2026-09-17T01:13:24.5158187Z   set-safe-directory: true
+2026-09-17T01:13:24.5158578Z   allow-unsafe-pr-checkout: false
+2026-09-17T01:13:24.5159173Z env:
+2026-09-17T01:13:24.5159481Z   FORCE_CPU: 1
+2026-09-17T01:13:24.5159807Z   FORCE_OPENMP: 1
+2026-09-17T01:13:24.5160154Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:13:24.5160536Z   MAX_JOBS: 2
+2026-09-17T01:13:24.5160863Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:13:24.5161221Z ##[endgroup]
+2026-09-17T01:13:24.6015414Z Syncing repository: S-aiueo32/torch-ms-deform-attn
+2026-09-17T01:13:24.6017228Z ##[group]Getting Git version info
+2026-09-17T01:13:24.6018018Z Working directory is '/home/runner/work/torch-ms-deform-attn/torch-ms-deform-attn'
+2026-09-17T01:13:24.6019036Z [command]/usr/bin/git version
+2026-09-17T01:13:24.6240354Z git version 2.55.0
+2026-09-17T01:13:24.6266110Z ##[endgroup]
+2026-09-17T01:13:24.6272028Z Temporarily overriding HOME='/home/runner/work/_temp/26558344-512f-4818-9745-0f404d2e288e' before making global git config changes
+2026-09-17T01:13:24.6273528Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-17T01:13:24.6277978Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/torch-ms-deform-attn/torch-ms-deform-attn
+2026-09-17T01:13:24.6326572Z Deleting the contents of '/home/runner/work/torch-ms-deform-attn/torch-ms-deform-attn'
+2026-09-17T01:13:24.6328230Z ##[group]Initializing the repository
+2026-09-17T01:13:24.6329699Z [command]/usr/bin/git init /home/runner/work/torch-ms-deform-attn/torch-ms-deform-attn
+2026-09-17T01:13:24.6944846Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-17T01:13:24.6946626Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-17T01:13:24.6947904Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-17T01:13:24.6948896Z hint: call:
+2026-09-17T01:13:24.6949413Z hint:
+2026-09-17T01:13:24.6950100Z hint: 	git config --global init.defaultBranch <name>
+2026-09-17T01:13:24.6950915Z hint:
+2026-09-17T01:13:24.6951660Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-17T01:13:24.6952893Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-17T01:13:24.6953861Z hint:
+2026-09-17T01:13:24.6954404Z hint: 	git branch -m <name>
+2026-09-17T01:13:24.6955072Z hint:
+2026-09-17T01:13:24.6957994Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-17T01:13:24.6959574Z Initialized empty Git repository in /home/runner/work/torch-ms-deform-attn/torch-ms-deform-attn/.git/
+2026-09-17T01:13:24.6967609Z [command]/usr/bin/git remote add origin https://github.com/S-aiueo32/torch-ms-deform-attn
+2026-09-17T01:13:24.7008836Z ##[endgroup]
+2026-09-17T01:13:24.7010013Z ##[group]Disabling automatic garbage collection
+2026-09-17T01:13:24.7011219Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-17T01:13:24.7040116Z ##[endgroup]
+2026-09-17T01:13:24.7041382Z ##[group]Setting up auth
+2026-09-17T01:13:24.7044916Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-17T01:13:24.7077925Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-17T01:13:24.7349490Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-17T01:13:24.7380229Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-17T01:13:24.7576510Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-17T01:13:24.7608964Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-17T01:13:24.7805778Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-17T01:13:24.7839917Z ##[endgroup]
+2026-09-17T01:13:24.7840772Z ##[group]Fetching the repository
+2026-09-17T01:13:24.7848259Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a918db0241b01b01cdae97b1b9c40124793f47d6:refs/remotes/pull/10/merge
+2026-09-17T01:13:25.6967627Z From https://github.com/S-aiueo32/torch-ms-deform-attn
+2026-09-17T01:13:25.6968776Z  * [new ref]         a918db0241b01b01cdae97b1b9c40124793f47d6 -> pull/10/merge
+2026-09-17T01:13:25.6971153Z ##[endgroup]
+2026-09-17T01:13:25.6971611Z ##[group]Determining the checkout info
+2026-09-17T01:13:25.6972566Z ##[endgroup]
+2026-09-17T01:13:25.6972939Z [command]/usr/bin/git sparse-checkout disable
+2026-09-17T01:13:25.7021278Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-17T01:13:25.7048386Z ##[group]Checking out the ref
+2026-09-17T01:13:25.7051208Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/10/merge
+2026-09-17T01:13:25.7177289Z Note: switching to 'refs/remotes/pull/10/merge'.
+2026-09-17T01:13:25.7177614Z
+2026-09-17T01:13:25.7177819Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-09-17T01:13:25.7178295Z changes and commit them, and you can discard any commits you make in this
+2026-09-17T01:13:25.7178725Z state without impacting any branches by switching back to a branch.
+2026-09-17T01:13:25.7178977Z
+2026-09-17T01:13:25.7179184Z If you want to create a new branch to retain commits you create, you may
+2026-09-17T01:13:25.7179599Z do so (now or later) by using -c with the switch command. Example:
+2026-09-17T01:13:25.7179839Z
+2026-09-17T01:13:25.7179955Z   git switch -c <new-branch-name>
+2026-09-17T01:13:25.7180128Z
+2026-09-17T01:13:25.7180239Z Or undo this operation with:
+2026-09-17T01:13:25.7180413Z
+2026-09-17T01:13:25.7180512Z   git switch -
+2026-09-17T01:13:25.7180666Z
+2026-09-17T01:13:25.7180939Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-09-17T01:13:25.7181220Z
+2026-09-17T01:13:25.7181520Z HEAD is now at a918db0 Merge 135e0abba22210e1176fd006d914c427b6d63bea into 9cd3f4b194bfe986d648ab827b81560506102b1b
+2026-09-17T01:13:25.7190808Z ##[endgroup]
+2026-09-17T01:13:25.7228752Z [command]/usr/bin/git log -1 --format=%H
+2026-09-17T01:13:25.7252026Z a918db0241b01b01cdae97b1b9c40124793f47d6
+2026-09-17T01:13:25.7535303Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-17T01:13:25.7536975Z ##[group]Run actions/setup-python@v5
+2026-09-17T01:13:25.7537245Z with:
+2026-09-17T01:13:25.7537457Z   python-version: 3.12
+2026-09-17T01:13:25.7537688Z   check-latest: false
+2026-09-17T01:13:25.7539730Z   token: ***
+2026-09-17T01:13:25.7539961Z   update-environment: true
+2026-09-17T01:13:25.7540259Z   allow-prereleases: false
+2026-09-17T01:13:25.7540503Z   freethreaded: false
+2026-09-17T01:13:25.7540726Z env:
+2026-09-17T01:13:25.7540926Z   FORCE_CPU: 1
+2026-09-17T01:13:25.7541145Z   FORCE_OPENMP: 1
+2026-09-17T01:13:25.7541378Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:13:25.7541623Z   MAX_JOBS: 2
+2026-09-17T01:13:25.7541863Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:13:25.7542094Z ##[endgroup]
+2026-09-17T01:13:25.8613654Z ##[group]Installed versions
+2026-09-17T01:13:26.0701914Z (node:2086) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-17T01:13:26.0703067Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-17T01:13:26.0703642Z Successfully set up CPython (3.12.14)
+2026-09-17T01:13:26.0704387Z ##[endgroup]
+2026-09-17T01:13:26.0867136Z ##[group]Run python -m pip install "torch==$TORCH_VERSION" --index-url https://download.pytorch.org/whl/cpu
+2026-09-17T01:13:26.0868339Z python -m pip install "torch==$TORCH_VERSION" --index-url https://download.pytorch.org/whl/cpu
+2026-09-17T01:13:26.0924887Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:13:26.0925312Z env:
+2026-09-17T01:13:26.0925778Z   FORCE_CPU: 1
+2026-09-17T01:13:26.0926106Z   FORCE_OPENMP: 1
+2026-09-17T01:13:26.0926455Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:13:26.0926822Z   MAX_JOBS: 2
+2026-09-17T01:13:26.0927126Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:13:26.0927578Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:26.0928237Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:13:26.0928887Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:26.0929477Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:26.0930129Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:26.0930718Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:13:26.0931472Z ##[endgroup]
+2026-09-17T01:13:28.3125317Z Looking in indexes: https://download.pytorch.org/whl/cpu
+2026-09-17T01:13:28.4139874Z Collecting torch==2.11.0
+2026-09-17T01:13:28.6186127Z   Downloading torch-2.11.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (29 kB)
+2026-09-17T01:13:28.6840049Z Collecting filelock (from torch==2.11.0)
+2026-09-17T01:13:28.7232840Z   Downloading filelock-3.32.3-py3-none-any.whl.metadata (2.0 kB)
+2026-09-17T01:13:28.8463672Z Collecting typing-extensions>=4.10.0 (from torch==2.11.0)
+2026-09-17T01:13:28.8489470Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-09-17T01:13:28.8583379Z Collecting setuptools<82 (from torch==2.11.0)
+2026-09-17T01:13:28.8617505Z   Downloading setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)
+2026-09-17T01:13:28.8801176Z Collecting sympy>=1.13.3 (from torch==2.11.0)
+2026-09-17T01:13:28.8828909Z   Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+2026-09-17T01:13:28.9024287Z Collecting networkx>=2.5.1 (from torch==2.11.0)
+2026-09-17T01:13:28.9050921Z   Downloading networkx-3.6.1-py3-none-any.whl.metadata (6.8 kB)
+2026-09-17T01:13:28.9165466Z Collecting jinja2 (from torch==2.11.0)
+2026-09-17T01:13:28.9196533Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-09-17T01:13:28.9525007Z Collecting fsspec>=0.8.5 (from torch==2.11.0)
+2026-09-17T01:13:28.9552838Z   Downloading fsspec-2026.7.0-py3-none-any.whl.metadata (10 kB)
+2026-09-17T01:13:29.0062193Z Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.11.0)
+2026-09-17T01:13:29.0086356Z   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+2026-09-17T01:13:29.0249917Z Collecting MarkupSafe>=2.0 (from jinja2->torch==2.11.0)
+2026-09-17T01:13:29.0281272Z   Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-09-17T01:13:29.0494580Z Downloading torch-2.11.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (190.3 MB)
+2026-09-17T01:13:31.7796620Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 190.3/190.3 MB 69.9 MB/s  0:00:02
+2026-09-17T01:13:31.7837811Z Downloading setuptools-78.1.0-py3-none-any.whl (1.3 MB)
+2026-09-17T01:13:31.7977072Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 90.0 MB/s  0:00:00
+2026-09-17T01:13:31.7999809Z Downloading fsspec-2026.7.0-py3-none-any.whl (206 kB)
+2026-09-17T01:13:31.8165868Z Downloading networkx-3.6.1-py3-none-any.whl (2.1 MB)
+2026-09-17T01:13:31.8434901Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 80.2 MB/s  0:00:00
+2026-09-17T01:13:31.8459703Z Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-09-17T01:13:31.8969698Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 125.0 MB/s  0:00:00
+2026-09-17T01:13:31.9001165Z Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-09-17T01:13:31.9803139Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 3.5 MB/s  0:00:00
+2026-09-17T01:13:31.9828595Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-09-17T01:13:32.0581748Z Downloading filelock-3.32.3-py3-none-any.whl (98 kB)
+2026-09-17T01:13:32.0636222Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-09-17T01:13:32.0712336Z Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-09-17T01:13:32.3869595Z Installing collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch
+2026-09-17T01:13:48.8614722Z
+2026-09-17T01:13:48.8629633Z Successfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 setuptools-78.1.0 sympy-1.14.0 torch-2.11.0+cpu typing-extensions-4.16.0
+2026-09-17T01:13:48.9494833Z ##[group]Run python -m pip install numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
+2026-09-17T01:13:48.9495337Z python -m pip install numpy 'setuptools>=77' 'packaging>=24.2' wheel ninja build
+2026-09-17T01:13:48.9530188Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:13:48.9530404Z env:
+2026-09-17T01:13:48.9530726Z   FORCE_CPU: 1
+2026-09-17T01:13:48.9530894Z   FORCE_OPENMP: 1
+2026-09-17T01:13:48.9531068Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:13:48.9531258Z   MAX_JOBS: 2
+2026-09-17T01:13:48.9531415Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:13:48.9531645Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:48.9532000Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:13:48.9532347Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:48.9532649Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:48.9532990Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:48.9533286Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:13:48.9533555Z ##[endgroup]
+2026-09-17T01:13:49.8008663Z Collecting numpy
+2026-09-17T01:13:49.8378616Z   Downloading numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+2026-09-17T01:13:49.8414074Z Requirement already satisfied: setuptools>=77 in /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages (78.1.0)
+2026-09-17T01:13:49.8603359Z Collecting packaging>=24.2
+2026-09-17T01:13:49.8632345Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-09-17T01:13:49.8891057Z Collecting wheel
+2026-09-17T01:13:49.8918811Z   Downloading wheel-0.48.0-py3-none-any.whl.metadata (2.3 kB)
+2026-09-17T01:13:49.9281284Z Collecting ninja
+2026-09-17T01:13:49.9330390Z   Downloading ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.4 kB)
+2026-09-17T01:13:49.9547510Z Collecting build
+2026-09-17T01:13:49.9579807Z   Downloading build-1.6.1-py3-none-any.whl.metadata (5.6 kB)
+2026-09-17T01:13:49.9816199Z Collecting pyproject_hooks (from build)
+2026-09-17T01:13:49.9843487Z   Downloading pyproject_hooks-1.3.3-py3-none-any.whl.metadata (1.3 kB)
+2026-09-17T01:13:49.9897529Z Downloading numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+2026-09-17T01:13:50.1579316Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 104.6 MB/s  0:00:00
+2026-09-17T01:13:50.1611886Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-09-17T01:13:50.3132389Z Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+2026-09-17T01:13:50.3193972Z Downloading ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (183 kB)
+2026-09-17T01:13:50.3242782Z Downloading build-1.6.1-py3-none-any.whl (31 kB)
+2026-09-17T01:13:50.3286931Z Downloading pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+2026-09-17T01:13:50.3853828Z Installing collected packages: pyproject_hooks, packaging, numpy, ninja, wheel, build
+2026-09-17T01:13:52.2624242Z
+2026-09-17T01:13:52.2639365Z Successfully installed build-1.6.1 ninja-1.13.2 numpy-2.5.3 packaging-26.3 pyproject_hooks-1.3.3 wheel-0.48.0
+2026-09-17T01:13:52.3296656Z ##[group]Run python -m build --sdist --no-isolation
+2026-09-17T01:13:52.3297000Z python -m build --sdist --no-isolation
+2026-09-17T01:13:52.3329414Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:13:52.3329643Z env:
+2026-09-17T01:13:52.3329815Z   FORCE_CPU: 1
+2026-09-17T01:13:52.3329992Z   FORCE_OPENMP: 1
+2026-09-17T01:13:52.3330169Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:13:52.3330360Z   MAX_JOBS: 2
+2026-09-17T01:13:52.3330523Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:13:52.3330762Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:52.3331108Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:13:52.3331452Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:52.3331753Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:52.3332049Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:52.3332413Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:13:52.3332669Z ##[endgroup]
+2026-09-17T01:13:52.4331830Z * Getting build dependencies for sdist...
+2026-09-17T01:13:53.9414550Z running egg_info
+2026-09-17T01:13:53.9432193Z creating src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:53.9433785Z writing src/torch_ms_deform_attn.egg-info/PKG-INFO
+2026-09-17T01:13:53.9437507Z writing dependency_links to src/torch_ms_deform_attn.egg-info/dependency_links.txt
+2026-09-17T01:13:53.9439311Z writing requirements to src/torch_ms_deform_attn.egg-info/requires.txt
+2026-09-17T01:13:53.9440087Z writing top-level names to src/torch_ms_deform_attn.egg-info/top_level.txt
+2026-09-17T01:13:53.9441284Z writing manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+2026-09-17T01:13:53.9522083Z reading manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+2026-09-17T01:13:53.9523062Z reading manifest template 'MANIFEST.in'
+2026-09-17T01:13:53.9551264Z adding license file 'LICENSE'
+2026-09-17T01:13:53.9551861Z adding license file 'NOTICE'
+2026-09-17T01:13:53.9559604Z writing manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+2026-09-17T01:13:54.2882280Z * Building sdist...
+2026-09-17T01:13:55.3716689Z running sdist
+2026-09-17T01:13:55.3717234Z running egg_info
+2026-09-17T01:13:55.3754331Z writing src/torch_ms_deform_attn.egg-info/PKG-INFO
+2026-09-17T01:13:55.3758940Z writing dependency_links to src/torch_ms_deform_attn.egg-info/dependency_links.txt
+2026-09-17T01:13:55.3760829Z writing requirements to src/torch_ms_deform_attn.egg-info/requires.txt
+2026-09-17T01:13:55.3761840Z writing top-level names to src/torch_ms_deform_attn.egg-info/top_level.txt
+2026-09-17T01:13:55.3844191Z reading manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+2026-09-17T01:13:55.3851062Z reading manifest template 'MANIFEST.in'
+2026-09-17T01:13:55.3878531Z adding license file 'LICENSE'
+2026-09-17T01:13:55.3878856Z adding license file 'NOTICE'
+2026-09-17T01:13:55.3889430Z writing manifest file 'src/torch_ms_deform_attn.egg-info/SOURCES.txt'
+2026-09-17T01:13:55.3891647Z running check
+2026-09-17T01:13:55.3914846Z creating torch_ms_deform_attn-0.1.0rc2
+2026-09-17T01:13:55.3918059Z creating torch_ms_deform_attn-0.1.0rc2/benchmarks
+2026-09-17T01:13:55.3919250Z creating torch_ms_deform_attn-0.1.0rc2/csrc
+2026-09-17T01:13:55.3920540Z creating torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+2026-09-17T01:13:55.3921778Z creating torch_ms_deform_attn-0.1.0rc2/docs
+2026-09-17T01:13:55.3923110Z creating torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-14-p1
+2026-09-17T01:13:55.3925145Z creating torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-15-p2
+2026-09-17T01:13:55.3956145Z creating torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-17-pytorch240
+2026-09-17T01:13:55.3956839Z creating torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+2026-09-17T01:13:55.3957436Z creating torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:55.3957976Z creating torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3958683Z creating torch_ms_deform_attn-0.1.0rc2/tests/integration
+2026-09-17T01:13:55.3959223Z creating torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+2026-09-17T01:13:55.3959718Z copying files to torch_ms_deform_attn-0.1.0rc2...
+2026-09-17T01:13:55.3960168Z copying LICENSE -> torch_ms_deform_attn-0.1.0rc2
+2026-09-17T01:13:55.3960615Z copying MANIFEST.in -> torch_ms_deform_attn-0.1.0rc2
+2026-09-17T01:13:55.3961062Z copying NOTICE -> torch_ms_deform_attn-0.1.0rc2
+2026-09-17T01:13:55.3961482Z copying README.md -> torch_ms_deform_attn-0.1.0rc2
+2026-09-17T01:13:55.3961959Z copying pyproject.toml -> torch_ms_deform_attn-0.1.0rc2
+2026-09-17T01:13:55.3962424Z copying setup.py -> torch_ms_deform_attn-0.1.0rc2
+2026-09-17T01:13:55.3963007Z copying benchmarks/benchmark_compile.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+2026-09-17T01:13:55.3963727Z copying benchmarks/benchmark_cpu.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+2026-09-17T01:13:55.3964425Z copying benchmarks/benchmark_cuda.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+2026-09-17T01:13:55.3965106Z copying benchmarks/environment.py -> torch_ms_deform_attn-0.1.0rc2/benchmarks
+2026-09-17T01:13:55.3965923Z copying csrc/ms_deform_attn_cpu.cpp -> torch_ms_deform_attn-0.1.0rc2/csrc
+2026-09-17T01:13:55.3966714Z copying csrc/ms_deform_attn_cpu.h -> torch_ms_deform_attn-0.1.0rc2/csrc
+2026-09-17T01:13:55.3967287Z copying csrc/vision.cpp -> torch_ms_deform_attn-0.1.0rc2/csrc
+2026-09-17T01:13:55.3967852Z copying csrc/cuda/index_utils.h -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+2026-09-17T01:13:55.3968508Z copying csrc/cuda/ms_deform_attn_cuda.cu -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+2026-09-17T01:13:55.3969177Z copying csrc/cuda/ms_deform_attn_cuda.h -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+2026-09-17T01:13:55.3969882Z copying csrc/cuda/ms_deform_im2col_cuda.cuh -> torch_ms_deform_attn-0.1.0rc2/csrc/cuda
+2026-09-17T01:13:55.3970497Z copying docs/api.md -> torch_ms_deform_attn-0.1.0rc2/docs
+2026-09-17T01:13:55.3971036Z copying docs/benchmarks.md -> torch_ms_deform_attn-0.1.0rc2/docs
+2026-09-17T01:13:55.3971600Z copying docs/compatibility.md -> torch_ms_deform_attn-0.1.0rc2/docs
+2026-09-17T01:13:55.3972175Z copying docs/development.md -> torch_ms_deform_attn-0.1.0rc2/docs
+2026-09-17T01:13:55.3972735Z copying docs/gpu-runner.md -> torch_ms_deform_attn-0.1.0rc2/docs
+2026-09-17T01:13:55.3973295Z copying docs/installation.md -> torch_ms_deform_attn-0.1.0rc2/docs
+2026-09-17T01:13:55.3974041Z copying docs/validation/2026-09-14-p1/README.md -> torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-14-p1
+2026-09-17T01:13:55.3974958Z copying docs/validation/2026-09-15-p2/README.md -> torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-15-p2
+2026-09-17T01:13:55.3976116Z copying docs/validation/2026-09-17-pytorch240/README.md -> torch_ms_deform_attn-0.1.0rc2/docs/validation/2026-09-17-pytorch240
+2026-09-17T01:13:55.3977054Z copying src/torch_ms_deform_attn/_C.pyi -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+2026-09-17T01:13:55.3977878Z copying src/torch_ms_deform_attn/__init__.py -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+2026-09-17T01:13:55.3978694Z copying src/torch_ms_deform_attn/_ops.py -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+2026-09-17T01:13:55.3979531Z copying src/torch_ms_deform_attn/functional.py -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+2026-09-17T01:13:55.3980385Z copying src/torch_ms_deform_attn/py.typed -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn
+2026-09-17T01:13:55.3981341Z copying src/torch_ms_deform_attn.egg-info/PKG-INFO -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:55.3982468Z copying src/torch_ms_deform_attn.egg-info/SOURCES.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:55.3983521Z copying src/torch_ms_deform_attn.egg-info/dependency_links.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:55.3984790Z copying src/torch_ms_deform_attn.egg-info/requires.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:55.3986152Z copying src/torch_ms_deform_attn.egg-info/top_level.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:55.3986999Z copying tests/sampling_cases.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3987633Z copying tests/test_amp_training.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3988215Z copying tests/test_cpu.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3988804Z copying tests/test_cuda.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3989465Z copying tests/test_cuda_graphs.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3990085Z copying tests/test_fake_contract.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3991281Z copying tests/test_indexing.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3992490Z copying tests/test_input_contract.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3993807Z copying tests/test_integration.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3995056Z copying tests/test_low_precision.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3996537Z copying tests/test_sampling_precision.py -> torch_ms_deform_attn-0.1.0rc2/tests
+2026-09-17T01:13:55.3997819Z copying tests/integration/__init__.py -> torch_ms_deform_attn-0.1.0rc2/tests/integration
+2026-09-17T01:13:55.3998936Z copying tests/integration/test_upstream.py -> torch_ms_deform_attn-0.1.0rc2/tests/integration
+2026-09-17T01:13:55.4000269Z copying tests/integration/fixtures/manifest.json -> torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+2026-09-17T01:13:55.4001523Z copying tests/integration/fixtures/ms_deform_attn.py.txt -> torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+2026-09-17T01:13:55.4002795Z copying tests/integration/fixtures/ms_deform_attn_func.py.txt -> torch_ms_deform_attn-0.1.0rc2/tests/integration/fixtures
+2026-09-17T01:13:55.4004052Z copying src/torch_ms_deform_attn.egg-info/SOURCES.txt -> torch_ms_deform_attn-0.1.0rc2/src/torch_ms_deform_attn.egg-info
+2026-09-17T01:13:55.4010425Z Writing torch_ms_deform_attn-0.1.0rc2/setup.cfg
+2026-09-17T01:13:55.4012309Z Creating tar archive
+2026-09-17T01:13:55.4254531Z removing 'torch_ms_deform_attn-0.1.0rc2' (and everything under it)
+2026-09-17T01:13:55.7619544Z Successfully built torch_ms_deform_attn-0.1.0rc2.tar.gz
+2026-09-17T01:13:55.7811016Z ##[group]Run python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
+2026-09-17T01:13:55.7811493Z python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
+2026-09-17T01:13:55.7844538Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:13:55.7844748Z env:
+2026-09-17T01:13:55.7844916Z   FORCE_CPU: 1
+2026-09-17T01:13:55.7845090Z   FORCE_OPENMP: 1
+2026-09-17T01:13:55.7845274Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:13:55.7845470Z   MAX_JOBS: 2
+2026-09-17T01:13:55.7845801Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:13:55.7846040Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:55.7846381Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:13:55.7846714Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:55.7847030Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:55.7847329Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:13:55.7847669Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:13:55.7847932Z ##[endgroup]
+2026-09-17T01:13:56.0643662Z Processing ./dist/torch_ms_deform_attn-0.1.0rc2.tar.gz
+2026-09-17T01:13:56.0647421Z   File was already downloaded /home/runner/work/torch-ms-deform-attn/torch-ms-deform-attn/dist/torch_ms_deform_attn-0.1.0rc2.tar.gz
+2026-09-17T01:13:56.0810128Z   Preparing metadata (pyproject.toml): started
+2026-09-17T01:13:57.4744121Z   Preparing metadata (pyproject.toml): finished with status 'done'
+2026-09-17T01:13:57.4763054Z Building wheels for collected packages: torch-ms-deform-attn
+2026-09-17T01:13:57.4769685Z   Building wheel for torch-ms-deform-attn (pyproject.toml): started
+2026-09-17T01:14:13.0289935Z   Building wheel for torch-ms-deform-attn (pyproject.toml): finished with status 'done'
+2026-09-17T01:14:13.0314330Z   Created wheel for torch-ms-deform-attn: filename=torch_ms_deform_attn-0.1.0rc2-cp312-cp312-linux_x86_64.whl size=1908522 sha256=dcdeb2073cf5c4ba3dbb644303487821f0da0db822cbde3088c57fd23bc24e50
+2026-09-17T01:14:13.0315876Z   Stored in directory: /home/runner/.cache/pip/wheels/92/a7/73/1c874f6b8660596fa64ed2089243c65d136c8772320dc551b8
+2026-09-17T01:14:13.0337283Z Successfully built torch-ms-deform-attn
+2026-09-17T01:14:13.0860743Z ##[group]Run python -m pip install --no-deps dist/*.whl
+2026-09-17T01:14:13.0861088Z python -m pip install --no-deps dist/*.whl
+2026-09-17T01:14:13.0892714Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:14:13.0892923Z env:
+2026-09-17T01:14:13.0893083Z   FORCE_CPU: 1
+2026-09-17T01:14:13.0893248Z   FORCE_OPENMP: 1
+2026-09-17T01:14:13.0893430Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:14:13.0893620Z   MAX_JOBS: 2
+2026-09-17T01:14:13.0893777Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:14:13.0894025Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.0894549Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:14:13.0894883Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.0895193Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.0895488Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.0895923Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:14:13.0896187Z ##[endgroup]
+2026-09-17T01:14:13.3642401Z Processing ./dist/torch_ms_deform_attn-0.1.0rc2-cp312-cp312-linux_x86_64.whl
+2026-09-17T01:14:13.3797943Z Installing collected packages: torch-ms-deform-attn
+2026-09-17T01:14:13.4449839Z Successfully installed torch-ms-deform-attn-0.1.0rc2
+2026-09-17T01:14:13.4984060Z ##[group]Run python -m unittest discover -s build_tests -v
+2026-09-17T01:14:13.4984413Z python -m unittest discover -s build_tests -v
+2026-09-17T01:14:13.5016489Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:14:13.5016716Z env:
+2026-09-17T01:14:13.5016878Z   FORCE_CPU: 1
+2026-09-17T01:14:13.5017042Z   FORCE_OPENMP: 1
+2026-09-17T01:14:13.5017215Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:14:13.5017438Z   MAX_JOBS: 2
+2026-09-17T01:14:13.5017597Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:14:13.5017831Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.5018175Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:14:13.5018507Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.5018809Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.5019105Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:13.5019448Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:14:13.5019706Z ##[endgroup]
+2026-09-17T01:14:15.5310621Z test_strict_compile_failure (test_benchmark_compile.BenchmarkFailureTest.test_strict_compile_failure) ... ok
+2026-09-17T01:14:15.5398769Z test_architecture (test_build_config.BuildConfigTest.test_architecture) ... ok
+2026-09-17T01:14:15.5933061Z test_backend_selection (test_build_config.BuildConfigTest.test_backend_selection) ... ok
+2026-09-17T01:14:15.6017612Z test_invalid_prefix (test_build_config.BuildConfigTest.test_invalid_prefix) ... ok
+2026-09-17T01:14:15.6094105Z test_invalid_selection (test_build_config.BuildConfigTest.test_invalid_selection) ... ok
+2026-09-17T01:14:15.6181247Z test_missing_ninja_falls_back (test_build_config.BuildConfigTest.test_missing_ninja_falls_back) ... W0917 01:14:15.617000 2274 site-packages/torch/utils/cpp_extension.py:680] Attempted to use ninja as the BuildExtension backend but we could not find ninja.. Falling back to using the slow distutils backend.
+2026-09-17T01:14:15.6182975Z ok
+2026-09-17T01:14:15.6436608Z test_required_openmp_errors (test_build_config.BuildConfigTest.test_required_openmp_errors) ... ok
+2026-09-17T01:14:15.6437116Z
+2026-09-17T01:14:15.6437251Z ----------------------------------------------------------------------
+2026-09-17T01:14:15.6437616Z Ran 7 tests in 1.077s
+2026-09-17T01:14:15.6437726Z
+2026-09-17T01:14:15.6437797Z OK
+2026-09-17T01:14:16.2073210Z ##[group]Run cp -R tests "$RUNNER_TEMP/msda-tests"
+2026-09-17T01:14:16.2073741Z cp -R tests "$RUNNER_TEMP/msda-tests"
+2026-09-17T01:14:16.2074101Z cd "$RUNNER_TEMP"
+2026-09-17T01:14:16.2074972Z python -c 'import os; from torch_ms_deform_attn import _C; assert not _C.with_cuda; assert _C.cpu_parallel_backend == os.environ["EXPECTED_CPU_BACKEND"], _C.cpu_parallel_backend'
+2026-09-17T01:14:16.2076181Z python -m unittest discover -s msda-tests -v
+2026-09-17T01:14:16.2108820Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:14:16.2109024Z env:
+2026-09-17T01:14:16.2109193Z   FORCE_CPU: 1
+2026-09-17T01:14:16.2109358Z   FORCE_OPENMP: 1
+2026-09-17T01:14:16.2109535Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:14:16.2109730Z   MAX_JOBS: 2
+2026-09-17T01:14:16.2109892Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:14:16.2110286Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:16.2110673Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:14:16.2110998Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:16.2111292Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:16.2111580Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:16.2111868Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:14:16.2112128Z ##[endgroup]
+2026-09-17T01:14:18.5769191Z test_module_optimizer_parity (integration.test_upstream.CPUUpstreamTest.test_module_optimizer_parity) ... <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:18.5803779Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.3733377Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.3759242Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.3875978Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.3912058Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.4036369Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.4061246Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.4178756Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.4202275Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.4313436Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.4336340Z <unknown>:83: SyntaxWarning: invalid escape sequence '\s'
+2026-09-17T01:14:19.4431407Z ok
+2026-09-17T01:14:19.4432164Z test_module_optimizer_parity (integration.test_upstream.CUDAUpstreamTest.test_module_optimizer_parity) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:19.4732022Z test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CPUAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... ok
+2026-09-17T01:14:19.4742713Z test_double_and_inference (test_amp_training.CPUAMPTrainingTest.test_double_and_inference) ... ok
+2026-09-17T01:14:20.9659367Z test_scaled_training_and_accumulation (test_amp_training.CPUAMPTrainingTest.test_scaled_training_and_accumulation) ... ok
+2026-09-17T01:14:20.9661234Z test_amp_dtype_patterns_and_partial_gradients (test_amp_training.CUDAAMPTrainingTest.test_amp_dtype_patterns_and_partial_gradients) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:20.9662602Z test_double_and_inference (test_amp_training.CUDAAMPTrainingTest.test_double_and_inference) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:20.9663885Z test_scaled_training_and_accumulation (test_amp_training.CUDAAMPTrainingTest.test_scaled_training_and_accumulation) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:20.9770345Z test_colliding_samples_and_overlapping_levels (test_cpu.CPUAttentionTest.test_colliding_samples_and_overlapping_levels) ... ok
+2026-09-17T01:14:23.4800031Z test_cpu_parallel_workers_honor_thread_count (test_cpu.CPUAttentionTest.test_cpu_parallel_workers_honor_thread_count) ... ok
+2026-09-17T01:14:23.4812332Z test_empty_batch (test_cpu.CPUAttentionTest.test_empty_batch) ... ok
+2026-09-17T01:14:23.4843305Z test_empty_heads_channels_levels_and_points (test_cpu.CPUAttentionTest.test_empty_heads_channels_levels_and_points) ... ok
+2026-09-17T01:14:23.4850861Z test_empty_queries (test_cpu.CPUAttentionTest.test_empty_queries) ... ok
+2026-09-17T01:14:23.4948305Z test_gradcheck (test_cpu.CPUAttentionTest.test_gradcheck) ... ok
+2026-09-17T01:14:23.8248303Z test_invalid_inputs (test_cpu.CPUAttentionTest.test_invalid_inputs) ... ok
+2026-09-17T01:14:23.8270373Z test_level_start_index (test_cpu.CPUAttentionTest.test_level_start_index) ... ok
+2026-09-17T01:14:23.8497618Z test_offsets_collisions_and_noncontiguous_metadata (test_cpu.CPUAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... ok
+2026-09-17T01:14:23.9027144Z test_padding_support_and_channel_sizes (test_cpu.CPUAttentionTest.test_padding_support_and_channel_sizes) ... ok
+2026-09-17T01:14:23.9038322Z test_public_api (test_cpu.CPUAttentionTest.test_public_api) ... ok
+2026-09-17T01:14:23.9096693Z test_reference_forward_and_backward (test_cpu.CPUAttentionTest.test_reference_forward_and_backward) ... ok
+2026-09-17T01:14:23.9104043Z test_reject_invalid_gradient (test_cpu.CPUAttentionTest.test_reject_invalid_gradient) ... ok
+2026-09-17T01:14:23.9112408Z test_reject_unsupported_dtype (test_cpu.CPUAttentionTest.test_reject_unsupported_dtype) ... ok
+2026-09-17T01:14:23.9113290Z test_cuda_input_error (test_cuda.CPUOnlyBuildTest.test_cuda_input_error) ... skipped 'Requires GPU and CPU-only build'
+2026-09-17T01:14:23.9126899Z test_amp_and_compile (test_cuda.CUDAAttentionTest.test_amp_and_compile) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9127909Z test_compile_dynamic (test_cuda.CUDAAttentionTest.test_compile_dynamic) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9129385Z test_deterministic_algorithms (test_cuda.CUDAAttentionTest.test_deterministic_algorithms) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9130437Z test_gradcheck (test_cuda.CUDAAttentionTest.test_gradcheck) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9131375Z test_invalid_inputs (test_cuda.CUDAAttentionTest.test_invalid_inputs) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9132479Z test_invalid_metadata_device_assert (test_cuda.CUDAAttentionTest.test_invalid_metadata_device_assert) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9133675Z test_noncontiguous_and_stream (test_cuda.CUDAAttentionTest.test_noncontiguous_and_stream) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9134781Z test_noncurrent_device (test_cuda.CUDAAttentionTest.test_noncurrent_device) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9136176Z test_offsets_collisions_and_noncontiguous_metadata (test_cuda.CUDAAttentionTest.test_offsets_collisions_and_noncontiguous_metadata) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9137614Z test_padding_support_and_channel_sizes (test_cuda.CUDAAttentionTest.test_padding_support_and_channel_sizes) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9138797Z test_partial_batch_chunk (test_cuda.CUDAAttentionTest.test_partial_batch_chunk) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9139938Z test_reference_forward_backward (test_cuda.CUDAAttentionTest.test_reference_forward_backward) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9141158Z test_dynamic_shapes_and_metadata (test_cuda_graphs.CUDAGraphTest.test_dynamic_shapes_and_metadata) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9142183Z test_opcheck (test_cuda_graphs.CUDAGraphTest.test_opcheck) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:23.9202061Z test_backward_metadata (test_fake_contract.FakeContractTest.test_backward_metadata) ... ok
+2026-09-17T01:14:23.9532808Z test_fake_devices_and_empty_dimensions (test_fake_contract.FakeContractTest.test_fake_devices_and_empty_dimensions) ... ok
+2026-09-17T01:14:23.9955476Z test_invalid_forward_metadata (test_fake_contract.FakeContractTest.test_invalid_forward_metadata) ... ok
+2026-09-17T01:14:23.9956656Z test_grid_limit_can_be_resolved_by_chunking (test_indexing.CUDAIndexingTest.test_grid_limit_can_be_resolved_by_chunking) ... ok
+2026-09-17T01:14:23.9963847Z test_invalid_dimensions_and_overflow (test_indexing.CUDAIndexingTest.test_invalid_dimensions_and_overflow) ... ok
+2026-09-17T01:14:23.9964839Z test_location_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_location_offsets_exceed_int32) ... ok
+2026-09-17T01:14:23.9965811Z test_partial_chunk_plan (test_indexing.CUDAIndexingTest.test_partial_chunk_plan) ... ok
+2026-09-17T01:14:23.9966340Z test_value_offsets_exceed_int32 (test_indexing.CUDAIndexingTest.test_value_offsets_exceed_int32) ... ok
+2026-09-17T01:14:23.9967236Z test_work_exceeds_int32 (test_indexing.CUDAIndexingTest.test_work_exceeds_int32) ... ok
+2026-09-17T01:14:23.9978213Z test_backward_contract (test_input_contract.CPUInputContractTest.test_backward_contract) ... ok
+2026-09-17T01:14:24.0016610Z test_empty_dimension_policy (test_input_contract.CPUInputContractTest.test_empty_dimension_policy) ... ok
+2026-09-17T01:14:24.0067109Z test_forward_contract (test_input_contract.CPUInputContractTest.test_forward_contract) ... ok
+2026-09-17T01:14:24.0068182Z test_backward_contract (test_input_contract.CUDAInputContractTest.test_backward_contract) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:24.0069450Z test_empty_dimension_policy (test_input_contract.CUDAInputContractTest.test_empty_dimension_policy) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:24.0076832Z test_forward_contract (test_input_contract.CUDAInputContractTest.test_forward_contract) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:24.1501571Z test_amp_and_compiled_amp (test_integration.IntegrationTest.test_amp_and_compiled_amp) ... ok
+2026-09-17T01:14:24.7137912Z test_compile_dynamic_forward_backward (test_integration.IntegrationTest.test_compile_dynamic_forward_backward) ... /opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+2026-09-17T01:14:24.7138940Z   warnings.warn(
+2026-09-17T01:14:25.3883323Z ok
+2026-09-17T01:14:25.3893348Z test_double_preserved_under_autocast (test_integration.IntegrationTest.test_double_preserved_under_autocast) ... ok
+2026-09-17T01:14:25.3906367Z test_higher_order_gradients_rejected (test_integration.IntegrationTest.test_higher_order_gradients_rejected) ... ok
+2026-09-17T01:14:25.4431119Z test_legacy_apply_compile (test_integration.IntegrationTest.test_legacy_apply_compile) ... ok
+2026-09-17T01:14:25.7561730Z test_opcheck (test_integration.IntegrationTest.test_opcheck) ... ok
+2026-09-17T01:14:53.6582935Z test_forward_backward_and_dynamic_compile (test_low_precision.CPULowPrecisionTest.test_forward_backward_and_dynamic_compile) ... ok
+2026-09-17T01:14:53.6615466Z test_inference_and_empty_queries (test_low_precision.CPULowPrecisionTest.test_inference_and_empty_queries) ... ok
+2026-09-17T01:14:53.6674882Z test_optimizer_steps (test_low_precision.CPULowPrecisionTest.test_optimizer_steps) ... ok
+2026-09-17T01:14:53.6676134Z test_forward_backward_and_dynamic_compile (test_low_precision.CUDALowPrecisionTest.test_forward_backward_and_dynamic_compile) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:53.6677564Z test_inference_and_empty_queries (test_low_precision.CUDALowPrecisionTest.test_inference_and_empty_queries) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:53.6678804Z test_optimizer_steps (test_low_precision.CUDALowPrecisionTest.test_optimizer_steps) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:53.6686017Z test_near_knot_matches_double_oracle (test_sampling_precision.CPUSamplingPrecisionTest.test_near_knot_matches_double_oracle) ... ok
+2026-09-17T01:14:53.6687926Z test_near_knot_matches_double_oracle (test_sampling_precision.CUDASamplingPrecisionTest.test_near_knot_matches_double_oracle) ... skipped 'Requires CUDA extension and GPU'
+2026-09-17T01:14:53.6688788Z
+2026-09-17T01:14:53.6689119Z ----------------------------------------------------------------------
+2026-09-17T01:14:53.6689539Z Ran 66 tests in 35.094s
+2026-09-17T01:14:53.6689755Z
+2026-09-17T01:14:53.6689982Z OK (skipped=26)
+2026-09-17T01:14:54.7134329Z ##[group]Run echo "$GITHUB_SHA | $RUNNER_OS | Python $PYTHON_VERSION | torch $TORCH_VERSION | $EXPECTED_CPU_BACKEND | $RESULT" >> "$GITHUB_STEP_SUMMARY"
+2026-09-17T01:14:54.7135072Z echo "$GITHUB_SHA | $RUNNER_OS | Python $PYTHON_VERSION | torch $TORCH_VERSION | $EXPECTED_CPU_BACKEND | $RESULT" >> "$GITHUB_STEP_SUMMARY"
+2026-09-17T01:14:54.7167137Z shell: /usr/bin/bash -e {0}
+2026-09-17T01:14:54.7167513Z env:
+2026-09-17T01:14:54.7167672Z   FORCE_CPU: 1
+2026-09-17T01:14:54.7167835Z   FORCE_OPENMP: 1
+2026-09-17T01:14:54.7168010Z   EXPECTED_CPU_BACKEND: openmp
+2026-09-17T01:14:54.7168204Z   MAX_JOBS: 2
+2026-09-17T01:14:54.7168365Z   TORCH_VERSION: 2.11.0
+2026-09-17T01:14:54.7168608Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:54.7168941Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+2026-09-17T01:14:54.7169265Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:54.7169606Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:54.7169903Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+2026-09-17T01:14:54.7170192Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+2026-09-17T01:14:54.7170447Z   RESULT: success
+2026-09-17T01:14:54.7170614Z   PYTHON_VERSION: 3.12
+2026-09-17T01:14:54.7170787Z ##[endgroup]
+2026-09-17T01:14:54.7316016Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-17T01:14:54.7316968Z Post job cleanup.
+2026-09-17T01:14:54.8274608Z (node:2474) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-17T01:14:54.8275207Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-17T01:14:54.8444920Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-17T01:14:54.8446058Z Post job cleanup.
+2026-09-17T01:14:54.9191882Z [command]/usr/bin/git version
+2026-09-17T01:14:54.9233418Z git version 2.55.0
+2026-09-17T01:14:54.9256561Z Temporarily overriding HOME='/home/runner/work/_temp/1731ace8-6db1-4b6f-b55c-c38c1c97f780' before making global git config changes
+2026-09-17T01:14:54.9257645Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-17T01:14:54.9258766Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/torch-ms-deform-attn/torch-ms-deform-attn
+2026-09-17T01:14:54.9277578Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-17T01:14:54.9306413Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-17T01:14:54.9523062Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-17T01:14:54.9548041Z http.https://github.com/.extraheader
+2026-09-17T01:14:54.9557670Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-17T01:14:54.9589155Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-17T01:14:54.9808290Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-17T01:14:54.9844394Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-17T01:14:55.0202060Z Cleaning up orphan processes
+2026-09-17T01:14:55.0472144Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -31,6 +31,25 @@ IMAGE = (
     "pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel@sha256:"
     "14611869895df612b7b07227d5925f30ec3cd6673bad58ce3d84ed107950e014"
 )
+TORCH_CONFIGS = {
+    "2.4.0": (
+        "pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel@sha256:"
+        "e96c6896ecfbb50d89c87bf94110206ef444f27268c5f72201eb29fba9c90331",
+        "12.4",
+    ),
+    "2.5.1": (IMAGE, "12.4"),
+    "2.7.1": ("pytorch/pytorch:2.7.1-cuda12.6-cudnn9-devel", "12.6"),
+    "2.8.0": (
+        "pytorch/pytorch:2.8.0-cuda12.6-cudnn9-devel@sha256:"
+        "adb0f2d3769e0796a5d86740b0f900a72835b6fa9577b77d6efed460f1322fcb",
+        "12.6",
+    ),
+    "2.14.0": (
+        "pytorch/pytorch:2.14.0-cuda12.6-cudnn9-devel@sha256:"
+        "0e968d2570373aeb781603c21925a030053b432945967da14f6f8423e1f0cc79",
+        "12.6",
+    ),
+}
 GPU_IDS = {"A5000": "NVIDIA RTX A5000", "L4": "NVIDIA L4", "RTX4090": "NVIDIA GeForce RTX 4090"}
 ARTIFACT_SUFFIXES = {".whl", ".log", ".txt", ".json", ".xml"}
 MAX_ARTIFACT_BYTES = 128 * 1024 * 1024
@@ -500,7 +519,7 @@ def collect_artifacts(ssh, directory):
 
 def run(api, args):
     torch_version = getattr(args, "torch_version", "2.5.1")
-    image = IMAGE if torch_version == "2.5.1" else "pytorch/pytorch:2.7.1-cuda12.6-cudnn9-devel"
+    image, toolkit = TORCH_CONFIGS[torch_version]
     deadline = time.monotonic() + args.timeout_minutes * 60
     args.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     args.state_dir.chmod(0o700)
@@ -554,7 +573,7 @@ def run(api, args):
             "count": count,
             "minRamPerGpu": 16,
             "minVcpuCountPerGpu": 4,
-            "minCudaVersion": "12.4" if torch_version == "2.5.1" else "12.6",
+            "minCudaVersion": toolkit,
         },
         "cloud": "SECURE",
         "ports": ["22/tcp"],
@@ -721,7 +740,7 @@ def parse_args(argv=None):
             "--gpu", choices=list(GPU_IDS) + list(GPU_IDS.values()), default="A5000"
         )
         subparser.add_argument("--max-hourly-usd", type=money, default=Decimal("0.50"))
-    run_parser.add_argument("--torch-version", choices=("2.5.1", "2.7.1"), default="2.5.1")
+    run_parser.add_argument("--torch-version", choices=tuple(TORCH_CONFIGS), default="2.5.1")
     run_parser.add_argument("--gpu-count", type=int, choices=(1, 2), default=1)
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)

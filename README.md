@@ -10,7 +10,8 @@ outside the package's scope.
 
 Install the published release candidate from
 [PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.0rc2/).
-The current source requires Python 3.10+, PyTorch >=2.4.0,<3, and a C++17 compiler. The package is
+The current source requires Python 3.10+, PyTorch >=2.4.0,<3, and a C++ compiler
+compatible with PyTorch (C++17 through 2.12; C++20 from 2.13). The package is
 distributed as source and compiles against the PyTorch in your environment:
 
 ```bash
@@ -56,6 +57,70 @@ Native low-precision kernels,
 MPS, and higher-order gradients are unsupported. CUDA backward is
 nondeterministic.
 
+## Support matrix
+
+Compatibility on Linux x86_64 with standard CPython (GIL enabled).
+
+- ✅ Verified with this library.
+- ➖ Within PyTorch's Python compatibility range, but unverified with this library.
+- ❌ Outside PyTorch's Python compatibility range.
+
+An asterisk (*) marks experimental Python support in PyTorch; those combinations
+are also unverified with this library. Upstream compatibility follows
+[PyTorch's release matrix](https://github.com/pytorch/pytorch/blob/v2.14.0/RELEASE.md#release-compatibility-matrix)
+and [2.14.0 package metadata](https://pypi.org/project/torch/2.14.0/).
+
+### CPU
+
+| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| 2.4.0 | ✅ | ✅ | ➖ | ❌ | ❌ |
+| 2.5.0 | ✅ | ➖ | ➖ | ➖* | ❌ |
+| 2.5.1 | ➖ | ✅ | ➖ | ➖* | ❌ |
+| 2.7.1 | ➖ | ✅ | ✅ | ➖ | ❌ |
+| 2.8.0 | ➖ | ✅ | ✅ | ➖ | ❌ |
+| 2.9.1 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.10.0 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.11.0 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.12.1 | ➖ | ➖ | ✅ | ➖ | ➖* |
+| 2.13.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
+| 2.14.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
+
+### GPU (CUDA)
+
+| PyTorch | Python 3.10 | Python 3.11 | Python 3.12 | Python 3.13 | Python 3.14 |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| 2.4.0 | ➖ | ✅ | ➖ | ❌ | ❌ |
+| 2.5.0 | ➖ | ➖ | ➖ | ➖* | ❌ |
+| 2.5.1 | ➖ | ✅ | ➖ | ➖* | ❌ |
+| 2.7.1 | ➖ | ✅ | ➖ | ➖ | ❌ |
+| 2.8.0 | ➖ | ✅ | ➖ | ➖ | ❌ |
+| 2.9.1 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.10.0 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.11.0 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.12.1 | ➖ | ➖ | ➖ | ➖ | ➖* |
+| 2.13.0 | ➖ | ➖ | ➖ | ➖ | ➖ |
+| 2.14.0 | ➖ | ➖ | ✅ | ➖ | ➖ |
+
+CUDA validation selects a CUDA build from
+[PyTorch's official version-specific builds](https://pytorch.org/get-started/previous-versions/)
+and uses a matching toolkit. Each ✅ covers that tested pair; exact CUDA versions
+are recorded in the [detailed matrix](docs/installation.md#prerequisites).
+
+### Scope
+
+Unverified combinations within PyTorch's compatibility range, other CUDA
+toolkits, macOS and Windows are best effort. Combinations marked ❌ are excluded.
+This library requires Python >=3.10 even where PyTorch supports older Python.
+The dependency range permits more versions than this tested matrix.
+MPS is unsupported.
+
+The 2.4.0 and 2.8–2.14 entries describe current-source validation; the published
+`0.1.0rc2` requires PyTorch >=2.5. Results are tied to specific source revisions:
+see the [2.4.0 evidence](docs/validation/2026-09-17-pytorch240/README.md),
+[2.8–2.14 evidence](docs/validation/2026-09-17-newer-pytorch/README.md), and
+[earlier validation records](docs/installation.md#prerequisites).
+
 ## Validation and documentation
 
 For development, use uv to create `.venv`, install locked dependencies, and build
@@ -65,12 +130,6 @@ the editable extension:
 uv sync --locked
 uv run --locked python -m unittest discover -s tests -v
 ```
-
-CPU CI targets Linux with the Python/PyTorch combinations in the
-[support matrix](docs/installation.md#prerequisites). CUDA correctness
-and Compute Sanitizer memcheck have been recorded on an NVIDIA L4 with CUDA 12.4;
-see the [GPU validation record](docs/gpu-runner.md#run-tests).
-The declared dependency range is broader than this tested configuration.
 
 - [Installation](docs/installation.md): requirements, backend selection, CPU parallelism.
 - [API](docs/api.md): arguments, reference implementation, AMP, compilation, limitations.

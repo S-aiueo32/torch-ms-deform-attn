@@ -275,7 +275,13 @@ class ControllerTest(unittest.TestCase):
 
     def test_selected_torch_version_and_source_sha_reach_remote(self):
         self.prepare_run()
-        for version in ("2.5.1", "2.7.1"):
+        for version, toolkit in (
+            ("2.4.0", "12.4"),
+            ("2.5.1", "12.4"),
+            ("2.7.1", "12.6"),
+            ("2.8.0", "12.6"),
+            ("2.14.0", "12.6"),
+        ):
             with self.subTest(torch_version=version):
                 self.args.torch_version = version
                 self.args.state_dir = self.root / f"state-{version}"
@@ -291,6 +297,8 @@ class ControllerTest(unittest.TestCase):
                 self.assertIn(f"CUDA_CHECKS_SOURCE_SHA={'a' * 40} ", remote)
                 payload = next(payload for method, _, payload in api.calls if method == "POST")
                 self.assertIn(f"pytorch:{version}-", payload["image"])
+                self.assertIn(f"cuda{toolkit}-", payload["image"])
+                self.assertEqual(payload["gpu"]["minCudaVersion"], toolkit)
                 self.assertFalse(api.pods)
                 self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
 

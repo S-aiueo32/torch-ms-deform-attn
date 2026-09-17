@@ -113,6 +113,11 @@ records initial decoder reference points, upstream of MSDA, to reveal changes
 in proposal selection/order. All per-tensor differences survive failed cases.
 Use `--compiled-training-only` to reproduce training failures without rerunning
 the entire matrix, or `--compiled-only` for both compiled inference/training.
+Use `--debug-artifacts` to save BF16 AMP compiled-training fixtures alongside
+the report as `*-debug.tar.gz`. Its `case.pt` contains the initial model state,
+input, labels, captured candidate/reference graphs, and comparison tensors.
+The full GPU suite enables this automatically so a failed random fixture can
+be replayed without reconstructing its initialization environment.
 The full GPU suite uses `controlled` for FP32/AMP and `eager` for explicit
 FP16/BF16. Pass `--diagnostic-controls` to `gpu_suite.py` to additionally run
 default-numerics FP32/FP16/BF16 training controls. Controls can deliberately
@@ -145,6 +150,9 @@ python -m pytest kernel-hub/e2e/test_rt_detr.py -v
 The fixture exports the real Python adapter, then supplies a **test-only**
 `_ops.py` backed by the installed upstream CPU extension and synthetic CPU
 metadata. The real kernels loader and Transformers integration run unchanged.
+The fixture registers a test-only Python autograd formula that calls its own
+namespaced backward operator, preserving graph and profiler visibility. It does
+not substitute a second operator through an Autograd dispatch implementation.
 This validates integration plumbing, not Kernel Builder/native binding/CUDA
 compatibility. The fixture's PyPI import never enters the distribution export.
 
@@ -158,9 +166,12 @@ kernels-data 0.16.2. PyTorch 2.5.1 failed full-graph inference in Transformers'
 decorator code; the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for
 compilation checks.
 
-The [L4 evidence](../../docs/validation/kernel-hub/README.md) records the initial
-14/20 run and passing rechecks of its six compiled failures under the explicit
-policies above. A single final-revision full matrix has not been run. Native
+The [L4 evidence](../../docs/validation/kernel-hub/README.md) records a full
+post-dispatcher run at `2ae90ab`: Phase 1 passed 3/3 and RT-DETR passed 20/20,
+including BF16 autocast compiled training against compiled HF. The preceding
+19/20 run's BF16 gradient discrepancy did not recur; its cause remains
+unisolated. That failure, the earlier 14/20 run, and focused rechecks are retained
+as historical evidence. Native
 FP16/BF16 operator differences were traced to precision policy; the validation
 record documents FP64 accuracy checks and the FP32-compute comparison contract.
 Pretrained model

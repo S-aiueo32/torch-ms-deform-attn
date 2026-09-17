@@ -1,0 +1,14 @@
+/workspace/ci/debug-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/debug-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/debug-env/lib/python3.11/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+  _warn_once(
+/workspace/ci/debug-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/debug-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(

@@ -137,7 +137,7 @@ its operator tests plus RT-DETR E2E checks:
 
 ```bash
 gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn \
-  --ref feat/kernel-hub-transformers-e2e \
+  --ref main \
   --field workload=kernel-hub --field operation=test \
   --field torch_version=2.14.0 --field sanitizer=none \
   --field gpu='NVIDIA L4' --field max_hourly_usd=0.50 \
@@ -182,6 +182,18 @@ include source and binary hashes, builder metadata, individual test logs/E2E
 JSON reports, the overall `kernel-hub-summary.json`, and `runpod-state.json`.
 Require all requested runs to pass and the Pod state to be `deleted`. These
 results do not replace core CUDA release-validation evidence.
+
+For a full Kernel Hub run, put `runpod-state.json` alongside the downloaded
+`artifacts/` contents, then verify the source and all 20 RT-DETR cases:
+
+```bash
+python scripts/verify_kernel_hub.py --sha FULL_SOURCE_SHA --evidence PATH/TO/evidence
+```
+
+The verifier rejects focused suites, missing/duplicate cases, failed Phase 1
+tests, mixed artifact or harness hashes, missing operator execution/compilation,
+and unverified Pod deletion. It checks recorded evidence, not its authenticity;
+use artifacts from the trusted workflow. A pass does not validate a Nix build.
 
 ## Cleanup and costs
 

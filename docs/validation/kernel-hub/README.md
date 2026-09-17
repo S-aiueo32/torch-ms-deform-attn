@@ -1,10 +1,132 @@
 # Kernel Hub / Transformers integration evidence
 
-Recorded on 2026-09-17. **CUDA E2E is partially validated; the full Phase 1/2
-regression gates have not passed.**
+Updated on 2026-09-18. **The full Phase 1/2 L4 regression gate passed at
+`2ae90ab38a26c8ca9223d811f19a4532c7f5010c`: Phase 1 3/3, RT-DETR 20/20.**
 
-The corrected Phase 1 precision-contract suite passed on L4 at `4e21ffc`.
-The final-revision complete Phase 2 matrix remains outstanding.
+## Full regression with pinned integration dependencies
+
+[Run 35275929141](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35275929141)
+used Kernel Builder 0.16.1, kernels 0.16.2, Transformers 5.17.0 and
+PyTorch 2.10.0+cu126 on NVIDIA L4. It built the actual native CMake artifact,
+loaded it through Kernel Hub, and compared against the pinned HF artifact at
+`abfd4042216fa4f84c9c5c4e3e844a3143c70ad5`.
+
+| Precision | Eager inference | Eager training | Inductor inference | Inductor training |
+| --- | --- | --- | --- | --- |
+| FP32 | Pass | Pass | Pass | Pass |
+| FP16 | Pass | Pass | Pass | Pass |
+| BF16 | Pass | Pass | Pass | Pass |
+| FP16 autocast | Pass | Pass | Pass | Pass |
+| BF16 autocast | Pass | Pass | Pass | Pass |
+
+The BF16 AMP compiled-training case checked 241 gradient tensors, observed
+native forward/backward calls, and captured two MSDA calls in its graphs.
+The previously failing `model.decoder.layers.0.self_attn.o_proj.bias` gradient
+matches compiled HF exactly in this run. Numerical tolerances and CUDA
+arithmetic are unchanged. The earlier failure below remains part of the record:
+it did not recur in this full run or the direct diagnostics, but its cause has
+not been isolated. The dependency update alone is not evidence of its cause.
+
+The [suite summary](run-35275929141/kernel-hub-summary.json),
+[source manifest](run-35275929141/UPSTREAM.json),
+[BF16 AMP report](run-35275929141/e2e-bf16-amp.json), and
+[replay fixture and graphs](run-35275929141/e2e-bf16-amp-debug.tar.gz)
+preserve the tested configuration. All precision reports, native artifact
+hashes, package versions and logs are archived alongside them.
+[Pod deletion](run-35275929141/runpod-state.json) was verified.
+
+The evidence verifier passes:
+
+```bash
+python scripts/verify_kernel_hub.py \
+  --sha 2ae90ab38a26c8ca9223d811f19a4532c7f5010c \
+  --evidence docs/validation/kernel-hub/run-35275929141
+```
+
+Local checks passed all 20 CPU fixture cases (five tests), 55 controller/evidence
+tests, and Ruff. This establishes the documented synthetic RT-DETR contract
+under the recorded compiler/reference adaptations. Reproducible Nix distribution
+builds, broader PyTorch/GPU coverage, pretrained accuracy and HF adoption remain
+separate gates.
+
+## Earlier full regression after native dispatcher changes
+
+[Run 35233588181](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35233588181)
+tested `2e7cdb5d36922b82f97b2f9b0155752c2a1b9efa` with the harness corrections
+below, using L4, PyTorch 2.10.0+cu126, Transformers 5.17.0 and kernels 0.16.0.
+The three Phase 1 tests passed. All 20 E2E cases executed; 19 passed.
+
+| Precision | Eager inference | Eager training | Inductor inference | Inductor training |
+| --- | --- | --- | --- | --- |
+| FP32 | Pass | Pass | Pass | Pass |
+| FP16 | Pass | Pass | Pass | Pass |
+| BF16 | Pass | Pass | Pass | Pass |
+| FP16 autocast | Pass | Pass | Pass | Pass |
+| BF16 autocast | Pass | Pass | Pass | **Gradient mismatch** |
+
+All runs retain the documented precision/reference adaptations and compiler
+policies. The failure is in
+`model.decoder.layers.0.self_attn.o_proj.bias`: one of 32 elements exceeds
+`atol=0.02, rtol=0.05`, with absolute error 0.0703125 and relative error
+0.09677419 at that element. The tensor's overall maximum absolute difference
+is 0.5; larger reference elements can satisfy the relative tolerance despite
+larger absolute errors. No tolerance was changed.
+
+The failed case's diagnostics show:
+
+- Eager candidate versus eager HF: every parameter gradient, logits, boxes and
+  loss match exactly; the maximum input-gradient difference is `2.98e-8`.
+- Compiled candidate versus compiled HF: maximum logit difference `0.0078125`
+  and loss difference `0.0006218`; the bias gradient above fails.
+- Both compiled models differ from their own eager execution. The same bias
+  tensor has maximum differences of 1.5 (candidate) and 1.4375 (HF).
+- Initial proposals match without a query permutation.
+
+These observations establish a remaining compiled BF16 AMP discrepancy; they
+do not isolate its cause or prove it harmless. Subsequent
+[L4 diagnostics](direct-20260918/README.md) compared captured MSDA inputs,
+outputs and backward results, including a rebuild with the failed run's exact
+namespace. The discrepancy did not recur: forward inputs/outputs matched
+exactly and native value-gradient differences were at most `7.45e-9`. This does
+not establish why that formal run failed. The fresh full run above passed;
+the runner now archives BF16 AMP fixtures and graphs for exact replay.
+Nix distribution validation and HF adoption remain
+separate, uncompleted gates.
+
+Evidence: [suite summary](run-35233588181/kernel-hub-summary.json),
+[BF16 AMP cases and diagnostics](run-35233588181/e2e-bf16-amp.json),
+[Phase 1 log](run-35233588181/phase1.log),
+[source manifest](run-35233588181/UPSTREAM.json),
+[candidate hashes](run-35233588181/candidate-files.json),
+[baseline hashes](run-35233588181/baseline-files.json), and
+[verified Pod deletion](run-35233588181/runpod-state.json).
+
+Local checks of the corrected harness passed all 20 CPU fixture cases (four
+tests). Exporter tests passed 3/3; controller/evidence tests passed 55/55, as did
+Ruff and the PR's ordinary CI. CPU results do not replace the failed CUDA gate.
+
+### Initial attempt and harness correction
+
+[Run 35231276149](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35231276149)
+tested merged main `bf256ebadce5e61841d97bbae72b9c92353a0cac` on L4 with
+PyTorch 2.10.0+cu126. The real builder/loader and all three Phase 1 tests passed.
+All 20 RT-DETR cases failed in the harness before completing comparison: its
+profiler namespace lookup used `CustomOpDef._qualname`, and its graph counter
+used `CustomOpDef._opoverload`. After PR #16 the registered forward is already
+an `OpOverload`, so neither attribute exists. This run supplies no completed
+E2E parity result.
+
+The harness now compares graph targets directly with the registered overload
+and uses its `name()` for profiler matching. Numerical tolerances, compiler
+policies and operator execution requirements are unchanged.
+
+Evidence: [suite summary](run-35231276149/kernel-hub-summary.json),
+[Phase 1 log](run-35231276149/phase1.log),
+[FP32 failures](run-35231276149/e2e-fp32.json),
+[source manifest](run-35231276149/UPSTREAM.json), and
+[verified Pod deletion](run-35231276149/runpod-state.json).
+
+## Earlier integration evidence
 
 The six initially failing compiled cases now have passing, source-bound
 rechecks under explicit numerical policies and query-identity comparison.

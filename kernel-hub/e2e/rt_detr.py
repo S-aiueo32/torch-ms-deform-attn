@@ -8,8 +8,10 @@ import argparse
 import copy
 import hashlib
 import importlib.metadata
+import io
 import json
 import platform
+import tarfile
 import traceback
 from contextlib import nullcontext
 from pathlib import Path
@@ -156,6 +158,27 @@ def artifact_hashes(module):
     }
 
 
+def save_debug_artifact(path, payload):
+    """Store only this synthetic fixture's tensors and graphs for exact replay."""
+
+    def cpu(value):
+        if isinstance(value, torch.Tensor):
+            return value.detach().cpu()
+        if isinstance(value, dict):
+            return {key: cpu(item) for key, item in value.items()}
+        if isinstance(value, (tuple, list)):
+            return [cpu(item) for item in value]
+        return value
+
+    buffer = io.BytesIO()
+    torch.save(cpu(payload), buffer)
+    member = tarfile.TarInfo("case.pt")
+    member.size = buffer.tell()
+    buffer.seek(0)
+    with tarfile.open(path, "w:gz") as archive:
+        archive.addfile(member, buffer)
+
+
 def align_proposals(actual, expected, *, atol, rtol):
     """Compare detector queries by their input proposals, never by predictions.
 
@@ -236,6 +259,7 @@ def run_case(
     numerics="default",
     diagnostics=None,
     compile_reference=False,
+    debug_artifact=None,
 ):
     torch.manual_seed(123)
     torch.set_num_threads(1)
@@ -264,6 +288,18 @@ def run_case(
         for _ in range(2)
     ]
     candidate_pixels = pixels if amp else pixels.to(scalar_type)
+    debug = None
+    if debug_artifact is not None:
+        debug = {
+            "model_state": {
+                name: value.detach().cpu() for name, value in candidate.state_dict().items()
+            },
+            "pixels": candidate_pixels.detach().cpu(),
+            "labels": labels,
+            "candidate_graphs": [],
+            "reference_graphs": [],
+        }
+        save_debug_artifact(debug_artifact, debug)
     baseline_original_error = None
     try:
         expected = run_model(
@@ -313,12 +349,13 @@ def run_case(
         compiler = lookup_backend(backend)
 
         def record_graph(graph, inputs):
+            if debug is not None:
+                debug["candidate_graphs"].append(graph.code)
             graphs.append(
                 {
                     "node_count": len(list(graph.graph.nodes)),
                     "msda_calls": sum(
-                        node.target == module._registrations.forward._opoverload
-                        for node in graph.graph.nodes
+                        node.target == module._registrations.forward for node in graph.graph.nodes
                     ),
                 }
             )
@@ -362,7 +399,7 @@ def run_case(
             execute=execute,
         )
     names = {event.key: event.count for event in profile.key_averages()}
-    prefix = module._registrations.forward._qualname.rsplit("::", 1)[0]
+    prefix = module._registrations.forward.name().rsplit("::", 1)[0]
     required = [f"{prefix}::forward"] + ([f"{prefix}::backward"] if training else [])
     for name in required:
         if not names.get(name):
@@ -399,6 +436,8 @@ def run_case(
         from torch._functorch import config as autograd_config
 
         def reference_backend(graph, inputs):
+            if debug is not None:
+                debug["reference_graphs"].append(graph.code)
             with autograd_config.patch(backward_pass_autocast="off"):
                 return compiler(
                     graph,
@@ -425,6 +464,9 @@ def run_case(
         if diagnostics is not None:
             diagnostics["hf_compiled_vs_eager"] = comparison(expected, reference_eager)
             diagnostics["candidate_vs_compiled_hf"] = comparison(actual, expected)
+    if debug is not None:
+        debug.update(actual=actual, expected=expected, candidate_eager=eager_candidate)
+        save_debug_artifact(debug_artifact, debug)
     actual, query_permutation = align_proposals(actual, expected, atol=atol, rtol=rtol)
     if diagnostics is not None:
         diagnostics["query_permutation"] = query_permutation
@@ -476,6 +518,7 @@ def main():
     parser.add_argument("--compiled-training-only", action="store_true")
     parser.add_argument("--compiled-only", action="store_true")
     parser.add_argument("--compile-reference", action="store_true")
+    parser.add_argument("--debug-artifacts", action="store_true")
     args = parser.parse_args()
     report = {
         "status": "failed",
@@ -525,6 +568,15 @@ def main():
                         numerics=args.numerics,
                         diagnostics=diagnostics,
                         compile_reference=args.compile_reference,
+                        debug_artifact=(
+                            args.report.with_name(args.report.stem + "-debug.tar.gz")
+                            if args.debug_artifacts
+                            and args.autocast
+                            and args.dtype == "bf16"
+                            and training
+                            and backend
+                            else None
+                        ),
                     )
                 except Exception:
                     case = {

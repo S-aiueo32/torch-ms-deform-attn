@@ -1,0 +1,14 @@
+{
+  "name": "deformable-detr",
+  "id": "_deformable_detr_cuda_2ae90ab38a26c8ca9223d811f19a4532c7f5010c",
+  "version": 1,
+  "license": "Apache-2.0",
+  "upstream": "https://github.com/S-aiueo32/torch-ms-deform-attn",
+  "python-depends": [],
+  "backend": {
+    "type": "cuda",
+    "archs": [
+      "8.9"
+    ]
+  }
+}

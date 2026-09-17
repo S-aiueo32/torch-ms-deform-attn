@@ -1,6 +1,6 @@
 # Kernel Hub adapter (experimental)
 
-This is a Phase 1 prototype, not an adopted or published Hugging Face kernel.
+This is an experimental adapter, not an adopted or published Hugging Face kernel.
 `torch-ms-deform-attn` remains the implementation source. No runtime import of,
 or dependency on, its PyPI package is added to the exported kernel.
 
@@ -93,12 +93,19 @@ invalid device/dtype checks. FP32/FP64 published-HF operator comparisons passed;
 native FP16/BF16 gradient differences were traced to precision policy, with the
 candidate closer to an independent FP64 oracle and exactly matching HF under
 FP32 computation. The [Phase 2 RT-DETR runner](e2e/README.md)
-initially passed 14/20 CUDA E2E cases. All six compiled failures now have passing
-individual rechecks under documented compiler and comparison policies; a full
-matrix at the final revision has not been rerun.
-The full regression gates, wider PyTorch coverage and reproducible Nix build
-remain open. Phase 3 benchmarking has not been run. Do not claim HF adoption
-or complete CUDA E2E compatibility.
+initially passed 14/20 CUDA E2E cases, followed by passing focused rechecks.
+After the native dispatcher changes and harness corrections, the full run at
+`2ae90ab` passed all three Phase 1 tests and all 20 E2E cases, including BF16
+autocast compiled training. The preceding 19/20 run remains archived; its BF16
+discrepancy did not recur, but its cause has not been isolated. Wider PyTorch
+coverage and a reproducible Nix build remain open.
+[Phase 3 measurements](../docs/validation/kernel-hub-benchmarks/README.md)
+cover six implementations on L4. The subsequent
+[performance investigation](../docs/validation/kernel-hub-performance/README.md)
+led to shared native autograd, guarded int32 CUDA indexing, and optional CUDA
+metadata-content checks. These changes passed core correctness and sanitizer
+checks, but do not establish HF performance parity across all shapes/dtypes.
+Do not claim HF adoption or complete CUDA E2E compatibility.
 
 ## References
 

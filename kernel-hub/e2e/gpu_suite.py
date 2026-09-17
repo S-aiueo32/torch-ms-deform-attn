@@ -96,6 +96,7 @@ def main():
                 "controlled" if dtype == "fp32" or amp else "eager",
                 "--report",
                 str(output / f"{name}.json"),
+                "--debug-artifacts",
             ]
             if amp:
                 command.append("--autocast")

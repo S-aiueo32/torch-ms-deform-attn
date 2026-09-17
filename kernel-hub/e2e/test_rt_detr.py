@@ -7,15 +7,17 @@ the upstream CPU extension importable.
 import hashlib
 import importlib.metadata
 import importlib.util
+import io
 import json
 import os
 import shutil
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
 
 import torch
-from rt_detr import align_proposals, run_case, run_model, tiny_model
+from rt_detr import align_proposals, run_case, run_model, save_debug_artifact, tiny_model
 
 from torch_ms_deform_attn import _C
 
@@ -23,6 +25,22 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class ProposalAlignmentTest(unittest.TestCase):
+    def test_debug_artifact_preserves_nested_fixture_and_graphs(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "case.tar.gz"
+            value = torch.arange(6.0, requires_grad=True).reshape(2, 3)
+            payload = {"pixels": value, "labels": [{"boxes": value * 2}], "graphs": ["graph"]}
+            save_debug_artifact(path, payload)
+            with tarfile.open(path) as archive:
+                self.assertEqual(archive.getnames(), ["case.pt"])
+                loaded = torch.load(
+                    io.BytesIO(archive.extractfile("case.pt").read()), weights_only=True
+                )
+            torch.testing.assert_close(loaded["pixels"], value)
+            torch.testing.assert_close(loaded["labels"][0]["boxes"], value * 2)
+            self.assertEqual(loaded["graphs"], ["graph"])
+            self.assertFalse(loaded["pixels"].requires_grad)
+
     def test_only_permutation_is_normalized(self):
         expected = {
             "proposals": torch.tensor([[[0.0, 1.0], [2.0, 3.0]]]),
@@ -98,17 +116,15 @@ class RTDetrCPUFixtureTest(unittest.TestCase):
         (cls.kernel_dir / "deformable_detr/_ops.py").write_text(
             """import torch
 from torch_ms_deform_attn import _C as ops
-from torch_ms_deform_attn._ops import forward, backward
 
 def add_op_namespace_prefix(name):
     return "msda_cpu_e2e_fixture::" + name
 
-# This CPU fixture delegates autograd to the canonical native operators.
-# The real Kernel Hub namespace and CUDA binding need separate GPU validation.
+# Keep the fixture's operators opaque to tracing and visible to the profiler.
+# Its Python autograd formula is test-only; native HF autograd needs GPU validation.
 signature = "Tensor value, Tensor shapes, Tensor starts, Tensor locations, Tensor weights"
 torch.library.define(add_op_namespace_prefix("forward"), f"({signature}, int step, bool check_cuda_metadata=False) -> Tensor")
 torch.library.impl(add_op_namespace_prefix("forward"), "CPU", ops.ms_deform_attn_forward)
-torch.library.impl(add_op_namespace_prefix("forward"), "Autograd", forward)
 torch.library.define(
     add_op_namespace_prefix("backward"),
     f"({signature}, Tensor grad, int step, bool check_cuda_metadata=False) -> (Tensor, Tensor, Tensor)",
@@ -117,7 +133,20 @@ torch.library.impl(
     add_op_namespace_prefix("backward"), "CPU",
     lambda *args: tuple(ops.ms_deform_attn_backward(*args)),
 )
-torch.library.impl(add_op_namespace_prefix("backward"), "Autograd", backward)
+def setup_context(ctx, inputs, output):
+    ctx.save_for_backward(*inputs[:5])
+    ctx.step, ctx.check = inputs[5:]
+
+def backward(ctx, grad):
+    value, shapes, starts, locations, weights = ctx.saved_tensors
+    dv, dl, dw = torch.ops.msda_cpu_e2e_fixture.backward.default(
+        value, shapes, starts, locations, weights, grad.contiguous(), ctx.step, ctx.check
+    )
+    return dv, None, None, dl, dw, None, None
+
+torch.library.register_autograd(
+    add_op_namespace_prefix("forward"), backward, setup_context=setup_context
+)
 """
         )
 

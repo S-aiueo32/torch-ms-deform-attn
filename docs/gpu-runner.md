@@ -177,6 +177,22 @@ installs runtime/build dependencies, compiles CUDA, and executes the tests. This
 real native adapter build and loader run, but not a Nix release build or proof
 of distribution portability. Builder artifacts are not uploaded to HF.
 
+To validate the reviewed Nix distribution instead, select
+`--field kernel_hub_suite=nix-full`. This downloads the artifact from Nix build
+35280414318 and checks its archive/file hashes and exported source hashes
+against the committed validation record before renting the GPU. It installs
+PyTorch 2.11.0 / torchvision 0.26.0 with CUDA 12.6 and runs the full Phase 1 and
+20-case RT-DETR matrix without recompiling the candidate.
+
+`NIX_BUILD.json` identifies the original Nix build/source/export revisions and
+binary hashes; `nix-UPSTREAM.json` preserves its original source manifest.
+`UPSTREAM.json` and the suite's `source_sha` identify the current validation
+checkout. The original artifact's exported sources must match that checkout.
+The suite checks the actually loaded candidate files against the Nix record,
+and the evidence verifier checks that identity across all 20 cases. Replacing
+the pinned artifact requires an explicit update to the reviewed build record
+and preparation script.
+
 The existing HF kernel revision is pinned in that script. Collected artifacts
 include source and binary hashes, builder metadata, individual test logs/E2E
 JSON reports, the overall `kernel-hub-summary.json`, and `runpod-state.json`.

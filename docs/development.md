@@ -229,7 +229,7 @@ workflow before upload. The evidence verifier checks contents; maintainers must
 still ensure the assets came from a trusted validation run.
 
 Increment the version for each candidate and mark its GitHub release as a
-prerelease. Reserve `0.1.0` for the final release. Keep `uv.lock` in sync with
+prerelease. Use a version without an RC suffix for a final release. Keep `uv.lock` in sync with
 `uv lock`; uploaded filenames cannot be reused for changed archives.
 
 Use **Actions → Publish to PyPI / TestPyPI → Run workflow** with a target:
@@ -269,19 +269,19 @@ version before uploading another candidate to the same index.
 
 Before publishing, complete the [required GPU release validation](gpu-runner.md#required-release-validation) for the exact source SHA and archive the evidence with the GitHub release. A CPU or CUDA build-only CI success is insufficient.
 
-The current release version is `0.1.0rc3` in `pyproject.toml`. For later releases,
+The current release version is `0.1.0` in `pyproject.toml`. For later releases,
 update that version before building and use the matching filename below.
 
 Validate the archive without uploading it:
 
 ```bash
-uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.0rc3.tar.gz
+uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.0.tar.gz
 ```
 
 Set your PyPI API token in the `UV_PUBLISH_TOKEN` environment variable, then run:
 
 ```bash
-uv publish dist/pypi/torch_ms_deform_attn-0.1.0rc3.tar.gz
+uv publish dist/pypi/torch_ms_deform_attn-0.1.0.tar.gz
 ```
 
 uv publishes to PyPI by default; no Twine or extra index configuration is needed.

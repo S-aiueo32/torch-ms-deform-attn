@@ -8,19 +8,19 @@ outside the package's scope.
 
 ## Install
 
-Install release candidate `0.1.0rc3` from PyPI. It requires Python 3.10+,
+Install `0.1.0` from PyPI. It requires Python 3.10+,
 PyTorch >=2.4,<3, and a compatible C++ compiler. Installation builds the extension
 from source against your installed PyTorch:
 
 ```bash
 python -m pip install 'torch>=2.4,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0rc3
+python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
 ```
 
 CPU builds need neither the CUDA toolkit nor torchvision. CUDA is built
 automatically when CUDA-enabled PyTorch, the CUDA toolkit, and a visible GPU
 are available; CUDA builds also support CPU. Install your chosen CPU/CUDA PyTorch
-build first. The explicit RC version does not require `--pre`.
+build first.
 See [installation and backend selection](docs/installation.md) for CPU/CUDA
 examples, verification, and rebuilding after changing PyTorch.
 
@@ -65,7 +65,7 @@ pairs, CUDA toolkits, and known `torch.compile` limitations. The maintained
 CPU/CUDA matrix covers Linux x86_64 with standard CPython. Apple Silicon MPS
 has a separate [validation record](docs/validation/mps/README.md); other macOS
 and Windows configurations are best effort.
-Results are tied to source revisions, including revisions newer than `0.1.0rc3`.
+Results apply to the source revisions recorded in each validation report.
 
 ## Documentation
 

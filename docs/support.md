@@ -65,13 +65,13 @@ Unverified combinations within PyTorch's compatibility range, other CUDA
 toolkits, macOS and Windows are best effort. Combinations marked ❌ are excluded.
 This library requires Python >=3.10 even where PyTorch supports older Python.
 The dependency range permits more versions than this tested matrix.
-Release candidate `0.1.0rc3` adds an Apple Silicon MPS backend. The existing Linux tables
+Release `0.1.0` includes an Apple Silicon MPS backend. The existing Linux tables
 do not imply MPS coverage: see the separate [MPS validation record](validation/mps/README.md).
 MPS requires macOS 13.3+ (14+ for bfloat16); float64, empty dimensions, and MPS
 `torch.compile` support are excluded.
 
 The tables combine current-source validation and historical release records.
-The published `0.1.0rc3` requires PyTorch >=2.4. Results are tied to source revisions:
+The published `0.1.0` requires PyTorch >=2.4. Results are tied to source revisions:
 see the [Python-matrix evidence](validation/python-matrix/README.md),
 [2.4.0 evidence](validation/minimum-pytorch/README.md),
 [2.8–2.14 evidence](validation/pytorch-versions/README.md), and

@@ -77,7 +77,11 @@ to this export. Set `MSDA_HF_BASELINE_REVISION` to the full 40-character Hub
 commit SHA of the existing artifact being compared. The baseline test loads
 that revision in a subprocess without `LOCAL_KERNELS` and compares FP32/FP64
 forward and backward over two feature levels. It requires Hub access or a
-cached artifact compatible with the host's PyTorch/CUDA build.
+cached artifact compatible with the host's PyTorch/CUDA build. FP16/BF16
+comparisons use the upstream FP32-compute contract and an independent FP64
+oracle at the original tolerances. Raw native-HF low-precision differences are
+recorded separately: native HF rounds intermediate arithmetic in the input
+dtype, so strict native-half parity is not the adapter's precision contract.
 The layer tests load via `kernels.get_kernel` and compare eager and
 compiled layer outputs/gradients against an independent grid-sample reference.
 Missing CUDA is an error, not a successful skipped validation.
@@ -85,7 +89,9 @@ Missing CUDA is an error, not a successful skipped validation.
 The [L4 validation record](../docs/validation/kernel-hub/README.md) confirms native
 build/loading, reference-based eager/compiled layer gradients, autocast and
 invalid device/dtype checks. FP32/FP64 published-HF operator comparisons passed;
-strict FP16 gradient parity failed. The [Phase 2 RT-DETR runner](e2e/README.md)
+native FP16/BF16 gradient differences were traced to precision policy, with the
+candidate closer to an independent FP64 oracle and exactly matching HF under
+FP32 computation. The [Phase 2 RT-DETR runner](e2e/README.md)
 initially passed 14/20 CUDA E2E cases. All six compiled failures now have passing
 individual rechecks under documented compiler and comparison policies; a full
 matrix at the final revision has not been rerun.

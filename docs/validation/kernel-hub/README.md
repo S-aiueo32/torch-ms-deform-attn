@@ -3,12 +3,17 @@
 Recorded on 2026-09-17. **CUDA E2E is partially validated; the full Phase 1/2
 regression gates have not passed.**
 
+The corrected Phase 1 precision-contract suite passed on L4 at `4e21ffc`.
+The final-revision complete Phase 2 matrix remains outstanding.
+
 The six initially failing compiled cases now have passing, source-bound
 rechecks under explicit numerical policies and query-identity comparison.
 BF16 AMP was also checked against a compiled HF reference. This is **not** a
 claim that default Inductor matches eager element-for-element, nor that a
-single final-revision full matrix has passed. The strict Phase 1 FP16 native
-gradient comparison remains open. See the investigation below for each change.
+single final-revision full matrix has passed. Phase 1's native FP16/BF16
+gradient differences have been traced to differing computation precision; see
+the operator investigation below. Strict native-half numerical parity is not
+provided by the FP32-compute adapter.
 
 ## NVIDIA L4 / real Kernel Hub artifacts
 
@@ -146,6 +151,59 @@ this investigation. Fixes concern compiler policy, AOT assumptions and a
 comparison that previously conflated model/compiler numerics with replacement
 of the kernel. Pretrained accuracy and performance under these policies still
 require separate validation.
+
+## Operator FP16/BF16 precision investigation
+
+[Run 35199275357](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35199275357)
+at `15f90c9` retained the original native-HF assertions and added two controls:
+the pinned HF kernel on FP32-promoted inputs (results cast back to input dtype),
+and an independent FP64 `grid_sample` forward/backward oracle. It checked the
+same two-level shapes, seed and four input dtypes as the original test. All
+four dtypes were evaluated even when a subtest failed.
+
+For FP16 and BF16, **every candidate output and all three gradients exactly
+matched HF with FP32 computation**. Against the FP64 oracle, the candidate
+passed the original tolerances and had lower RMS error than native HF for
+every output/gradient tensor. Native HF failed the oracle tolerance for FP16
+location/weight gradients and BF16 location gradients.
+
+| Tensor / input dtype | Candidate RMS error vs FP64 | Native HF RMS error vs FP64 | Candidate vs FP32-compute HF |
+| --- | --- | --- | --- |
+| Sampling-location gradient / FP16 | 0.00134653 | 0.00324162 | Exact |
+| Attention-weight gradient / FP16 | 0.000358368 | 0.00104703 | Exact |
+| Sampling-location gradient / BF16 | 0.00811373 | 0.02758888 | Exact |
+
+The adapter computes interpolation and gradient accumulation in FP32 before
+casting results back, as the upstream API already documents. Native HF uses
+low-precision intermediate arithmetic and accumulation. Reproducing those
+rounding errors would change the upstream precision contract; this is not a
+candidate gradient defect demonstrated by this fixture.
+
+The test now requires both matched-computation HF parity and independent FP64
+accuracy, with the **original tolerances unchanged**. It additionally requires
+the candidate's RMS error not to exceed native HF's on this fixture. Raw native
+comparisons remain in `phase1-numerics.json`, but are diagnostic for FP16/BF16;
+FP32/FP64 native comparisons remain gates. This is an explicit correction of
+the comparison contract, not a claim that native-half differences vanished.
+No production kernel arithmetic changed. This synthetic fixture does not
+establish pretrained model accuracy or every possible input shape.
+
+The diagnostic run failed its three retained native-half assertions; all added
+accuracy controls, layer eager/compile checks and autocast checks passed.
+See [numerical report](run-35199275357/phase1-numerics.json),
+[test log](run-35199275357/phase1.log),
+[source manifest](run-35199275357/UPSTREAM.json), and
+[verified Pod deletion](run-35199275357/runpod-state.json).
+
+[Run 35199874809](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35199874809)
+at `4e21ffc` reran the corrected Phase 1 suite on L4 with PyTorch 2.10.0+cu126.
+All three tests passed, covering FP32/FP64 native-HF parity, FP16/BF16
+FP32-compute parity and FP64 accuracy, eager/compiled layer gradients, autocast,
+and device/dtype validation. This was an operator-only run, not a new E2E matrix.
+See [passing suite](run-35199874809/kernel-hub-summary.json),
+[numerical comparisons](run-35199874809/phase1-numerics.json),
+[test log](run-35199874809/phase1.log), and
+[verified Pod deletion](run-35199874809/runpod-state.json).
 
 ## Earlier CPU fixture
 

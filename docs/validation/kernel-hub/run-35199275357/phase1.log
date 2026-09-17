@@ -1,0 +1,45 @@
+test_autocast_and_validation (test_kernel.KernelTest.test_autocast_and_validation) ... /workspace/ci/kernel-hub.vWZZKSfM/venv/lib/python3.11/site-packages/torch/jit/_script.py:362: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+ok
+test_layer (test_kernel.KernelTest.test_layer) ... ok
+test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) ... Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1170.15it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1181.83it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1120.87it/s]
+
+  test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) (dtype=torch.float16, tensor='grad_locations', comparison='candidate_vs_native_hf') ... FAIL
+  test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) (dtype=torch.float16, tensor='grad_weights', comparison='candidate_vs_native_hf') ... FAIL
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1169.21it/s]
+  test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) (dtype=torch.bfloat16, tensor='grad_locations', comparison='candidate_vs_native_hf') ... FAIL
+
+======================================================================
+FAIL: test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) (dtype=torch.float16, tensor='grad_locations', comparison='candidate_vs_native_hf')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/ci/kernel-hub.vWZZKSfM/candidate/tests/test_kernel.py", line 140, in test_pinned_hf_baseline
+    self.assertTrue(checks[contract]["close"], checks[contract])
+AssertionError: False is not true : {'max_abs': 0.015625, 'rms': 0.0033420072356830284, 'close': False}
+
+======================================================================
+FAIL: test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) (dtype=torch.float16, tensor='grad_weights', comparison='candidate_vs_native_hf')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/ci/kernel-hub.vWZZKSfM/candidate/tests/test_kernel.py", line 140, in test_pinned_hf_baseline
+    self.assertTrue(checks[contract]["close"], checks[contract])
+AssertionError: False is not true : {'max_abs': 0.00390625, 'rms': 0.0010907928461753337, 'close': False}
+
+======================================================================
+FAIL: test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) (dtype=torch.bfloat16, tensor='grad_locations', comparison='candidate_vs_native_hf')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/ci/kernel-hub.vWZZKSfM/candidate/tests/test_kernel.py", line 140, in test_pinned_hf_baseline
+    self.assertTrue(checks[contract]["close"], checks[contract])
+AssertionError: False is not true : {'max_abs': 0.25, 'rms': 0.02973348006954293, 'close': False}
+
+----------------------------------------------------------------------
+Ran 3 tests in 17.303s
+
+FAILED (failures=3)

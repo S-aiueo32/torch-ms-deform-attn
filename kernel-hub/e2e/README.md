@@ -158,6 +158,8 @@ the fixture uses PyTorch 2.10.0 / torchvision 0.25.0 for compilation checks.
 
 The [L4 evidence](../../docs/validation/kernel-hub/README.md) records the initial
 14/20 run and passing rechecks of its six compiled failures under the explicit
-policies above. A single final-revision full matrix has not been run, and strict
-low-precision operator parity remains open. Pretrained model
+policies above. A single final-revision full matrix has not been run. Native
+FP16/BF16 operator differences were traced to precision policy; the validation
+record documents FP64 accuracy checks and the FP32-compute comparison contract.
+Pretrained model
 accuracy, RF-DETR and PP-DocLayoutV2 remain separate follow-up coverage.

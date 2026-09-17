@@ -104,6 +104,63 @@ class ControllerTest(unittest.TestCase):
         self.assertEqual([call[:2] for call in api.calls], [("DELETE", "/pods/ownedpod")])
         self.assertFalse(api.pods)
 
+    def test_capacity_wait_retries_without_creating_pods(self):
+        api = FakeAPI()
+        self.args.capacity_wait_minutes = 1
+        with (
+            mock.patch.object(ci.time, "monotonic", return_value=0),
+            mock.patch.object(
+                api, "quote", side_effect=[ci.CapacityUnavailable("none"), Decimal("0.27")]
+            ) as quote,
+        ):
+            self.assertEqual(ci.wait_for_capacity(api, self.args, 60), Decimal("0.27"))
+        self.assertEqual(quote.call_count, 2)
+        self.assertFalse(api.calls)
+        self.assertFalse(api.pods)
+
+    def test_capacity_wait_does_not_retry_price_or_auth_failures(self):
+        for error in (ci.ControllerError("price limit"), ci.APIError("GET", 401)):
+            api = FakeAPI()
+            self.args.capacity_wait_minutes = 1
+            with mock.patch.object(api, "quote", side_effect=error) as quote:
+                with self.assertRaises(ci.ControllerError):
+                    ci.wait_for_capacity(api, self.args, float("inf"))
+            quote.assert_called_once()
+
+    def test_capacity_wait_honors_deadline(self):
+        api = FakeAPI()
+        self.args.capacity_wait_minutes = 1
+        with (
+            mock.patch.object(ci.time, "monotonic", side_effect=[0, 1]),
+            mock.patch.object(api, "quote", side_effect=ci.CapacityUnavailable("none")) as quote,
+        ):
+            with self.assertRaises(ci.CapacityUnavailable):
+                ci.wait_for_capacity(api, self.args, 1)
+        quote.assert_called_once()
+
+    def test_startup_diagnostics_exclude_pod_credentials(self):
+        self.args.output_dir.mkdir()
+        self.pod["env"]["CI_SSH_HOST_KEY_B64"] = "NEVER_LOG_PRIVATE_KEY"
+        state = {"pod_id": "ownedpod", "owner": self.owner, "created_at": self.created}
+        with (
+            mock.patch.object(ci.time, "monotonic", return_value=0),
+            mock.patch.object(ci, "ssh_command", return_value=["ssh"]),
+            mock.patch.object(
+                ci.subprocess,
+                "run",
+                side_effect=[
+                    subprocess.CompletedProcess([], 255, stderr="Connection refused"),
+                    subprocess.CompletedProcess([], 0, stderr=""),
+                ],
+            ),
+        ):
+            ci.wait_for_ssh(FakeAPI([self.pod]), self.args, state, 60)
+        text = (self.args.output_dir / "gpu-startup.json").read_text()
+        self.assertNotIn("NEVER_LOG_PRIVATE_KEY", text)
+        self.assertEqual(
+            [row["stage"] for row in json.loads(text)], ["ssh_command_failed", "ready"]
+        )
+
     def test_cleanup_rejects_state_from_another_workflow(self):
         self.save_state()
         self.args.run_id = "457"

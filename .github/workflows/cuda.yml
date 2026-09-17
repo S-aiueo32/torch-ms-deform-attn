@@ -40,6 +40,10 @@ on:
         description: Maximum controller execution time in minutes (5-60)
         type: number
         default: 45
+      capacity_wait_minutes:
+        description: Wait for the selected GPU without renting a Pod (within total timeout)
+        type: number
+        default: 0
 permissions:
   contents: read
 concurrency:
@@ -58,6 +62,7 @@ jobs:
       SANITIZER: ${{ inputs.sanitizer }}
       MAX_HOURLY_USD: ${{ inputs.max_hourly_usd }}
       TIMEOUT_MINUTES: ${{ inputs.timeout_minutes }}
+      CAPACITY_WAIT_MINUTES: ${{ inputs.capacity_wait_minutes }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -108,7 +113,8 @@ jobs:
             --output-dir "$RUNNER_TEMP/runpod-results" \
             --gpu "$GPU" --sanitizer "$SANITIZER" --torch-version "$TORCH_VERSION" \
             --workload "$WORKLOAD" --kernel-hub-suite "$KERNEL_HUB_SUITE" "${prepared[@]}" \
-            --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES"
+            --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES" \
+            --capacity-wait-minutes "$CAPACITY_WAIT_MINUTES"
       - name: Retry cleanup after failure or cancellation
         if: always() && inputs.operation == 'test'
         timeout-minutes: 5

@@ -1,0 +1,36 @@
+name: Kernel Hub Nix build
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - kernel-hub/**
+      - scripts/run_kernel_hub_nix.sh
+      - .github/workflows/kernel-hub-nix.yml
+permissions:
+  contents: read
+concurrency:
+  group: kernel-hub-nix-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25
+        with:
+          extra-conf: |
+            max-jobs = 1
+            cores = 2
+            sandbox-fallback = false
+            extra-substituters = https://huggingface.cachix.org
+            extra-trusted-public-keys = huggingface.cachix.org-1:ynTPbLS0W8ofXd9fDjk1KvoFky9K2jhxe6r4nXAkc/o=
+      - name: Build redistributable CUDA variant with Nix
+        run: bash scripts/run_kernel_hub_nix.sh "$RUNNER_TEMP/kernel-hub-nix"
+      - name: Preserve lock, build logs and distribution artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-hub-nix-${{ github.run_id }}
+          path: ${{ runner.temp }}/kernel-hub-nix/evidence/
+          if-no-files-found: error

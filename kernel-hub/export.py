@@ -44,6 +44,8 @@ def export(destination, revision=None):
             )
     write("kernel-hub/build.toml", "build.toml")
     write("kernel-hub/flake.nix", "flake.nix")
+    if (ROOT / "kernel-hub/flake.lock").is_file():
+        write("kernel-hub/flake.lock", "flake.lock")
     for source in sorted((ROOT / "kernel-hub/tests").glob("*.py")):
         write(source.relative_to(ROOT).as_posix(), f"tests/{source.name}")
     for name in ("rt_detr.py", "requirements.txt"):

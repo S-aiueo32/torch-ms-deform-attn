@@ -1,0 +1,30 @@
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+  _warn_once(
+W0917 07:24:36.787000 5666 torch/_inductor/utils.py:1679] [0/0] Not enough SMs to use max_autotune_gemm mode
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+W0917 07:25:22.680000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:22.684000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:22.685000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:22.689000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:22.690000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:22.692000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:23.186000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.203000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.206000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.208000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.210000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.212000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.214000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.313000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:25:25.750000 5666 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])

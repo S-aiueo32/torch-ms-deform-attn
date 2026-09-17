@@ -1,0 +1,26 @@
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+W0917 07:19:32.172000 3122 torch/_inductor/utils.py:1679] [1/0_1] Not enough SMs to use max_autotune_gemm mode
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/torch/_inductor/compile_fx.py:321: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+W0917 07:19:55.226000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:55.229000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:55.231000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:55.235000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:55.237000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:55.239000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:55.715000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:57.678000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+W0917 07:19:58.106000 3122 torch/utils/_sympy/interp.py:179] [10/2] failed while executing pow_by_natural([VR[1, int_oo], VR[-1, -1]])
+/workspace/ci/kernel-hub.zG2B8p7E/venv/lib/python3.11/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+  _warn_once(
+Traceback (most recent call last):
+  File "/workspace/ci/source/kernel-hub/e2e/rt_detr.py", line 445, in <module>
+    main()
+  File "/workspace/ci/source/kernel-hub/e2e/rt_detr.py", line 434, in main
+    raise RuntimeError("E2E cases failed; inspect per-case errors in the report")
+RuntimeError: E2E cases failed; inspect per-case errors in the report

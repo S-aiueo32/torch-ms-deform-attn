@@ -561,6 +561,19 @@ def run(api, args):
         env=child_environment(),
         timeout=60,
     )
+    prepared = getattr(args, "prepared_kernel", None)
+    if prepared is not None:
+        manifest = json.loads((prepared / "UPSTREAM.json").read_text())
+        if manifest["revision"] != source_sha:
+            raise ControllerError("Prepared kernel revision differs from archived source")
+        with tarfile.open(archive, "a") as bundle:
+            for path in sorted(prepared.rglob("*")):
+                if path.is_symlink() or not (path.is_file() or path.is_dir()):
+                    raise ControllerError("Prepared kernel must contain only regular files")
+                if path.is_file():
+                    bundle.add(
+                        path, arcname="kernel-hub-prepared/" + path.relative_to(prepared).as_posix()
+                    )
     created = utc_now().isoformat()
     state = {"owner": owner, "created_at": created, "phase": "intent", "pod_id": None}
     write_state(args.state_dir, state)
@@ -586,6 +599,7 @@ def run(api, args):
             CI_SSH_PUBLIC_KEY=public,
             CI_SSH_HOST_KEY_B64=host_private,
             CI_MAX_SECONDS=str(args.timeout_minutes * 60),
+            CI_WORKLOAD=getattr(args, "workload", "core"),
         ),
     }
     ssh = None
@@ -633,6 +647,13 @@ def run(api, args):
             + (" benchmark" if args.benchmark else "")
         )
         matrix_cases = getattr(args, "matrix_cases", None)
+        if getattr(args, "workload", "core") == "kernel-hub":
+            suite = getattr(args, "kernel_hub_suite", "full")
+            remote = (
+                f"cd /workspace/ci/source && CUDA_CHECKS_SOURCE_SHA={source_sha} "
+                f"timeout --signal=TERM --kill-after=30s {remaining - 30}s "
+                f"bash scripts/run_kernel_hub_checks.sh /workspace/ci/results {suite}"
+            )
         if matrix_cases:
             # uv provisions standard CPython versions without changing system Python.
             workload = (
@@ -763,6 +784,11 @@ def parse_args(argv=None):
         help="Run up to nine pairs on one Pod, using --torch-version's toolkit image",
     )
     run_parser.add_argument("--gpu-count", type=int, choices=(1, 2), default=1)
+    run_parser.add_argument("--workload", choices=("core", "kernel-hub"), default="core")
+    run_parser.add_argument(
+        "--kernel-hub-suite", choices=("full", "compile-amp", "phase1"), default="full"
+    )
+    run_parser.add_argument("--prepared-kernel", type=Path)
     run_parser.add_argument("--source", type=Path, required=True)
     run_parser.add_argument("--output-dir", type=Path, required=True)
     run_parser.add_argument(
@@ -777,6 +803,11 @@ def parse_args(argv=None):
     )
     run_parser.add_argument("--timeout-minutes", type=int, default=45)
     args = parser.parse_args(argv)
+    if getattr(args, "workload", "core") == "kernel-hub":
+        if args.matrix_cases or args.benchmark or args.sanitizer != "none" or args.gpu_count != 1:
+            parser.error("kernel-hub requires one GPU, sanitizer=none, no matrix and no benchmark")
+        if TORCH_CONFIGS[args.torch_version][1] != "12.6":
+            parser.error("kernel-hub requires a CUDA 12.6 image")
     if getattr(args, "matrix_cases", None):
         from run_support_matrix import parse_case, toolkit
 

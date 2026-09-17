@@ -7,6 +7,7 @@ import tempfile
 import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import torch
 
@@ -56,6 +57,16 @@ class ExportTest(unittest.TestCase):
                             expected = torch.autograd.grad(reference.sum(), args, retain_graph=True)
                             for a, b in zip(actual, expected):
                                 torch.testing.assert_close(a, b)
+                        explicit = module.ms_deform_attn_forward(
+                            value, shapes, starts, loc, weights, 64
+                        )
+                        torch.testing.assert_close(explicit, reference)
+                        gradients = module.ms_deform_attn_backward(
+                            value, shapes, starts, loc, weights, torch.ones_like(explicit), 64
+                        )
+                        self.assertIsInstance(gradients, list)
+                        for actual_grad, expected_grad in zip(gradients, expected):
+                            torch.testing.assert_close(actual_grad, expected_grad)
 
     def test_refuse_overwrite_and_changed_contract(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -63,6 +74,18 @@ class ExportTest(unittest.TestCase):
                 exporter.export(tmp)
         with self.assertRaises(ValueError):
             exporter.replace_once("changed", "original", "replacement")
+
+    def test_archive_revision_without_git(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch.object(exporter.subprocess, "check_output") as git:
+                destination = Path(tmp) / "kernel"
+                exporter.export(destination, revision="a" * 40)
+            git.assert_not_called()
+            self.assertEqual(
+                json.loads((destination / "UPSTREAM.json").read_text())["revision"], "a" * 40
+            )
+            with self.assertRaisesRegex(ValueError, "full Git commit SHA"):
+                exporter.export(Path(tmp) / "invalid", revision="main")
 
 
 if __name__ == "__main__":

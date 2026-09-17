@@ -5,6 +5,7 @@ import base64
 import copy
 import importlib.util
 import io
+import json
 import subprocess
 import tarfile
 import tempfile
@@ -203,7 +204,8 @@ class ControllerTest(unittest.TestCase):
                 target = next(
                     value.split("=", 1)[1] for value in command if value.startswith("--output=")
                 )
-                Path(target).write_bytes(b"fake source archive")
+                with tarfile.open(target, "w"):
+                    pass
             return subprocess.CompletedProcess(command, 0)
 
         mock.patch.object(
@@ -301,6 +303,43 @@ class ControllerTest(unittest.TestCase):
                 self.assertEqual(payload["gpu"]["minCudaVersion"], toolkit)
                 self.assertFalse(api.pods)
                 self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
+
+    def test_kernel_hub_workload_retains_cleanup_and_source_binding(self):
+        self.prepare_run()
+        self.args.torch_version = "2.14.0"
+        self.args.workload = "kernel-hub"
+        self.args.kernel_hub_suite = "compile-amp"
+        self.args.prepared_kernel = self.args.source / "prepared"
+        self.args.prepared_kernel.mkdir()
+        (self.args.prepared_kernel / "UPSTREAM.json").write_text(json.dumps({"revision": "a" * 40}))
+        api = FakeAPI()
+        with (
+            mock.patch.object(ci, "wait_for_ssh", return_value=["ssh"]),
+            mock.patch.object(ci, "stream_command", return_value=1) as command,
+            mock.patch.object(ci, "collect_artifacts") as collect,
+        ):
+            with self.assertRaisesRegex(ci.ControllerError, "exit status 1"):
+                ci.run(api, self.args)
+        remote = command.call_args.args[0][-1]
+        self.assertIn("run_kernel_hub_checks.sh", remote)
+        self.assertTrue(remote.endswith("/workspace/ci/results compile-amp"))
+        self.assertIn(f"CUDA_CHECKS_SOURCE_SHA={'a' * 40}", remote)
+        self.assertIn("timeout --signal=TERM --kill-after=30s", remote)
+        collect.assert_called_once()
+        self.assertFalse(api.pods)
+        self.assertEqual(ci.read_state(self.args.state_dir)["phase"], "deleted")
+        with tarfile.open(self.args.state_dir / "source.tar") as bundle:
+            self.assertIn("kernel-hub-prepared/UPSTREAM.json", bundle.getnames())
+
+    def test_prepared_kernel_wrong_revision_rejected_before_rental(self):
+        self.prepare_run()
+        self.args.prepared_kernel = self.args.source / "prepared"
+        self.args.prepared_kernel.mkdir()
+        (self.args.prepared_kernel / "UPSTREAM.json").write_text(json.dumps({"revision": "b" * 40}))
+        api = FakeAPI()
+        with self.assertRaisesRegex(ci.ControllerError, "revision differs"):
+            ci.run(api, self.args)
+        self.assertFalse(any(call[0] == "POST" for call in api.calls))
 
     def test_two_gpu_request_and_remote_requirement(self):
         self.prepare_run()

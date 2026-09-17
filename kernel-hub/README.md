@@ -23,6 +23,9 @@ substitution fails the export. The manifest records HEAD and hashes of the
 actual source files, including any uncommitted changes. Export refuses to
 overwrite an existing directory.
 
+For a source archive without `.git`, pass `--revision FULL_SOURCE_SHA`; the
+Runpod controller supplies the exact commit it archived.
+
 Keep generated files out of upstream version control. Sync downstream by
 regenerating from a reviewed upstream revision; do not edit generated kernels.
 Changes found downstream should be applied upstream before the next export.
@@ -31,8 +34,10 @@ Changes found downstream should be applied upstream before the next export.
 
 - `layers.MultiScaleDeformableAttention.forward` preserves HF's seven-argument
   contract, including the unused `value_spatial_shapes_list` argument.
-- `ms_deform_attn_forward` / `ms_deform_attn_backward` preserve the low-level
-  API: contiguous CUDA FP32/FP64 tensors, with explicit backward.
+- `ms_deform_attn_forward` / `ms_deform_attn_backward` preserve the explicit
+  forward/backward API, including FP16/BF16 input compatibility. Low-precision
+  computation is promoted to FP32 and explicit low-precision gradients are
+  returned in the input dtype.
 - The layer and `ms_deform_attn` use upstream dtype, contiguous-input,
   FakeTensor and first-order autograd handling. Explicit FP16/BF16 inputs
   compute in FP32 and return the input dtype; autocast returns FP32.
@@ -41,10 +46,10 @@ Changes found downstream should be applied upstream before the next export.
 - No CPU/MPS dispatch is registered in the HF native binding. The CPU test
   shim described below is only a test fixture.
 
-The builder configuration follows edition 5. `flake.nix` currently follows
-the builder's main branch: generate and retain `flake.lock` on the Linux build
-host before recording reproducible build evidence. CUDA, PyTorch and compiler
-compatibility have not yet been established for this adapter.
+The configuration is validated with builder 0.16.0. `flake.nix` currently follows
+the builder's main branch: generate and retain `flake.lock` before validating a
+publishable Nix build. The recorded L4 run uses the pinned builder's local CMake
+development route with PyTorch 2.10.0 and CUDA 12.6.
 
 ## Validation
 
@@ -72,16 +77,27 @@ to this export. Set `MSDA_HF_BASELINE_REVISION` to the full 40-character Hub
 commit SHA of the existing artifact being compared. The baseline test loads
 that revision in a subprocess without `LOCAL_KERNELS` and compares FP32/FP64
 forward and backward over two feature levels. It requires Hub access or a
-cached artifact compatible with the host's PyTorch/CUDA build.
+cached artifact compatible with the host's PyTorch/CUDA build. FP16/BF16
+comparisons use the upstream FP32-compute contract and an independent FP64
+oracle at the original tolerances. Raw native-HF low-precision differences are
+recorded separately: native HF rounds intermediate arithmetic in the input
+dtype, so strict native-half parity is not the adapter's precision contract.
 The layer tests load via `kernels.get_kernel` and compare eager and
 compiled layer outputs/gradients against an independent grid-sample reference.
 Missing CUDA is an error, not a successful skipped validation.
 
-Phase 1 remains open until a real builder/loader/CUDA run passes and numerical
-comparison against a pinned existing HF artifact is recorded. Also outstanding:
-execution of the included GPU autocast and invalid device/dtype checks, PyTorch version coverage,
-and a reproducible builder lock. Phase 2 real-model E2E and Phase 3 benchmarking
-have not been run. Do not claim HF adoption or end-to-end compatibility yet.
+The [L4 validation record](../docs/validation/kernel-hub/README.md) confirms native
+build/loading, reference-based eager/compiled layer gradients, autocast and
+invalid device/dtype checks. FP32/FP64 published-HF operator comparisons passed;
+native FP16/BF16 gradient differences were traced to precision policy, with the
+candidate closer to an independent FP64 oracle and exactly matching HF under
+FP32 computation. The [Phase 2 RT-DETR runner](e2e/README.md)
+initially passed 14/20 CUDA E2E cases. All six compiled failures now have passing
+individual rechecks under documented compiler and comparison policies; a full
+matrix at the final revision has not been rerun.
+The full regression gates, wider PyTorch coverage and reproducible Nix build
+remain open. Phase 3 benchmarking has not been run. Do not claim HF adoption
+or complete CUDA E2E compatibility.
 
 ## References
 

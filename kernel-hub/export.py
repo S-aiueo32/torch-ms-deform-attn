@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -15,7 +16,9 @@ def replace_once(text, old, new):
     return text.replace(old, new, 1)
 
 
-def export(destination):
+def export(destination, revision=None):
+    if revision is not None and not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise ValueError("revision must be a full Git commit SHA")
     destination = Path(destination).resolve()
     # Requiring a new directory prevents stale files and accidental overwrites.
     destination.mkdir(parents=True, exist_ok=False)
@@ -43,6 +46,8 @@ def export(destination):
     write("kernel-hub/flake.nix", "flake.nix")
     for source in sorted((ROOT / "kernel-hub/tests").glob("*.py")):
         write(source.relative_to(ROOT).as_posix(), f"tests/{source.name}")
+    for name in ("rt_detr.py", "requirements.txt"):
+        write(f"kernel-hub/e2e/{name}", f"e2e/{name}")
 
     def registrations(text):
         text = replace_once(
@@ -68,7 +73,10 @@ def export(destination):
             "from ._registrations import forward as _forward",
         ),
     )
-    revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    if revision is None:
+        revision = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
     (destination / "UPSTREAM.json").write_text(
         json.dumps({"revision": revision, "source_sha256": sources}, indent=2) + "\n"
     )
@@ -77,4 +85,8 @@ def export(destination):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("destination", type=Path)
-    export(parser.parse_args().destination)
+    parser.add_argument(
+        "--revision", help="Full source SHA when exporting a git archive without .git"
+    )
+    args = parser.parse_args()
+    export(args.destination, revision=args.revision)

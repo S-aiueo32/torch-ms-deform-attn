@@ -1,0 +1,76 @@
+test_detection_loss_matches_public_forward (test_rt_detr.RTDetrCPUFixtureTest.test_detection_loss_matches_public_forward) ... ok
+test_full_detector (test_rt_detr.RTDetrCPUFixtureTest.test_full_detector) ... /tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/torch/profiler/profiler.py:217: UserWarning: Warning: Profiler clears events at the end of each cycle.Only events from the current cycle will be reported.To keep events across cycles, set acc_events=True.
+  _warn_once(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+ok
+test_refuses_same_baseline (test_rt_detr.RTDetrCPUFixtureTest.test_refuses_same_baseline) ... /tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `GeLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+/tmp/msda-phase2-env/lib/python3.11/site-packages/kernels/layer/layer.py:423: UserWarning: 
+No kernel mapping found for layer `SiLU`. Check if the layer name matches one of the kernels in the mapping or add the kernel you want to use to the mapping. Defaulting to original forward implementation.
+  warnings.warn(
+ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 49.959s
+
+OK

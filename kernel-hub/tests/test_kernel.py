@@ -1,5 +1,6 @@
 """Run inside a builder testshell with LOCAL_KERNELS pointing at this build."""
 
+import json
 import os
 import subprocess
 import sys
@@ -8,6 +9,40 @@ import unittest
 from pathlib import Path
 
 import torch
+
+
+def double_reference(args, grad):
+    """Independent two-level grid-sample oracle at the exact input coordinates."""
+    value, shapes, starts, locations, weights = args
+    value, locations, weights = (
+        tensor.detach().double().requires_grad_() for tensor in (value, locations, weights)
+    )
+    batch, _, heads, channels = value.shape
+    queries, points = locations.shape[1], locations.shape[4]
+    sampled = []
+    for level, ((height, width), start) in enumerate(zip(shapes.tolist(), starts.tolist())):
+        feature = value[:, start : start + height * width]
+        feature = feature.permute(0, 2, 3, 1).reshape(batch * heads, channels, height, width)
+        grid = (2 * locations[:, :, :, level] - 1).permute(0, 2, 1, 3, 4)
+        sample = torch.nn.functional.grid_sample(
+            feature, grid.reshape(batch * heads, queries, points, 2), align_corners=False
+        )
+        sampled.append(sample)
+    samples = torch.stack(sampled, dim=-2).flatten(-2)
+    attention = weights.permute(0, 2, 1, 3, 4).reshape(batch * heads, 1, queries, -1)
+    output = (samples * attention).sum(-1)
+    output = output.reshape(batch, heads * channels, queries).transpose(1, 2).contiguous()
+    gradients = torch.autograd.grad(output, (value, locations, weights), grad.double())
+    return (output.detach(), *gradients)
+
+
+def comparison(actual, expected, tolerance):
+    difference = actual.double() - expected.double()
+    return {
+        "max_abs": difference.abs().max().item(),
+        "rms": difference.square().mean().sqrt().item(),
+        "close": torch.allclose(actual.double(), expected.double(), atol=tolerance, rtol=tolerance),
+    }
 
 
 class KernelTest(unittest.TestCase):
@@ -38,11 +73,23 @@ kernel = get_kernel("kernels-community/deformable-detr", revision=sys.argv[1])
 value, shapes, starts, locations, weights, grad = torch.load(sys.argv[2], weights_only=True)
 out = kernel.ms_deform_attn_forward(value, shapes, starts, locations, weights, 64)
 grads = kernel.ms_deform_attn_backward(value, shapes, starts, locations, weights, grad, 64)
-torch.save((out, grads), sys.argv[3])
+if value.dtype in (torch.float16, torch.bfloat16):
+    promoted = (value.float(), shapes, starts, locations.float(), weights.float())
+    promoted_out = kernel.ms_deform_attn_forward(*promoted, 64).to(value.dtype)
+    promoted_grads = [g.to(value.dtype) for g in kernel.ms_deform_attn_backward(*promoted, grad.float(), 64)]
+else:
+    promoted_out, promoted_grads = out, grads
+torch.save((out, grads, promoted_out, promoted_grads), sys.argv[3])
 """
         env = {key: val for key, val in os.environ.items() if key != "LOCAL_KERNELS"}
+        report = {
+            "baseline_revision": revision,
+            "low_precision_contract": "FP32 computation; output and gradients cast to input dtype",
+            "native_low_precision_comparison": "diagnostic, not the FP32-compute accuracy oracle",
+            "cases": [],
+        }
         torch.manual_seed(29)
-        for dtype in (torch.float32, torch.float64):
+        for dtype in (torch.float32, torch.float64, torch.float16, torch.bfloat16):
             value = torch.randn(2, 20, 2, 8, dtype=dtype, device="cuda")
             shapes = torch.tensor([[4, 4], [2, 2]], device="cuda")
             starts = torch.tensor([0, 16], device="cuda")
@@ -58,12 +105,54 @@ torch.save((out, grads), sys.argv[3])
                     env=env,
                     check=True,
                 )
-                reference, ref_grads = torch.load(outputs, weights_only=True)
+                reference, ref_grads, promoted, promoted_grads = torch.load(
+                    outputs, weights_only=True
+                )
             actual = self.kernel.ms_deform_attn_forward(*args, 64)
             grads = self.kernel.ms_deform_attn_backward(*args, grad, 64)
-            torch.testing.assert_close(actual, reference)
-            for actual_grad, reference_grad in zip(grads, ref_grads):
-                torch.testing.assert_close(actual_grad, reference_grad, atol=1e-5, rtol=1e-5)
+            tolerance = (
+                2e-2 if dtype == torch.bfloat16 else 2e-3 if dtype == torch.float16 else 1e-5
+            )
+            oracle = double_reference(args, grad)
+            tensors = {}
+            for name, candidate, native, matched, truth in zip(
+                ("output", "grad_value", "grad_locations", "grad_weights"),
+                (actual, *grads),
+                (reference, *ref_grads),
+                (promoted, *promoted_grads),
+                oracle,
+            ):
+                tensors[name] = {
+                    "candidate_vs_native_hf": comparison(candidate, native, tolerance),
+                    "candidate_vs_fp32_hf": comparison(candidate, matched, tolerance),
+                    "candidate_vs_fp64_oracle": comparison(candidate, truth, tolerance),
+                    "native_hf_vs_fp64_oracle": comparison(native, truth, tolerance),
+                }
+            report["cases"].append(
+                {"dtype": str(dtype), "tolerance": tolerance, "tensors": tensors}
+            )
+            if os.environ.get("MSDA_OUTPUT_DIR"):
+                (Path(os.environ["MSDA_OUTPUT_DIR"]) / "phase1-numerics.json").write_text(
+                    json.dumps(report, indent=2) + "\n"
+                )
+            for name, checks in tensors.items():
+                low_precision = dtype in (torch.float16, torch.bfloat16)
+                # Native HF rounds intermediate arithmetic and accumulation in
+                # FP16/BF16. Our documented contract promotes to FP32. Require
+                # agreement under that policy AND independent FP64 accuracy;
+                # retain raw native differences above rather than loosening tol.
+                contracts = ["candidate_vs_fp32_hf", "candidate_vs_fp64_oracle"]
+                if not low_precision:
+                    contracts.append("candidate_vs_native_hf")
+                for contract in contracts:
+                    with self.subTest(dtype=dtype, tensor=name, comparison=contract):
+                        self.assertTrue(checks[contract]["close"], checks[contract])
+                if low_precision:
+                    with self.subTest(dtype=dtype, tensor=name, comparison="accuracy_regression"):
+                        self.assertLessEqual(
+                            checks["candidate_vs_fp64_oracle"]["rms"],
+                            checks["native_hf_vs_fp64_oracle"]["rms"] + 1e-12,
+                        )
 
     def test_autocast_and_validation(self):
         for dtype in (torch.float16, torch.bfloat16):

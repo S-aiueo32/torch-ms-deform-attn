@@ -16,7 +16,11 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
-apt-get install -y --no-install-recommends openssh-server ca-certificates git build-essential python3-venv
+ci_packages=(openssh-server ca-certificates git build-essential python3-venv)
+if [[ "${CI_WORKLOAD:-core}" == kernel-hub ]]; then
+  ci_packages+=(pkg-config libssl-dev curl)
+fi
+apt-get install -y --no-install-recommends "${ci_packages[@]}"
 useradd --create-home --shell /bin/bash ci
 # A disabled password with public-key login; the SSH server rejects passwords.
 usermod --password '*' ci

@@ -130,6 +130,50 @@ the archived source SHA. `cpu-tests.json` records the separate CPU-only suite;
 mean the corresponding validation phase was not reached, even when wheels were
 downloaded or built successfully. Preserve failed attempts as well as successes.
 
+## Kernel Hub and Transformers workload
+
+The same controller can build the experimental Kernel Hub distribution and run
+its operator tests plus RT-DETR E2E checks:
+
+```bash
+gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn \
+  --ref feat/kernel-hub-transformers-e2e \
+  --field workload=kernel-hub --field operation=test \
+  --field torch_version=2.14.0 --field sanitizer=none \
+  --field gpu='NVIDIA L4' --field max_hourly_usd=0.50 \
+  --field timeout_minutes=60
+```
+
+Here `torch_version` selects the CUDA 12.6 container; the workload installs its
+own pinned PyTorch 2.10.0 / torchvision 0.25.0 environment. It requires one GPU,
+no sanitizer, and no benchmark or support-matrix options. The local controller
+equivalent is `--workload kernel-hub --torch-version 2.14.0`.
+
+The default `kernel_hub_suite=full` runs operator tests and the entire E2E matrix.
+For the two compiled AMP training regressions only, add
+`--field kernel_hub_suite=compile-amp` (controller: `--kernel-hub-suite compile-amp`).
+For operator correctness and precision diagnostics without the model matrix,
+use `--field kernel_hub_suite=phase1` (controller: `--kernel-hub-suite phase1`).
+`phase1-numerics.json` records both raw native-HF differences and errors against
+an independent FP64 grid-sample reference.
+The summary records whether this focused subset was selected; it cannot be used
+as evidence that the full matrix passed.
+
+`scripts/run_kernel_hub_checks.sh` uses the official kernel-builder 0.16.0 local
+development build (`create-pyproject`, then CMake build and `local_install`).
+The workflow caches the pinned builder on the CPU runner and generates the
+project before renting a GPU. `--prepared-kernel` transfers that generated tree
+with the source archive after checking its upstream revision. The GPU host only
+installs runtime/build dependencies, compiles CUDA, and executes the tests. This is a
+real native adapter build and loader run, but not a Nix release build or proof
+of distribution portability. Builder artifacts are not uploaded to HF.
+
+The existing HF kernel revision is pinned in that script. Collected artifacts
+include source and binary hashes, builder metadata, individual test logs/E2E
+JSON reports, the overall `kernel-hub-summary.json`, and `runpod-state.json`.
+Require all requested runs to pass and the Pod state to be `deleted`. These
+results do not replace core CUDA release-validation evidence.
+
 ## Cleanup and costs
 
 The controller deletes the Pod in a `finally` block, handles cancellation signals,

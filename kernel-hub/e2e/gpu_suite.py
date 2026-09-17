@@ -36,7 +36,7 @@ def main():
     summary = {
         "source_sha": os.environ["CUDA_CHECKS_SOURCE_SHA"],
         "baseline_revision": revision,
-        "builder": "hf-kernel-builder 0.16.0 create-pyproject + setup.py build_kernel",
+        "builder": "hf-kernel-builder 0.16.0 create-pyproject + CMake local_install",
         "torch": torch.__version__,
         "cuda": torch.version.cuda,
         "gpu": torch.cuda.get_device_name(),

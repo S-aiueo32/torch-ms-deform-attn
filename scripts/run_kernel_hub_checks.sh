@@ -23,7 +23,7 @@ python -m pip install --no-cache-dir -r kernel-hub/e2e/requirements.txt \
 python -c 'import torch; assert torch.cuda.is_available(); assert torch.version.cuda == "12.6"; print(torch.__version__, torch.cuda.get_device_name())'
 
 # Official kernel-builder local development route: generate CMake/setup.py,
-# then build_kernel. This tests real builder glue without claiming Nix portability.
+# then CMake's local_install target. This does not establish Nix portability.
 curl --fail --location --proto '=https' https://sh.rustup.rs -o "$msda_work/rustup.sh"
 sh "$msda_work/rustup.sh" -y --profile minimal --default-toolchain 1.94.0 --no-modify-path
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -32,11 +32,10 @@ kernel-builder --version
 python kernel-hub/export.py "$msda_work/candidate" --revision "$CUDA_CHECKS_SOURCE_SHA"
 cp "$msda_work/candidate/UPSTREAM.json" "$msda_output/UPSTREAM.json"
 kernel-builder create-pyproject "$msda_work/candidate" --unique-id "$CUDA_CHECKS_SOURCE_SHA"
-export CMAKE_ARGS='-DCMAKE_CUDA_ARCHITECTURES=89'
-(
-    cd "$msda_work/candidate"
-    python setup.py build_kernel
-)
+cmake -S "$msda_work/candidate" -B "$msda_work/cmake" -G Ninja \
+    -DPython3_EXECUTABLE="$msda_work/venv/bin/python" -DCMAKE_BUILD_TYPE=Release
+cmake --build "$msda_work/cmake" --parallel "$MAX_JOBS"
+cmake --build "$msda_work/cmake" --target local_install
 python -m pip freeze > "$msda_output/python-packages.txt"
 export MSDA_KERNEL_DIR="$msda_work/candidate"
 export MSDA_OUTPUT_DIR="$msda_output"

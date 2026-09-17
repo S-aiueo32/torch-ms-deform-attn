@@ -150,7 +150,7 @@ no sanitizer, and no benchmark or support-matrix options. The local controller
 equivalent is `--workload kernel-hub --torch-version 2.14.0`.
 
 `scripts/run_kernel_hub_checks.sh` uses the official kernel-builder 0.16.0 local
-development build (`create-pyproject`, then `setup.py build_kernel`). This is a
+development build (`create-pyproject`, then CMake build and `local_install`). This is a
 real native adapter build and loader run, but not a Nix release build or proof
 of distribution portability. Builder artifacts are not uploaded to HF.
 

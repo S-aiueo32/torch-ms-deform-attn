@@ -1,7 +1,7 @@
 name: Runpod cleanup
 on:
   workflow_run:
-    workflows: [CUDA correctness, CUDA benchmark]
+    workflows: [CUDA GPU]
     types: [completed]
   schedule:
     - cron: '17 * * * *'

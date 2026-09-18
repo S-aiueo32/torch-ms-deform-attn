@@ -6,7 +6,7 @@ on:
       - '**/*.pyi'
       - 'pyproject.toml'
       - 'uv.lock'
-      - '.github/workflows/lint.yml'
+      - '.github/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,6 +24,8 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           version: "0.12.5"
+      - name: Validate GitHub Actions
+        run: uvx --from 'actionlint-py==1.7.12.24' actionlint
       - run: uv sync --locked --only-group lint
       - run: uv run --no-sync ruff check .
       - run: uv run --no-sync ruff format --check .

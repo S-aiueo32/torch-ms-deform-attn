@@ -1,0 +1,94 @@
+name: Runpod CUDA lifecycle
+description: Check Runpod access or run one CUDA task with verified Pod cleanup
+inputs:
+  task:
+    description: check, core, benchmark, or kernel-hub
+    required: true
+  kernel-hub-suite:
+    description: Kernel Hub suite
+    required: true
+  torch-version:
+    description: PyTorch version selecting the CUDA container
+    required: true
+  sanitizer:
+    description: Compute Sanitizer mode
+    required: true
+  gpu:
+    description: Runpod GPU model
+    required: true
+  max-hourly-usd:
+    description: Maximum accepted compute price
+    required: true
+  timeout-minutes:
+    description: Controller deadline
+    required: true
+  capacity-wait-minutes:
+    description: Capacity polling period
+    required: true
+  api-key:
+    description: Runpod API credential
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check account access and GPU quote
+      if: inputs.task == 'check'
+      shell: bash
+      env:
+        RUNPOD_API_KEY: ${{ inputs.api-key }}
+        GPU: ${{ inputs.gpu }}
+        MAX_HOURLY_USD: ${{ inputs.max-hourly-usd }}
+      run: |
+        python3 scripts/runpod_ci.py check \
+          --gpu "$GPU" --max-hourly-usd "$MAX_HOURLY_USD"
+    - name: Start GPU, run task, and delete Pod
+      if: inputs.task != 'check'
+      shell: bash
+      env:
+        RUNPOD_API_KEY: ${{ inputs.api-key }}
+        TASK: ${{ inputs.task }}
+        KERNEL_HUB_SUITE: ${{ inputs.kernel-hub-suite }}
+        TORCH_VERSION: ${{ inputs.torch-version }}
+        SANITIZER: ${{ inputs.sanitizer }}
+        GPU: ${{ inputs.gpu }}
+        MAX_HOURLY_USD: ${{ inputs.max-hourly-usd }}
+        TIMEOUT_MINUTES: ${{ inputs.timeout-minutes }}
+        CAPACITY_WAIT_MINUTES: ${{ inputs.capacity-wait-minutes }}
+      run: |
+        workload=core
+        prepared=()
+        benchmark=()
+        if [ "$TASK" = kernel-hub ]; then
+          workload=kernel-hub
+          prepared=(--prepared-kernel "$RUNNER_TEMP/kernel-hub-preflight")
+        elif [ "$TASK" = benchmark ]; then
+          benchmark=(--benchmark)
+        fi
+        python3 scripts/runpod_ci.py run \
+          --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
+          --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+          --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
+          --output-dir "$RUNNER_TEMP/runpod-results" \
+          --gpu "$GPU" --sanitizer "$SANITIZER" --torch-version "$TORCH_VERSION" \
+          --workload "$workload" --kernel-hub-suite "$KERNEL_HUB_SUITE" \
+          "${benchmark[@]}" "${prepared[@]}" \
+          --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES" \
+          --capacity-wait-minutes "$CAPACITY_WAIT_MINUTES"
+    - name: Retry cleanup after failure or cancellation
+      if: always() && inputs.task != 'check'
+      shell: bash
+      env:
+        RUNPOD_API_KEY: ${{ inputs.api-key }}
+      run: |
+        python3 scripts/runpod_ci.py cleanup \
+          --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
+          --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
+          --state-dir "$RUNNER_TEMP/runpod-state"
+    - name: Preserve Pod cleanup state
+      if: always() && inputs.task != 'check'
+      shell: bash
+      run: |
+        if [ -f "$RUNNER_TEMP/runpod-state/state.json" ]; then
+          mkdir -p "$RUNNER_TEMP/runpod-results"
+          cp "$RUNNER_TEMP/runpod-state/state.json" "$RUNNER_TEMP/runpod-results/runpod-state.json"
+        fi

@@ -6,41 +6,51 @@ on:
         description: Build all CUDA pairs instead of only the minimum and latest
         type: boolean
         default: false
+  workflow_call:
+    inputs:
+      full_matrix:
+        description: Build all CUDA pairs instead of only the minimum and latest
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
   group: cuda-build-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  matrix:
+    name: Select build matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      configurations: ${{ steps.configurations.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - id: configurations
+        env:
+          FULL_MATRIX: ${{ inputs.full_matrix }}
+        run: |
+          arguments=()
+          if [ "$FULL_MATRIX" = true ]; then
+            arguments+=(--full)
+          fi
+          echo "value=$(python3 scripts/cuda_matrix.py "${arguments[@]}")" >> "$GITHUB_OUTPUT"
   build:
+    needs: matrix
     strategy:
       fail-fast: false
       matrix:
-        include: >-
-          ${{ fromJSON(inputs.full_matrix && '[
-            {"torch":"2.4.0","cuda":"12.4","image":"pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel@sha256:e96c6896ecfbb50d89c87bf94110206ef444f27268c5f72201eb29fba9c90331"},
-            {"torch":"2.5.1","cuda":"12.4","image":"pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel@sha256:14611869895df612b7b07227d5925f30ec3cd6673bad58ce3d84ed107950e014"},
-            {"torch":"2.7.1","cuda":"12.6","image":"pytorch/pytorch:2.7.1-cuda12.6-cudnn9-devel"},
-            {"torch":"2.8.0","cuda":"12.6","image":"pytorch/pytorch:2.8.0-cuda12.6-cudnn9-devel@sha256:adb0f2d3769e0796a5d86740b0f900a72835b6fa9577b77d6efed460f1322fcb"},
-            {"torch":"2.14.0","cuda":"12.6","image":"pytorch/pytorch:2.14.0-cuda12.6-cudnn9-devel@sha256:0e968d2570373aeb781603c21925a030053b432945967da14f6f8423e1f0cc79"}
-          ]' || '[
-            {"torch":"2.4.0","cuda":"12.4","image":"pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel@sha256:e96c6896ecfbb50d89c87bf94110206ef444f27268c5f72201eb29fba9c90331"},
-            {"torch":"2.14.0","cuda":"12.6","image":"pytorch/pytorch:2.14.0-cuda12.6-cudnn9-devel@sha256:0e968d2570373aeb781603c21925a030053b432945967da14f6f8423e1f0cc79"}
-          ]') }}
+        include: ${{ fromJSON(needs.matrix.outputs.configurations) }}
     name: torch ${{ matrix.torch }} / CUDA ${{ matrix.cuda }} build only
     # Compile CUDA and exercise its host-side checks without requiring a GPU.
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      CUDA_BUILD_IMAGE: ${{ matrix.image }}
-      EXPECTED_TORCH: ${{ matrix.torch }}
-      EXPECTED_CUDA: ${{ matrix.cuda }}
-      FORCE_CUDA: "1"
-      FORCE_OPENMP: "1"
-      TORCH_CUDA_ARCH_LIST: "8.0"
-      MAX_JOBS: "2"
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Reclaim unused host tool cache for the CUDA development image
         # Python and the CUDA toolkit come from the container in this job.
         run: |
@@ -48,22 +58,18 @@ jobs:
           sudo rm -rf "$RUNNER_TOOL_CACHE"
           df -h /
       - name: Build source distribution and test the installed CUDA wheel
-        run: |
-          docker run --rm -i \
-            --volume "$GITHUB_WORKSPACE:/workspace" --workdir /workspace \
-            --env EXPECTED_TORCH --env EXPECTED_CUDA --env FORCE_CUDA --env FORCE_OPENMP --env TORCH_CUDA_ARCH_LIST --env MAX_JOBS \
-            "$CUDA_BUILD_IMAGE" bash -euo pipefail <<'BASH'
-          # Newer images mark system Python externally managed. This container
-          # is disposable and intentionally installs the wheel into that Python.
-          export PIP_BREAK_SYSTEM_PACKAGES=1
-          nvcc --version
-          python -c 'import os, torch; assert torch.__version__.split("+")[0] == os.environ["EXPECTED_TORCH"]; assert torch.version.cuda == os.environ["EXPECTED_CUDA"]; assert not torch.cuda.is_available()'
-          python -m pip install --no-cache-dir numpy 'pytest>=8,<10' 'setuptools>=77' 'packaging>=24.2' wheel ninja build
-          python -m build --sdist --no-isolation
-          python -m pip wheel --no-build-isolation --no-deps dist/*.tar.gz -w dist
-          python -m pip install --no-deps dist/*.whl
-          cp -R tests /tmp/msda-tests
-          cd /tmp
-          python -c 'from torch_ms_deform_attn import _C; assert _C.with_cuda; assert _C.cpu_parallel_backend == "openmp", _C.cpu_parallel_backend'
-          python -m pytest msda-tests -v
-          BASH
+        uses: ./.github/actions/cuda-package-build
+        with:
+          image: ${{ matrix.image }}
+          torch-version: ${{ matrix.torch }}
+          cuda-version: ${{ matrix.cuda }}
+      - name: Upload CUDA distributions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuda-build-torch-${{ matrix.torch }}-cu${{ matrix.cuda }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            dist/*.tar.gz
+            dist/*.whl
+          if-no-files-found: ignore
+          retention-days: 14

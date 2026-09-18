@@ -2,11 +2,11 @@
 
 [Back to README](../README.md) · [Development and CI](development.md) · [GPU benchmarks](benchmarks.md#gpu-benchmarks)
 
-The **CUDA correctness** workflow (`cuda.yml`) rents one Runpod GPU, builds and
-tests the installed CUDA wheel, uploads logs and distributions, and deletes the
-Pod. Start it from GitHub Actions with **Run workflow**. The default configuration
-is one L4 on Secure Cloud, on-demand, with a 45-minute controller deadline
-and a $0.50/hour compute-price limit.
+The **CUDA GPU** workflow (`cuda.yml`) handles all Runpod-backed tasks: core CUDA
+validation, benchmarks, and Kernel Hub checks. It rents one GPU, uploads results,
+and deletes the Pod. Start it from GitHub Actions with **Run workflow**. The
+default task validates the core package on one L4 in Secure Cloud, on-demand,
+with a 45-minute controller deadline and a $0.50/hour compute-price limit.
 
 An ordinary GitHub-hosted Ubuntu job controls the Pod over SSH. This works with
 a personally owned repository and GitHub Pro. It does not register a persistent
@@ -32,7 +32,7 @@ no network volumes, saved templates, or account-wide SSH keys. Runpod API
 credentials stay on the GitHub-hosted controller and are not sent to the GPU.
 The Pod's SSH host key is also generated for the run and pinned by the controller.
 
-First dispatch `operation=check`. This checks API access and the GPU price without
+First dispatch `task=check`. This checks API access and the GPU price without
 creating or modifying a Pod. It does not prove that credit or quota is sufficient
 for a subsequent deployment.
 
@@ -43,7 +43,7 @@ listed model within your accepted price limit or retry when capacity returns.
 
 ```bash
 gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn \
-  --ref main --field operation=check
+  --ref main --field task=check
 ```
 
 ## Run tests
@@ -51,7 +51,7 @@ gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn \
 ```bash
 gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn \
   --ref main \
-  --field operation=test --field sanitizer=none \
+  --field task=core --field sanitizer=none \
   --field gpu='NVIDIA L4' --field max_hourly_usd=0.50 \
   --field timeout_minutes=45
 ```
@@ -138,7 +138,7 @@ its operator tests plus RT-DETR E2E checks:
 ```bash
 gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn \
   --ref main \
-  --field workload=kernel-hub --field operation=test \
+  --field task=kernel-hub \
   --field torch_version=2.14.0 --field sanitizer=none \
   --field gpu='NVIDIA L4' --field max_hourly_usd=0.50 \
   --field timeout_minutes=60
@@ -229,8 +229,7 @@ gh variable set RUNPOD_CLEANUP_ENABLED --body true \
   --repo S-aiueo32/torch-ms-deform-attn
 ```
 
-This recovery workflow runs after **CUDA correctness** or **CUDA benchmark**
-finishes and once per hour.
+This recovery workflow runs after **CUDA GPU** finishes and once per hour.
 It deletes Pods for the finished run and this repository's marked Pods older than
 two hours. It can also be started manually. It executes trusted default-branch
 code. Recovery triggers require the workflow to exist on the default branch;
@@ -258,13 +257,13 @@ References: [Runpod API keys](https://docs.runpod.io/get-started/api-keys),
 
 Before publishing any release, the maintainer must:
 
-1. Resolve the release tag to a full source SHA. Run **CUDA correctness** on that
+1. Resolve the release tag to a full source SHA. Run the **CUDA GPU** `core` task on that
    commit/branch, or use the local controller with a checkout at that SHA.
    Ordinary **CUDA package build** is build-only evidence.
 2. Require a successful test run. For Actions, its `headSha` must match that SHA.
    For a local controller, retain the source archive and controller log, require
    exit status zero and `phase: deleted` in its state file, and verify the SHA in
-   the output JSON. `operation=check` does not run tests.
+   the output JSON. `task=check` does not run tests.
 3. Download its `cuda-runpod-RUN-ATTEMPT` artifact (or use the local controller's
    output `artifacts` directory) and run
    `python scripts/verify_cuda_release.py --sha FULL_SHA --evidence PATH/TO/artifacts`.

@@ -45,9 +45,7 @@ class PrepareNixTest(unittest.TestCase):
             ):
                 (root / name).write_bytes((record / name).read_bytes())
             nix.prepare(root, target, "c" * 40)
-            self.assertEqual(
-                (target / "build" / nix.VARIANT / "fixture.so").read_bytes(), binary
-            )
+            self.assertEqual((target / "build" / nix.VARIANT / "fixture.so").read_bytes(), binary)
             provenance = json.loads((target / "NIX_BUILD.json").read_text())
             self.assertEqual(provenance["artifact_source_sha"], "a" * 40)
             self.assertEqual(

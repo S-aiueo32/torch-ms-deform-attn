@@ -68,6 +68,12 @@ jobs:
         run: |
           uv pip install --system 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
           uv pip install --system 'setuptools>=77' 'packaging>=24.2' wheel
+      - name: Pin PyPI README links to the source commit
+        env:
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: |
+          python scripts/prepare_pypi_readme.py \
+            --repository "$SOURCE_REPOSITORY" --revision "$(git rev-parse HEAD)"
       - name: Build source distribution
         run: uv build --sdist --no-sources --no-build-isolation --out-dir dist/pypi
       - name: Validate distribution without uploading

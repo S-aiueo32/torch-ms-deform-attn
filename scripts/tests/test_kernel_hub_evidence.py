@@ -100,6 +100,52 @@ class KernelHubEvidenceTest(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             verify(self.directory, self.sha)
 
+    def test_nix_artifact_identity(self):
+        record = ROOT / "docs/validation/kernel-hub-nix/run-35280414318"
+        original = json.loads((record / "UPSTREAM.json").read_text())
+        variant = (record / "variant.txt").read_text().strip()
+        manifest = {
+            Path(name).relative_to(variant).as_posix(): digest
+            for name, digest in json.loads((record / "distribution-files.json").read_text()).items()
+        }
+        self.files["UPSTREAM.json"] = copy.deepcopy(original)
+        self.files["UPSTREAM.json"]["revision"] = self.sha
+        # An independently hashed compiler-compatibility harness may change
+        # without rebuilding the pinned native implementation.
+        harness = "kernel-hub/e2e/rt_detr.py"
+        self.files["UPSTREAM.json"]["source_sha256"][harness] = "f" * 64
+        self.files["nix-UPSTREAM.json"] = original
+        self.files["candidate-files.json"] = manifest
+        nix_build = {
+            "build_run": "35280414318",
+            "artifact_source_sha": original["revision"],
+            "archive_sha256": (record / "distribution.sha256").read_text().split()[0],
+            "variant": variant,
+            "files": manifest,
+        }
+        self.files["NIX_BUILD.json"] = nix_build
+        self.files["kernel-hub-summary.json"]["nix_build"] = nix_build
+        for name, report in self.files.items():
+            if name.startswith("e2e-"):
+                report["harness_sha256"] = "f" * 64
+                for case in report["cases"]:
+                    case["candidate_sha256"] = manifest
+        self.write(self.files)
+        verify(self.directory, self.sha)
+        for key, value in (("archive_sha256", "0" * 64), ("files", {})):
+            with self.subTest(key=key):
+                files = copy.deepcopy(self.files)
+                files["NIX_BUILD.json"][key] = value
+                self.write(files)
+                with self.assertRaises(ValueError):
+                    verify(self.directory, self.sha)
+
+        files = copy.deepcopy(self.files)
+        files["UPSTREAM.json"]["source_sha256"]["csrc/dispatcher.h"] = "0" * 64
+        self.write(files)
+        with self.assertRaisesRegex(ValueError, "Nix sources changed"):
+            verify(self.directory, self.sha)
+
     def test_historical_partial_suite_is_rejected(self):
         with self.assertRaises(ValueError):
             verify(HISTORICAL, self.sha)

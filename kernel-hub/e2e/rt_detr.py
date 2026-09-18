@@ -247,6 +247,15 @@ def reference_precision(model):
             child.forward = MethodType(wrap(child.forward), child)
 
 
+def division_rounding_option():
+    from torch._inductor import config
+
+    # PyTorch 2.11 moved the same eager-division policy into a config group.
+    if hasattr(config, "eager_numerics") and hasattr(config.eager_numerics, "division_rounding"):
+        return "eager_numerics.division_rounding"
+    return "emulate_divison_rounding"
+
+
 def run_case(
     kernel_dir,
     *,
@@ -370,7 +379,7 @@ def run_case(
                         inputs,
                         config_patches={
                             "emulate_precision_casts": True,
-                            "emulate_divison_rounding": True,
+                            division_rounding_option(): True,
                             **({"pattern_matcher": False} if numerics == "controlled" else {}),
                         },
                     )
@@ -444,7 +453,7 @@ def run_case(
                     inputs,
                     config_patches={
                         "emulate_precision_casts": numerics != "default",
-                        "emulate_divison_rounding": numerics != "default",
+                        division_rounding_option(): numerics != "default",
                         "pattern_matcher": numerics != "controlled",
                     },
                 )
@@ -572,7 +581,7 @@ def main():
                             args.report.with_name(args.report.stem + "-debug.tar.gz")
                             if args.debug_artifacts
                             and args.autocast
-                            and args.dtype == "bf16"
+                            and args.dtype in ("fp16", "bf16")
                             and training
                             and backend
                             else None

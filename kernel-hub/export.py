@@ -44,6 +44,7 @@ def export(destination, revision=None):
             )
     write("kernel-hub/build.toml", "build.toml")
     write("kernel-hub/flake.nix", "flake.nix")
+    write("kernel-hub/flake.lock", "flake.lock")
     for source in sorted((ROOT / "kernel-hub/tests").glob("*.py")):
         write(source.relative_to(ROOT).as_posix(), f"tests/{source.name}")
     for name in ("rt_detr.py", "requirements.txt"):
@@ -56,6 +57,13 @@ def export(destination, revision=None):
         for name in ("forward", "backward"):
             text = replace_once(
                 text, f'"torch_ms_deform_attn::{name}"', f'add_op_namespace_prefix("{name}")'
+            )
+            # Nix's registration check requires the namespace helper directly
+            # at the decorator, rather than following the OpOverload variable.
+            text = replace_once(
+                text,
+                f"@torch.library.register_fake({name})",
+                f'@torch.library.register_fake(add_op_namespace_prefix("{name}"))',
             )
         return text
 

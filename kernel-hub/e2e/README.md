@@ -92,6 +92,8 @@ compiled region. This is not a claim of full-graph compiled training.
 `--numerics default` preserves Inductor's normal optimizations. `--numerics eager`
 uses PyTorch 2.10's `emulate_precision_casts=True` and
 `emulate_divison_rounding=True` settings (the latter spelling is upstream's).
+PyTorch 2.11 moved the division option to `eager_numerics.division_rounding`;
+the runner selects the available name while keeping the same policy enabled.
 The first preserves intermediate low-precision rounding and disables Triton
 floating-point fusion; the second matches eager division rounding. These are
 explicit validation settings, not changes to the distributed kernel or to error
@@ -113,7 +115,7 @@ records initial decoder reference points, upstream of MSDA, to reveal changes
 in proposal selection/order. All per-tensor differences survive failed cases.
 Use `--compiled-training-only` to reproduce training failures without rerunning
 the entire matrix, or `--compiled-only` for both compiled inference/training.
-Use `--debug-artifacts` to save BF16 AMP compiled-training fixtures alongside
+Use `--debug-artifacts` to save FP16/BF16 AMP compiled-training fixtures alongside
 the report as `*-debug.tar.gz`. Its `case.pt` contains the initial model state,
 input, labels, captured candidate/reference graphs, and comparison tensors.
 The full GPU suite enables this automatically so a failed random fixture can
@@ -123,7 +125,7 @@ FP16/BF16. Pass `--diagnostic-controls` to `gpu_suite.py` to additionally run
 default-numerics FP32/FP16/BF16 training controls. Controls can deliberately
 reproduce failures, so they are not enabled in normal validation.
 
-For BF16 AMP the suite also uses `--compile-reference`: the historical HF ops
+For FP16 and BF16 AMP the suite also uses `--compile-reference`: the historical HF ops
 receive shape-only FakeTensor registrations so the reference model can run
 under the same compiler. Their CUDA arithmetic is unchanged. The report retains
 both sides' raw eager/compiled differences and the compiled-to-compiled result.
@@ -176,3 +178,10 @@ FP16/BF16 operator differences were traced to precision policy; the validation
 record documents FP64 accuracy checks and the FP32-compute comparison contract.
 Pretrained model
 accuracy, RF-DETR and PP-DocLayoutV2 remain separate follow-up coverage.
+
+The subsequent [Nix artifact validation](../../docs/validation/kernel-hub-nix/README.md)
+passed Phase 1 3/3 and RT-DETR 20/20 on L4 with PyTorch 2.11. It loads the
+distribution binary unchanged, selects the new division-rounding config name,
+and compares both AMP precisions against compiled HF. Raw eager/compiled
+differences remain in the reports; this is replacement parity under the stated
+compiler policy.

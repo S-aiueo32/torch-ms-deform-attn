@@ -46,11 +46,37 @@ Changes found downstream should be applied upstream before the next export.
 - No CPU/MPS dispatch is registered in the HF native binding. The CPU test
   shim described below is only a test fixture.
 
-The configuration is validated with builder 0.16.1. `flake.nix` pins the same
-released builder line; generate and retain `flake.lock` before validating a
-publishable Nix build. The recorded L4 evidence predates this patch-level update
-and used builder 0.16.0's local CMake development route with PyTorch 2.10.0 and
-CUDA 12.6.
+The configuration is validated with builder 0.16.1. `flake.nix` selects that
+release; `flake.lock` fixes its transitive dependencies and is included in the
+export. The full L4 regression used builder 0.16.1's local CMake
+development route with PyTorch 2.10.0 and CUDA 12.6.
+
+## Nix distribution build
+
+On an x86_64 Linux Nix host, run from the upstream checkout:
+
+```bash
+bash scripts/run_kernel_hub_nix.sh /tmp/msda-nix-build
+```
+
+The [Nix build workflow](../.github/workflows/kernel-hub-nix.yml) runs the same
+script. It builds `redistributable.torch211-cxx11-cu126-x86_64-linux` using the
+Hugging Face binary cache and retains the builder's ABI and `get_kernel` checks.
+Builder 0.16.1's Nix version set starts at PyTorch 2.11, so this artifact is a
+different PyTorch variant from the previous 2.10 CMake regression.
+
+The script exports upstream sources, uses a deterministic Git commit for the
+builder's namespace identity, and builds with `--no-update-lock-file`.
+The committed `kernel-hub/flake.lock` is required; dependencies are never
+silently updated by the build script.
+The `evidence/` directory contains the lock, upstream and export revisions,
+exported source archive, derivation, build log, store metadata, and the
+`distribution.tar.gz` artifact with a SHA-256 checksum. A successful build
+writes `status.txt`; failed attempts still retain their available evidence.
+
+This step builds one distribution variant without a GPU. CUDA Phase 1 and
+RT-DETR validation must subsequently load this exact artifact. It does not
+publish to the Hub or validate all supported build variants.
 
 ## Validation
 
@@ -98,7 +124,11 @@ After the native dispatcher changes and harness corrections, the full run at
 `2ae90ab` passed all three Phase 1 tests and all 20 E2E cases, including BF16
 autocast compiled training. The preceding 19/20 run remains archived; its BF16
 discrepancy did not recur, but its cause has not been isolated. Wider PyTorch
-coverage and a reproducible Nix build remain open.
+coverage and independent byte-for-byte reproducibility remain open. The
+[locked Nix distribution](../docs/validation/kernel-hub-nix/README.md) for
+PyTorch 2.11 / CUDA 12.6 / x86_64 passed ABI/loading checks and, without
+recompilation, Phase 1 3/3 and RT-DETR 20/20 on L4. Both AMP precisions compare
+compiled candidate and HF under the same compiler policy.
 [Phase 3 measurements](../docs/validation/kernel-hub-benchmarks/README.md)
 cover six implementations on L4. The subsequent
 [performance investigation](../docs/validation/kernel-hub-performance/README.md)

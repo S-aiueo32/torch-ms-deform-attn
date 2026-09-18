@@ -15,9 +15,18 @@ import tarfile
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 import torch
-from rt_detr import align_proposals, run_case, run_model, save_debug_artifact, tiny_model
+from rt_detr import (
+    align_proposals,
+    division_rounding_option,
+    run_case,
+    run_model,
+    save_debug_artifact,
+    tiny_model,
+)
 
 from torch_ms_deform_attn import _C
 
@@ -25,6 +34,17 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class ProposalAlignmentTest(unittest.TestCase):
+    def test_division_rounding_option_across_torch_versions(self):
+        for config, expected in (
+            (SimpleNamespace(emulate_divison_rounding=False), "emulate_divison_rounding"),
+            (
+                SimpleNamespace(eager_numerics=SimpleNamespace(division_rounding=False)),
+                "eager_numerics.division_rounding",
+            ),
+        ):
+            with self.subTest(option=expected), mock.patch("torch._inductor.config", config):
+                self.assertEqual(division_rounding_option(), expected)
+
     def test_debug_artifact_preserves_nested_fixture_and_graphs(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "case.tar.gz"

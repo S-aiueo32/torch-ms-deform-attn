@@ -11,7 +11,7 @@ on:
         description: Full Kernel Hub matrix, focused checks, or Phase 3 benchmark
         type: choice
         default: full
-        options: [full, compile-amp, phase1, benchmark]
+        options: [full, nix-full, compile-amp, phase1, benchmark]
       torch_version:
         description: PyTorch version (2.4/2.5 use CUDA 12.4; newer versions use CUDA 12.6)
         type: choice
@@ -46,6 +46,7 @@ on:
         default: 0
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: runpod-cuda
   cancel-in-progress: false
@@ -76,12 +77,12 @@ jobs:
             --gpu "$GPU" --max-hourly-usd "$MAX_HOURLY_USD"
       - uses: actions/cache/restore@v4
         id: builder-cache
-        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub'
+        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full'
         with:
           path: ~/.cargo/bin/kernel-builder
           key: kernel-builder-0.16.1-ubuntu-x86_64
       - name: Validate Kernel Builder configuration before renting a GPU
-        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub'
+        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full'
         run: |
           if ! command -v kernel-builder; then
             rustup toolchain install 1.94.0 --profile minimal
@@ -93,10 +94,18 @@ jobs:
             python3 kernel-hub/benchmarks/competitors.py "$RUNNER_TEMP/kernel-hub-preflight/benchmark-sources"
           fi
       - uses: actions/cache/save@v4
-        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && steps.builder-cache.outputs.cache-hit != 'true'
+        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full' && steps.builder-cache.outputs.cache-hit != 'true'
         with:
           path: ~/.cargo/bin/kernel-builder
           key: kernel-builder-0.16.1-ubuntu-x86_64
+      - name: Verify and prepare the reviewed Nix distribution before GPU rental
+        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite == 'nix-full'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 35280414318 --name kernel-hub-nix-35280414318 --dir "$RUNNER_TEMP/nix-artifact"
+          python3 scripts/prepare_kernel_hub_nix.py \
+            "$RUNNER_TEMP/nix-artifact" "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
       - name: Start Runpod GPU, test CUDA, and delete Pod
         if: inputs.operation == 'test'
         env:

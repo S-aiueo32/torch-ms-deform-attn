@@ -1,0 +1,33 @@
+{
+  "name": "deformable-detr",
+  "id": "_deformable_detr_cuda_69d65ca",
+  "version": 1,
+  "license": "Apache-2.0",
+  "upstream": "https://github.com/S-aiueo32/torch-ms-deform-attn",
+  "python-depends": [],
+  "backend": {
+    "type": "cuda",
+    "archs": [
+      "7.0",
+      "7.2",
+      "7.5",
+      "8.0",
+      "8.6",
+      "8.7",
+      "8.9",
+      "9.0+PTX"
+    ]
+  },
+  "digest": {
+    "algorithm": "sha256",
+    "files": {
+      "__init__.py": "Up27DpoKZi8zAnMsRYXR5vHRxXqr+bE5BfQkZUnnYac=",
+      "_deformable_detr_cuda_69d65ca.abi3.so": "We5k2c6EGFg0D0jSzQyUsCJzXUPaDfC+H1MJUwx+AgY=",
+      "_ops.py": "04YKtbqQb5sck/99OenRKbrganKRn9dGrKrWxSIw45w=",
+      "_registrations.py": "/8QHXcN0V4mZI47SuU8YUgCDs8Q8NL9HmutIXL47VhQ=",
+      "deformable_detr/__init__.py": "DFYPlrhXwYjEqCl/8n0SmWGZV8NFml5DPhMjKfv98GY=",
+      "functional.py": "o8Ctn57hpq31gFbuS8Yrmt9JXpZCfUrYrmU4d4VfPlk=",
+      "layers.py": "tcdagQ+2GT85VySfYMjmsJ4NFAQQWnL2gXbu6IjWNLE="
+    }
+  }
+}

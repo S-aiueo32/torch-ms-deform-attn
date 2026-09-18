@@ -10,27 +10,45 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from verify_kernel_hub import PRECISIONS, verify
 
-ROOT = Path(__file__).resolve().parents[2]
-HISTORICAL = ROOT / "docs/validation/kernel-hub/run-35197412721"
-
 
 class KernelHubEvidenceTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.directory = Path(self.temp.name)
-        upstream = json.loads((HISTORICAL / "UPSTREAM.json").read_text())
-        self.sha = upstream["revision"]
-        self.files = {
-            name: json.loads((HISTORICAL / name).read_text())
-            for name in (
-                "UPSTREAM.json",
-                "candidate-files.json",
-                "baseline-files.json",
-                "runpod-state.json",
-            )
+        self.sha = "1" * 40
+        harness_sha256 = "2" * 64
+        candidate = {"candidate.so": "3" * 64}
+        baseline = {"baseline.so": "4" * 64}
+        upstream = {
+            "revision": self.sha,
+            "source_sha256": {
+                "csrc/dispatcher.h": "5" * 64,
+                "kernel-hub/e2e/rt_detr.py": harness_sha256,
+            },
         }
-        template = json.loads((HISTORICAL / "e2e-bf16-amp.json").read_text())
+        self.files = {
+            "UPSTREAM.json": upstream,
+            "candidate-files.json": candidate,
+            "baseline-files.json": baseline,
+            "runpod-state.json": {"phase": "deleted"},
+        }
+        template = {
+            "status": "passed",
+            "torch": "2.10.0+cu126",
+            "harness_sha256": harness_sha256,
+            "cases": [
+                {
+                    "reference": "HF kernel",
+                    "candidate_sha256": candidate,
+                    "baseline_sha256": baseline,
+                    "executed_ops": {"test::forward": 1, "test::backward": 1},
+                    "gradient_tensor_count": 1,
+                    "reference_compiled": True,
+                    "compiled_graphs": [{"msda_calls": 1}],
+                }
+            ],
+        }
         runs = [{"name": "phase1", "exit_code": 0}]
         for dtype, amp in PRECISIONS:
             name = f"e2e-{dtype}" + ("-amp" if amp else "")
@@ -101,13 +119,15 @@ class KernelHubEvidenceTest(unittest.TestCase):
             verify(self.directory, self.sha)
 
     def test_nix_artifact_identity(self):
-        record = ROOT / "docs/validation/kernel-hub-nix/run-35280414318"
-        original = json.loads((record / "UPSTREAM.json").read_text())
-        variant = (record / "variant.txt").read_text().strip()
-        manifest = {
-            Path(name).relative_to(variant).as_posix(): digest
-            for name, digest in json.loads((record / "distribution-files.json").read_text()).items()
+        original = {
+            "revision": "6" * 40,
+            "source_sha256": {
+                "csrc/dispatcher.h": "5" * 64,
+                "kernel-hub/e2e/rt_detr.py": "7" * 64,
+            },
         }
+        variant = "torch11-cu126-x86_64"
+        manifest = {"lib/candidate.so": "8" * 64}
         self.files["UPSTREAM.json"] = copy.deepcopy(original)
         self.files["UPSTREAM.json"]["revision"] = self.sha
         # An independently hashed compiler-compatibility harness may change
@@ -119,7 +139,7 @@ class KernelHubEvidenceTest(unittest.TestCase):
         nix_build = {
             "build_run": "35280414318",
             "artifact_source_sha": original["revision"],
-            "archive_sha256": (record / "distribution.sha256").read_text().split()[0],
+            "archive_sha256": "9" * 64,
             "variant": variant,
             "files": manifest,
         }
@@ -132,7 +152,7 @@ class KernelHubEvidenceTest(unittest.TestCase):
                     case["candidate_sha256"] = manifest
         self.write(self.files)
         verify(self.directory, self.sha)
-        for key, value in (("archive_sha256", "0" * 64), ("files", {})):
+        for key, value in (("archive_sha256", "invalid"), ("files", {})):
             with self.subTest(key=key):
                 files = copy.deepcopy(self.files)
                 files["NIX_BUILD.json"][key] = value
@@ -147,5 +167,8 @@ class KernelHubEvidenceTest(unittest.TestCase):
             verify(self.directory, self.sha)
 
     def test_historical_partial_suite_is_rejected(self):
+        files = copy.deepcopy(self.files)
+        files["kernel-hub-summary.json"]["phase1_only"] = True
+        self.write(files)
         with self.assertRaises(ValueError):
-            verify(HISTORICAL, self.sha)
+            verify(self.directory, self.sha)

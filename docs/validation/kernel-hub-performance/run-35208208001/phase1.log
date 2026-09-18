@@ -1,16 +1,0 @@
-test_autocast_and_validation (test_kernel.KernelTest.test_autocast_and_validation) ... /workspace/ci/kernel-hub.CTslt5ij/venv/lib/python3.11/site-packages/torch/jit/_script.py:362: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
-  warnings.warn(
-ok
-test_layer (test_kernel.KernelTest.test_layer) ... ok
-test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) ... Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1842.38it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 2032.41it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1514.03it/s]
-Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1749.29it/s]
-ok
-
-----------------------------------------------------------------------
-Ran 3 tests in 14.003s
-
-OK

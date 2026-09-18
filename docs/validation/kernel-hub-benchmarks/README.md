@@ -8,12 +8,12 @@ All 54 common-policy backend/shape/dtype configurations passed output and all
 three gradient checks against the independent FP64 reference. Each produced
 three modes × three repetitions: 486 qualified timing rows.
 
-- [Complete tables](run-35206461746/benchmark-tables.md)
-- [Raw measurements, correctness and environment](run-35206461746/benchmark-kernel-hub.json)
-- [Summary, IQRs and HF comparison flags](run-35206461746/benchmark-summary.json)
-- [Pinned sources](run-35206461746/benchmark-sources.json),
-  [build log](run-35206461746/kernel-hub-checks.log), and
-  [verified Pod deletion](run-35206461746/runpod-state.json)
+- [Complete tables](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35206461746/benchmark-tables.md)
+- [Raw measurements, correctness and environment](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35206461746/benchmark-kernel-hub.json)
+- [Summary, IQRs and HF comparison flags](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35206461746/benchmark-summary.json)
+- [Pinned sources](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35206461746/benchmark-sources.json),
+  [build log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35206461746/kernel-hub-checks.log), and
+  [verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35206461746/runpod-state.json)
 
 ## Findings and limits
 
@@ -42,7 +42,7 @@ adapter. Short timer windows sometimes yield zero within-window IQR; raw
 repetition medians must also be inspected. Profiling with longer measurement
 windows is the next step before choosing an optimization.
 
-The independent process is [run 35205545939](run-35205545939/benchmark-tables.md)
+The independent process is [run 35205545939](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35205545939/benchmark-tables.md)
 (source `65fc1e7`). It measured the other five implementations with the same
 settings and recorded CPU/GPU/software versions, but failed overall because
 Triton lacked installed package metadata. `ba51116` fixes installation without
@@ -82,13 +82,13 @@ and mandatory ownership-checked cleanup. Builder preparation occurs before
 Pod creation. Provisioning failures do not constitute benchmark evidence.
 
 The first three created Pods were deleted, as recorded in the archived states:
-[first L4 attempt](run-35201349228/runpod-state.json),
-[cancelled 4090 attempt](run-35203625272/runpod-state.json), and
-[final 4090 attempt](run-35203791682/runpod-state.json).
+[first L4 attempt](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35201349228/runpod-state.json),
+[cancelled 4090 attempt](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35203625272/runpod-state.json), and
+[final 4090 attempt](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35203791682/runpod-state.json).
 The full workflow logs linked above contain the startup/price/capacity errors.
-Run 35204792661 also verified Pod deletion; its [state](run-35204792661/runpod-state.json)
-and [startup observations](run-35204792661/gpu-startup.json) are archived.
-Run 35205545939 also verified [Pod deletion](run-35205545939/runpod-state.json).
+Run 35204792661 also verified Pod deletion; its [state](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35204792661/runpod-state.json)
+and [startup observations](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35204792661/gpu-startup.json) are archived.
+Run 35205545939 also verified [Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub-benchmarks/run-35205545939/runpod-state.json).
 Its benchmark source is `65fc1e7`; `ba51116` fixes Triton installation without
 changing the other five implementations or their measurement settings.
 

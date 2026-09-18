@@ -10,16 +10,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD_RUN = "35280414318"
-RECORD = ROOT / "docs/validation/kernel-hub-nix" / f"run-{BUILD_RUN}"
 VARIANT = "torch211-cxx11-cu126-x86_64-linux"
 
 
 def prepare(artifact, destination, revision):
     archive = artifact / "distribution.tar.gz"
     digest = hashlib.sha256(archive.read_bytes()).hexdigest()
-    if digest != (RECORD / "distribution.sha256").read_text().split()[0]:
+    if digest != (artifact / "distribution.sha256").read_text().split()[0]:
         raise ValueError("Nix distribution archive checksum mismatch")
-    upstream = json.loads((RECORD / "UPSTREAM.json").read_text())
+    upstream = json.loads((artifact / "UPSTREAM.json").read_text())
     # Implementation/build inputs must stay identical; model validation code
     # can evolve independently and is hashed in the current UPSTREAM manifest.
     for name, expected in upstream["source_sha256"].items():
@@ -37,7 +36,7 @@ def prepare(artifact, destination, revision):
         ],
         check=True,
     )
-    expected = json.loads((RECORD / "distribution-files.json").read_text())
+    expected = json.loads((artifact / "distribution-files.json").read_text())
     files = {}
     with tarfile.open(archive) as bundle:
         for member in bundle.getmembers():
@@ -61,12 +60,12 @@ def prepare(artifact, destination, revision):
         "build_run": BUILD_RUN,
         "archive_sha256": digest,
         "artifact_source_sha": upstream["revision"],
-        "export_revision": (RECORD / "export-revision.txt").read_text().strip(),
+        "export_revision": (artifact / "export-revision.txt").read_text().strip(),
         "variant": VARIANT,
         "files": files,
     }
     (destination / "NIX_BUILD.json").write_text(json.dumps(provenance, indent=2) + "\n")
-    (destination / "nix-UPSTREAM.json").write_bytes((RECORD / "UPSTREAM.json").read_bytes())
+    (destination / "nix-UPSTREAM.json").write_bytes((artifact / "UPSTREAM.json").read_bytes())
 
 
 if __name__ == "__main__":

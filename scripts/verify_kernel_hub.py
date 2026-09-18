@@ -1,4 +1,4 @@
-"""Verify archived full Phase 1/RT-DETR evidence, not Nix portability or provenance."""
+"""Verify full GPU evidence, recorded Nix artifact identity when present, and cleanup."""
 
 import argparse
 import json

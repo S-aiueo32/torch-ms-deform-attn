@@ -178,3 +178,10 @@ FP16/BF16 operator differences were traced to precision policy; the validation
 record documents FP64 accuracy checks and the FP32-compute comparison contract.
 Pretrained model
 accuracy, RF-DETR and PP-DocLayoutV2 remain separate follow-up coverage.
+
+The subsequent [Nix artifact validation](../../docs/validation/kernel-hub-nix/README.md)
+passed Phase 1 3/3 and RT-DETR 20/20 on L4 with PyTorch 2.11. It loads the
+distribution binary unchanged, selects the new division-rounding config name,
+and compares both AMP precisions against compiled HF. Raw eager/compiled
+differences remain in the reports; this is replacement parity under the stated
+compiler policy.

@@ -5,6 +5,55 @@ variant, using Kernel Builder 0.16.1 and the committed
 [`flake.lock`](../../../kernel-hub/flake.lock). It is separate from the
 [PyTorch 2.10 CMake/GPU validation](../kernel-hub/README.md).
 
+## Passing GPU validation of the distribution artifact
+
+[Run 35291667815](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35291667815)
+passed **Phase 1 3/3 and RT-DETR 20/20** on NVIDIA L4, PyTorch 2.11.0+cu126,
+Python 3.11, kernels 0.16.2 and Transformers 5.17.0. Validation source revision:
+`d9d1838af51416053ffd3ff289d5f04f4956fd40`. The candidate was the unchanged
+distribution archive from Nix run 35280414318; no candidate compilation occurred
+on the GPU host. Every loaded candidate file matched its recorded Nix hash.
+
+| Precision | Eager inference | Eager training | Inductor inference | Inductor training |
+| --- | --- | --- | --- | --- |
+| FP32 | Pass | Pass | Pass | Pass |
+| FP16 | Pass | Pass | Pass | Pass |
+| BF16 | Pass | Pass | Pass | Pass |
+| FP16 autocast | Pass | Pass | Pass | Pass |
+| BF16 autocast | Pass | Pass | Pass | Pass |
+
+AMP compiled cases compare candidate and HF under the same compiler, using the
+documented shape-only fake registrations for HF. Both AMP training cases check
+241 gradient tensors. The previously failing bias gradient matches compiled HF
+exactly; the largest difference across all compared tensors is `2.91e-11`
+(FP16 AMP) and `5.82e-11` (BF16 AMP). Both implementations retain the same
+eager-versus-compiled bias-gradient differences (`0.171875` and `1.5`
+respectively). This establishes replacement parity under the recorded compiler
+policy, not equality between eager and compiled whole-model execution.
+No tolerance or CUDA arithmetic was changed.
+
+Evidence: [suite summary](run-35291667815/kernel-hub-summary.json),
+[Nix artifact identity](run-35291667815/NIX_BUILD.json),
+[validation source manifest](run-35291667815/UPSTREAM.json),
+[original Nix source manifest](run-35291667815/nix-UPSTREAM.json),
+[FP16 AMP report](run-35291667815/e2e-fp16-amp.json),
+[BF16 AMP report](run-35291667815/e2e-bf16-amp.json), and
+[verified Pod deletion](run-35291667815/runpod-state.json).
+The full matrix, source/artifact hashes and cleanup pass the evidence verifier:
+
+```bash
+python scripts/verify_kernel_hub.py \
+  --sha d9d1838af51416053ffd3ff289d5f04f4956fd40 \
+  --evidence docs/validation/kernel-hub-nix/run-35291667815
+```
+
+Replay archives for both AMP training cases are retained in GHA artifact
+`cuda-runpod-35291667815-1`; their hashes are in
+[debug-artifacts.json](run-35291667815/debug-artifacts.json). All three GPU
+attempts have verified Pod deletion. Local controller/evidence tests passed
+58/58, including tampered archive/source rejection, plus three targeted E2E
+harness tests and Ruff.
+
 ## Passing distribution build
 
 [Run 35280414318](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35280414318)
@@ -40,9 +89,9 @@ mkdir distribution
 tar -xzf distribution.tar.gz -C distribution
 ```
 
-The artifact is a distribution root containing the variant directory; the next
-GPU run must load this exact binary with a compatible PyTorch 2.11 environment.
-No GPU execution or full RT-DETR comparison was performed in this build job.
+The artifact is a distribution root containing the variant directory. The GPU
+validation above loaded this exact binary with a compatible PyTorch 2.11
+environment. No GPU execution occurred in the Nix build job itself.
 Other Nix variants, a second independent byte-for-byte reproducibility check,
 and Hub publication remain unvalidated. Dependency locking alone is not proof
 of byte-for-byte reproducibility.
@@ -50,8 +99,8 @@ of byte-for-byte reproducibility.
 The workflow builds the Nix `redistributable` output, which enables the
 builder's layout, namespaced registration, ABI and Kernel Hub import checks.
 It retains the source/export revisions, dependency lock, derivation, build log,
-distribution archive and its SHA-256 checksum. GPU numerical and RT-DETR tests
-must subsequently consume that distribution archive.
+distribution archive and its SHA-256 checksum. The GPU numerical and RT-DETR
+tests above consumed that distribution archive.
 
 ## Initial build and registration correction
 

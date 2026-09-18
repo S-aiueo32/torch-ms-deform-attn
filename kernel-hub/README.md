@@ -124,7 +124,11 @@ After the native dispatcher changes and harness corrections, the full run at
 `2ae90ab` passed all three Phase 1 tests and all 20 E2E cases, including BF16
 autocast compiled training. The preceding 19/20 run remains archived; its BF16
 discrepancy did not recur, but its cause has not been isolated. Wider PyTorch
-coverage and a reproducible Nix build remain open.
+coverage and independent byte-for-byte reproducibility remain open. The
+[locked Nix distribution](../docs/validation/kernel-hub-nix/README.md) for
+PyTorch 2.11 / CUDA 12.6 / x86_64 passed ABI/loading checks and, without
+recompilation, Phase 1 3/3 and RT-DETR 20/20 on L4. Both AMP precisions compare
+compiled candidate and HF under the same compiler policy.
 [Phase 3 measurements](../docs/validation/kernel-hub-benchmarks/README.md)
 cover six implementations on L4. The subsequent
 [performance investigation](../docs/validation/kernel-hub-performance/README.md)

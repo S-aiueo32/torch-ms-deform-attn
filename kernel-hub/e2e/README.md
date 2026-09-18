@@ -92,6 +92,8 @@ compiled region. This is not a claim of full-graph compiled training.
 `--numerics default` preserves Inductor's normal optimizations. `--numerics eager`
 uses PyTorch 2.10's `emulate_precision_casts=True` and
 `emulate_divison_rounding=True` settings (the latter spelling is upstream's).
+PyTorch 2.11 moved the division option to `eager_numerics.division_rounding`;
+the runner selects the available name while keeping the same policy enabled.
 The first preserves intermediate low-precision rounding and disables Triton
 floating-point fusion; the second matches eager division rounding. These are
 explicit validation settings, not changes to the distributed kernel or to error

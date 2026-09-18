@@ -187,7 +187,9 @@ PyTorch 2.11.0 / torchvision 0.26.0 with CUDA 12.6 and runs the full Phase 1 and
 `NIX_BUILD.json` identifies the original Nix build/source/export revisions and
 binary hashes; `nix-UPSTREAM.json` preserves its original source manifest.
 `UPSTREAM.json` and the suite's `source_sha` identify the current validation
-checkout. The original artifact's exported sources must match that checkout.
+checkout. The original artifact's implementation/build inputs and Phase 1 tests
+must match that checkout; E2E harness changes are independently hashed so
+compiler-version adaptations do not require recompiling the distribution.
 The suite checks the actually loaded candidate files against the Nix record,
 and the evidence verifier checks that identity across all 20 cases. Replacing
 the pinned artifact requires an explicit update to the reviewed build record

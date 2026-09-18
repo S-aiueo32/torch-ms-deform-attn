@@ -61,7 +61,15 @@ def verify(directory, sha):
             and original["revision"] == nix_build["artifact_source_sha"],
             "Nix artifact source mismatch",
         )
-        require(original["source_sha256"] == upstream["source_sha256"], "Nix sources changed")
+
+        def build_sources(manifest):
+            return {
+                name: digest
+                for name, digest in manifest["source_sha256"].items()
+                if not name.startswith("kernel-hub/e2e/")
+            }
+
+        require(build_sources(original) == build_sources(upstream), "Nix sources changed")
         files = json.loads((record / "distribution-files.json").read_text())
         expected = {
             Path(name).relative_to(nix_build["variant"]).as_posix(): digest

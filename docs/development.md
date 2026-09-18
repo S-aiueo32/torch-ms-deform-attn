@@ -189,7 +189,8 @@ uv build --sdist --no-sources --no-config --out-dir dist/pypi
 `--no-config` bypasses the project's editable-build isolation override, so uv
 installs the build dependencies declared in `pyproject.toml` in an isolated
 environment. The CI publisher instead installs CPU PyTorch and the build tools
-explicitly and builds with `--no-build-isolation`.
+explicitly, pins the README's repository links to the checked-out commit with
+`scripts/prepare_pypi_readme.py`, and builds with `--no-build-isolation`.
 The archive includes the CPU/CUDA/Metal sources, tests, documentation,
 and license files.
 
@@ -273,6 +274,16 @@ Before publishing, complete the [required GPU release validation](gpu-runner.md#
 
 The current release version is `0.1.0` in `pyproject.toml`. For later releases,
 update that version before building and use the matching filename below.
+
+For a manual upload, build from a clean release checkout and pin the packaged
+README links to that checkout before running the sdist build command above:
+
+```bash
+python scripts/prepare_pypi_readme.py \
+  --repository S-aiueo32/torch-ms-deform-attn --revision "$(git rev-parse HEAD)"
+uv build --sdist --no-sources --no-config --out-dir dist/pypi
+git restore README.md
+```
 
 Validate the archive without uploading it:
 

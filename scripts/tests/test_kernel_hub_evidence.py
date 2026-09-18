@@ -108,7 +108,12 @@ class KernelHubEvidenceTest(unittest.TestCase):
             Path(name).relative_to(variant).as_posix(): digest
             for name, digest in json.loads((record / "distribution-files.json").read_text()).items()
         }
-        self.files["UPSTREAM.json"] = {**original, "revision": self.sha}
+        self.files["UPSTREAM.json"] = copy.deepcopy(original)
+        self.files["UPSTREAM.json"]["revision"] = self.sha
+        # An independently hashed compiler-compatibility harness may change
+        # without rebuilding the pinned native implementation.
+        harness = "kernel-hub/e2e/rt_detr.py"
+        self.files["UPSTREAM.json"]["source_sha256"][harness] = "f" * 64
         self.files["nix-UPSTREAM.json"] = original
         self.files["candidate-files.json"] = manifest
         nix_build = {
@@ -122,7 +127,7 @@ class KernelHubEvidenceTest(unittest.TestCase):
         self.files["kernel-hub-summary.json"]["nix_build"] = nix_build
         for name, report in self.files.items():
             if name.startswith("e2e-"):
-                report["harness_sha256"] = original["source_sha256"]["kernel-hub/e2e/rt_detr.py"]
+                report["harness_sha256"] = "f" * 64
                 for case in report["cases"]:
                     case["candidate_sha256"] = manifest
         self.write(self.files)
@@ -134,6 +139,12 @@ class KernelHubEvidenceTest(unittest.TestCase):
                 self.write(files)
                 with self.assertRaises(ValueError):
                     verify(self.directory, self.sha)
+
+        files = copy.deepcopy(self.files)
+        files["UPSTREAM.json"]["source_sha256"]["csrc/dispatcher.h"] = "0" * 64
+        self.write(files)
+        with self.assertRaisesRegex(ValueError, "Nix sources changed"):
+            verify(self.directory, self.sha)
 
     def test_historical_partial_suite_is_rejected(self):
         with self.assertRaises(ValueError):

@@ -115,7 +115,7 @@ records initial decoder reference points, upstream of MSDA, to reveal changes
 in proposal selection/order. All per-tensor differences survive failed cases.
 Use `--compiled-training-only` to reproduce training failures without rerunning
 the entire matrix, or `--compiled-only` for both compiled inference/training.
-Use `--debug-artifacts` to save BF16 AMP compiled-training fixtures alongside
+Use `--debug-artifacts` to save FP16/BF16 AMP compiled-training fixtures alongside
 the report as `*-debug.tar.gz`. Its `case.pt` contains the initial model state,
 input, labels, captured candidate/reference graphs, and comparison tensors.
 The full GPU suite enables this automatically so a failed random fixture can
@@ -125,7 +125,7 @@ FP16/BF16. Pass `--diagnostic-controls` to `gpu_suite.py` to additionally run
 default-numerics FP32/FP16/BF16 training controls. Controls can deliberately
 reproduce failures, so they are not enabled in normal validation.
 
-For BF16 AMP the suite also uses `--compile-reference`: the historical HF ops
+For FP16 and BF16 AMP the suite also uses `--compile-reference`: the historical HF ops
 receive shape-only FakeTensor registrations so the reference model can run
 under the same compiler. Their CUDA arithmetic is unchanged. The report retains
 both sides' raw eager/compiled differences and the compiled-to-compiled result.

@@ -581,7 +581,7 @@ def main():
                             args.report.with_name(args.report.stem + "-debug.tar.gz")
                             if args.debug_artifacts
                             and args.autocast
-                            and args.dtype == "bf16"
+                            and args.dtype in ("fp16", "bf16")
                             and training
                             and backend
                             else None

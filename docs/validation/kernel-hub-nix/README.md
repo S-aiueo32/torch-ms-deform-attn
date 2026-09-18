@@ -72,3 +72,47 @@ and required for every export; builds refuse lock updates.
 The failed run's [compressed log](run-35279363509/build.log.gz),
 [derivation](run-35279363509/derivation.json) and
 [source manifest](run-35279363509/UPSTREAM.json) are retained.
+
+## Initial GPU run and PyTorch 2.11 harness adaptation
+
+[Run 35282647966](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35282647966)
+loaded the exact Nix distribution on NVIDIA L4 with PyTorch 2.11.0+cu126,
+Python 3.11, kernels 0.16.2 and Transformers 5.17.0. The loaded files matched the
+distribution hashes. Phase 1 passed 3/3 and all ten eager RT-DETR cases passed.
+All ten compiled RT-DETR cases failed before compilation because the harness
+still used PyTorch 2.10's `emulate_divison_rounding` config name.
+
+[PyTorch 2.11's config](https://github.com/pytorch/pytorch/blob/v2.11.0/torch/_inductor/config.py)
+moves the same eager division-rounding policy to
+`eager_numerics.division_rounding`. The harness now selects the available name
+for both candidate and compiled HF reference. The precision policy and numerical
+tolerances are unchanged. The Nix binary is unchanged; validation harness
+revisions and hashes are recorded independently from the original Nix build.
+
+The [suite summary](run-35282647966/kernel-hub-summary.json),
+[Nix identity](run-35282647966/NIX_BUILD.json),
+[Phase 1 log](run-35282647966/phase1.log), and
+[Pod deletion](run-35282647966/runpod-state.json) are archived with all per-case
+reports. Debug archives remain in the GHA artifact; their checksums are in
+[debug-artifacts.json](run-35282647966/debug-artifacts.json).
+
+[Run 35290373885](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35290373885)
+then passed Phase 1 and 19/20 RT-DETR cases. FP16 AMP compiled training failed
+one element of `model.decoder.layers.0.self_attn.o_proj.bias`: absolute difference
+`0.0517578125`, relative difference `0.0837283`, with unchanged `atol=0.02` and
+`rtol=0.05`. The tensor's overall maximum absolute difference was `0.171875`.
+Candidate eager versus HF eager matched that gradient, logits and loss exactly;
+candidate compiled versus its own eager execution showed the same bias-gradient
+discrepancy. Raw output/proposal differences also include query permutations,
+which the harness handles only through the documented proposal identity check.
+
+This run compared compiled FP16 AMP to eager HF, unlike the BF16 AMP protocol.
+The suite now applies the same compiled-to-compiled reference adaptation to
+both AMP precisions, retaining all raw eager/compiled diagnostics and unchanged
+tolerances. FP16 AMP also saves replay fixtures/graphs. This distinguishes
+kernel replacement parity under the same compiler from whole-model
+eager-versus-compiled numerical drift; it does not claim that drift is absent.
+
+The [19/20 summary](run-35290373885/kernel-hub-summary.json),
+[FP16 AMP comparisons](run-35290373885/e2e-fp16-amp.json), and
+[verified Pod deletion](run-35290373885/runpod-state.json) remain archived.

@@ -114,6 +114,8 @@ def verify(directory, sha):
             if case["training"]:
                 require(case["gradient_tensor_count"] > 0, f"Missing gradients: {name}")
             if case["compile_backend"]:
+                if summary.get("nix_build") and amp:
+                    require(case["reference_compiled"], f"Uncompiled AMP reference: {name}")
                 require(
                     any(graph["msda_calls"] > 0 for graph in case["compiled_graphs"]),
                     f"Missing compiled MSDA: {name}",

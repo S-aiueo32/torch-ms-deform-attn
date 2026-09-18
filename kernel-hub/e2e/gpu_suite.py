@@ -111,9 +111,7 @@ def main():
                 "--debug-artifacts",
             ]
             if amp:
-                command.append("--autocast")
-            if amp and dtype == "bf16":
-                command.append("--compile-reference")
+                command.extend(("--autocast", "--compile-reference"))
             if args.focus_compile:
                 command.append("--compiled-training-only" if amp else "--compiled-only")
             runs.append((name, command))

@@ -62,13 +62,13 @@ the local runs below. All other completed suites in this record pass.
 
 | PyTorch | Python | Result | Evidence |
 | --- | --- | --- | --- |
-| 2.4.0 | 3.12.14 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](local-cpu-2.4.0-python-3.12/cpu-tests.json), [log](local-cpu-2.4.0-python-3.12/cpu-checks.log) |
-| 2.5.0 | 3.13.15 | 9 errors, 26 skipped | [report](local-cpu-2.5.0-python-3.13/cpu-tests.json), [log](local-cpu-2.5.0-python-3.13/cpu-checks.log) |
-| 2.5.1 | 3.13.15 | 9 errors, 26 skipped | [report](local-cpu-2.5.1-python-3.13/cpu-tests.json), [log](local-cpu-2.5.1-python-3.13/cpu-checks.log) |
-| 2.9.1 | 3.14.7 | 10 errors, 26 skipped | [report](local-cpu-2.9.1-python-3.14/cpu-tests.json), [log](local-cpu-2.9.1-python-3.14/cpu-checks.log) |
-| 2.10.0 | 3.14.7 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](local-cpu-2.10.0-python-3.14/cpu-tests.json), [log](local-cpu-2.10.0-python-3.14/cpu-checks.log) |
-| 2.11.0 | 3.14.7 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](local-cpu-2.11.0-python-3.14/cpu-tests.json), [log](local-cpu-2.11.0-python-3.14/cpu-checks.log) |
-| 2.12.1 | 3.14.7 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](local-cpu-2.12.1-python-3.14/cpu-tests.json), [log](local-cpu-2.12.1-python-3.14/cpu-checks.log) |
+| 2.4.0 | 3.12.14 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.4.0-python-3.12/cpu-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.4.0-python-3.12/cpu-checks.log) |
+| 2.5.0 | 3.13.15 | 9 errors, 26 skipped | [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.5.0-python-3.13/cpu-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.5.0-python-3.13/cpu-checks.log) |
+| 2.5.1 | 3.13.15 | 9 errors, 26 skipped | [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.5.1-python-3.13/cpu-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.5.1-python-3.13/cpu-checks.log) |
+| 2.9.1 | 3.14.7 | 10 errors, 26 skipped | [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.9.1-python-3.14/cpu-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.9.1-python-3.14/cpu-checks.log) |
+| 2.10.0 | 3.14.7 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.10.0-python-3.14/cpu-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.10.0-python-3.14/cpu-checks.log) |
+| 2.11.0 | 3.14.7 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.11.0-python-3.14/cpu-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.11.0-python-3.14/cpu-checks.log) |
+| 2.12.1 | 3.14.7 | 40 passed, 26 skipped; 7 build-policy tests passed | [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.12.1-python-3.14/cpu-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.12.1-python-3.14/cpu-checks.log) |
 
 ## CPU and CUDA pair results
 
@@ -78,50 +78,50 @@ Each directory also contains environment details and checksums.
 
 | PyTorch | Python | CPU-only wheel | CUDA wheel | Evidence |
 | --- | --- | --- | --- | --- |
-| 2.4.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-6/torch-2.4.0-python-3.10/driver.log) |
-| 2.4.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-1/torch-2.4.0-python-3.12/driver.log) |
-| 2.5.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-6/torch-2.5.0-python-3.10/driver.log) |
-| 2.5.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-1/torch-2.5.0-python-3.11/driver.log) |
-| 2.5.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-1/torch-2.5.0-python-3.12/driver.log) |
-| 2.5.0 | 3.13 | [limited](local-cpu-2.5.0-python-3.13/cpu-tests.json) | 66 tests, 21 errors, 0 failures | [log](remote-1/torch-2.5.0-python-3.13/driver.log) |
-| 2.5.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-6/torch-2.5.1-python-3.10/driver.log) |
-| 2.5.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-1/torch-2.5.1-python-3.12/driver.log) |
-| 2.5.1 | 3.13 | [limited](local-cpu-2.5.1-python-3.13/cpu-tests.json) | 66 tests, 21 errors, 0 failures | [log](remote-1/torch-2.5.1-python-3.13/driver.log) |
-| 2.7.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.7.1-python-3.10/driver.log) |
-| 2.7.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-2/torch-2.7.1-python-3.12/driver.log) |
-| 2.7.1 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-2/torch-2.7.1-python-3.13/driver.log) |
-| 2.8.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.8.0-python-3.10/driver.log) |
-| 2.8.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-2/torch-2.8.0-python-3.12/driver.log) |
-| 2.8.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-2/torch-2.8.0-python-3.13/driver.log) |
-| 2.9.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.9.1-python-3.10/driver.log) |
-| 2.9.1 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-2/torch-2.9.1-python-3.11/driver.log) |
-| 2.9.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-2/torch-2.9.1-python-3.12/driver.log) |
-| 2.9.1 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-3/torch-2.9.1-python-3.13/driver.log) |
-| 2.9.1 | 3.14 | [limited](local-cpu-2.9.1-python-3.14/cpu-tests.json) | 66 tests, 22 errors, 0 failures | [log](remote-3/torch-2.9.1-python-3.14/driver.log) |
-| 2.10.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.10.0-python-3.10/driver.log) |
-| 2.10.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-3/torch-2.10.0-python-3.11/driver.log) |
-| 2.10.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-3/torch-2.10.0-python-3.12/driver.log) |
-| 2.10.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-3/torch-2.10.0-python-3.13/driver.log) |
-| 2.10.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-3/torch-2.10.0-python-3.14/driver.log) |
-| 2.11.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.11.0-python-3.10/driver.log) |
-| 2.11.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-3/torch-2.11.0-python-3.11/driver.log) |
-| 2.11.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-4/torch-2.11.0-python-3.12/driver.log) |
-| 2.11.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-4/torch-2.11.0-python-3.13/driver.log) |
-| 2.11.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-4/torch-2.11.0-python-3.14/driver.log) |
-| 2.12.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.12.1-python-3.10/driver.log) |
-| 2.12.1 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-4/torch-2.12.1-python-3.11/driver.log) |
-| 2.12.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-4/torch-2.12.1-python-3.12/driver.log) |
-| 2.12.1 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-4/torch-2.12.1-python-3.13/driver.log) |
-| 2.12.1 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-4/torch-2.12.1-python-3.14/driver.log) |
-| 2.13.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.13.0-python-3.10/driver.log) |
-| 2.13.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-5/torch-2.13.0-python-3.11/driver.log) |
-| 2.13.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-5/torch-2.13.0-python-3.12/driver.log) |
-| 2.13.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-5/torch-2.13.0-python-3.13/driver.log) |
-| 2.13.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-5/torch-2.13.0-python-3.14/driver.log) |
-| 2.14.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-7/torch-2.14.0-python-3.10/driver.log) |
-| 2.14.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-5/torch-2.14.0-python-3.11/driver.log) |
-| 2.14.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-5/torch-2.14.0-python-3.13/driver.log) |
-| 2.14.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](remote-5/torch-2.14.0-python-3.14/driver.log) |
+| 2.4.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-6/torch-2.4.0-python-3.10/driver.log) |
+| 2.4.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-1/torch-2.4.0-python-3.12/driver.log) |
+| 2.5.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-6/torch-2.5.0-python-3.10/driver.log) |
+| 2.5.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-1/torch-2.5.0-python-3.11/driver.log) |
+| 2.5.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-1/torch-2.5.0-python-3.12/driver.log) |
+| 2.5.0 | 3.13 | [limited](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.5.0-python-3.13/cpu-tests.json) | 66 tests, 21 errors, 0 failures | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-1/torch-2.5.0-python-3.13/driver.log) |
+| 2.5.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-6/torch-2.5.1-python-3.10/driver.log) |
+| 2.5.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-1/torch-2.5.1-python-3.12/driver.log) |
+| 2.5.1 | 3.13 | [limited](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.5.1-python-3.13/cpu-tests.json) | 66 tests, 21 errors, 0 failures | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-1/torch-2.5.1-python-3.13/driver.log) |
+| 2.7.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.7.1-python-3.10/driver.log) |
+| 2.7.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-2/torch-2.7.1-python-3.12/driver.log) |
+| 2.7.1 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-2/torch-2.7.1-python-3.13/driver.log) |
+| 2.8.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.8.0-python-3.10/driver.log) |
+| 2.8.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-2/torch-2.8.0-python-3.12/driver.log) |
+| 2.8.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-2/torch-2.8.0-python-3.13/driver.log) |
+| 2.9.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.9.1-python-3.10/driver.log) |
+| 2.9.1 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-2/torch-2.9.1-python-3.11/driver.log) |
+| 2.9.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-2/torch-2.9.1-python-3.12/driver.log) |
+| 2.9.1 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/torch-2.9.1-python-3.13/driver.log) |
+| 2.9.1 | 3.14 | [limited](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/local-cpu-2.9.1-python-3.14/cpu-tests.json) | 66 tests, 22 errors, 0 failures | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/torch-2.9.1-python-3.14/driver.log) |
+| 2.10.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.10.0-python-3.10/driver.log) |
+| 2.10.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/torch-2.10.0-python-3.11/driver.log) |
+| 2.10.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/torch-2.10.0-python-3.12/driver.log) |
+| 2.10.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/torch-2.10.0-python-3.13/driver.log) |
+| 2.10.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/torch-2.10.0-python-3.14/driver.log) |
+| 2.11.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.11.0-python-3.10/driver.log) |
+| 2.11.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/torch-2.11.0-python-3.11/driver.log) |
+| 2.11.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/torch-2.11.0-python-3.12/driver.log) |
+| 2.11.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/torch-2.11.0-python-3.13/driver.log) |
+| 2.11.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/torch-2.11.0-python-3.14/driver.log) |
+| 2.12.1 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.12.1-python-3.10/driver.log) |
+| 2.12.1 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/torch-2.12.1-python-3.11/driver.log) |
+| 2.12.1 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/torch-2.12.1-python-3.12/driver.log) |
+| 2.12.1 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/torch-2.12.1-python-3.13/driver.log) |
+| 2.12.1 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/torch-2.12.1-python-3.14/driver.log) |
+| 2.13.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.13.0-python-3.10/driver.log) |
+| 2.13.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/torch-2.13.0-python-3.11/driver.log) |
+| 2.13.0 | 3.12 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/torch-2.13.0-python-3.12/driver.log) |
+| 2.13.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/torch-2.13.0-python-3.13/driver.log) |
+| 2.13.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/torch-2.13.0-python-3.14/driver.log) |
+| 2.14.0 | 3.10 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/torch-2.14.0-python-3.10/driver.log) |
+| 2.14.0 | 3.11 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/torch-2.14.0-python-3.11/driver.log) |
+| 2.14.0 | 3.13 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/torch-2.14.0-python-3.13/driver.log) |
+| 2.14.0 | 3.14 | 41 passed, 25 skipped | 64 passed, 2 skipped | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/torch-2.14.0-python-3.14/driver.log) |
 
 ## Source identity and audit records
 
@@ -132,7 +132,7 @@ Each directory also contains environment details and checksums.
 
 The revisions differ only in the validation harness. Package source and tests
 (`src/`, `csrc/`, `tests/`, `setup.py`, `pyproject.toml`) are identical.
-Offline harness checks: [46 tests passed](harness-tests.log); Ruff, formatting
+Offline harness checks: [46 tests passed](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/harness-tests.log); Ruff, formatting
 and shell syntax checks passed.
 
 The raw archive contains 55 attempts: 44 completed suites and 11 setup failures.
@@ -143,13 +143,13 @@ individual reports or turn a limited pair into a passing one.
 
 | Shard | Local run ID | Attempts | Controller exit | Cleanup record |
 | --- | --- | --- | --- | --- |
-| 1 | 20260917110101 | 9 | 1 | [deleted](remote-1/controller-state.json) |
-| 2 | 20260917110102 | 9 | 1 | [deleted](remote-2/controller-state.json) |
-| 3 | 20260917110103 | 9 | 1 | [deleted](remote-3/controller-state.json) |
-| 4 | 20260917110104 | 8 | 1 | [deleted](remote-4/controller-state.json) |
-| 5 | 20260917110105 | 9 | 1 | [deleted](remote-5/controller-state.json) |
-| 6 | 20260917110106 | 3 | 0 | [deleted](remote-6/controller-state.json) |
-| 7 | 20260917110107 | 8 | 0 | [deleted](remote-7/controller-state.json) |
+| 1 | 20260917110101 | 9 | 1 | [deleted](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-1/controller-state.json) |
+| 2 | 20260917110102 | 9 | 1 | [deleted](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-2/controller-state.json) |
+| 3 | 20260917110103 | 9 | 1 | [deleted](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-3/controller-state.json) |
+| 4 | 20260917110104 | 8 | 1 | [deleted](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-4/controller-state.json) |
+| 5 | 20260917110105 | 9 | 1 | [deleted](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-5/controller-state.json) |
+| 6 | 20260917110106 | 3 | 0 | [deleted](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-6/controller-state.json) |
+| 7 | 20260917110107 | 8 | 0 | [deleted](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/python-matrix/remote-7/controller-state.json) |
 
 
 All seven Pods were verified deleted. Each was quoted at $0.49/hour, with

@@ -1,9 +1,0 @@
-{
-  "source_sha": "4863ba7ffa23af96766541ea8d780db3e9db7ac1",
-  "success": true,
-  "tests_run": 1,
-  "skipped": 0,
-  "torch": "2.4.0+cu124",
-  "gpu": "NVIDIA L4",
-  "with_cuda": false
-}

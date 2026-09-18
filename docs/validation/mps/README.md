@@ -2,16 +2,16 @@
 
 Validated on Apple M2, macOS 26.6.2 arm64, Python 3.11.16 on 2026-09-17.
 These results describe the current checkout, not the published `0.1.0rc2`.
-The final source snapshot is recorded in [source-sha256.json](source-sha256.json).
+The final source snapshot is recorded in [source-sha256.json](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/source-sha256.json).
 Test and benchmark JSON files also identify the loaded extension binary by SHA-256.
 
 ## Correctness and builds
 
 | PyTorch | Tests run | Passed | Skipped | Failures/errors | Evidence |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2.4.0 | 75 | 48 | 27 | 0 / 0 | [log](pytorch-2.4.0-tests.log), [environment](pytorch-2.4.0-tests.json) |
-| 2.5.1 | 75 | 49 | 26 | 0 / 0 | [log](pytorch-2.5.1-tests.log), [environment](pytorch-2.5.1-tests.json) |
-| 2.14.0 | 75 | 49 | 26 | 0 / 0 | [log](pytorch-2.14.0-tests.log), [environment](pytorch-2.14.0-tests.json) |
+| 2.4.0 | 75 | 48 | 27 | 0 / 0 | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.4.0-tests.log), [environment](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.4.0-tests.json) |
+| 2.5.1 | 75 | 49 | 26 | 0 / 0 | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.5.1-tests.log), [environment](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.5.1-tests.json) |
+| 2.14.0 | 75 | 49 | 26 | 0 / 0 | [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.14.0-tests.log), [environment](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.14.0-tests.json) |
 
 The CUDA tests are skipped because this host has no CUDA GPU. PyTorch 2.4 also
 skips MPS autocast, which that release does not implement. MPS forward/backward,
@@ -43,7 +43,7 @@ not whole-model speedups or controlled fleet-wide benchmarks.
 
 PyTorch 2.5.1 forward speedups range from 3.67× to 5.35×. Its MPS `grid_sample`
 backward is unimplemented, so no reference backward speedup is reported.
-See [2.5.1 raw measurements](pytorch-2.5.1-benchmark.json).
+See [2.5.1 raw measurements](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.5.1-benchmark.json).
 
 PyTorch 2.14.0 has a faster reference and supports its backward. Forward speedups
 range from 1.43× to 2.27×. Forward+backward ranges from 0.71× to 1.29×:
@@ -61,7 +61,7 @@ No automatic fallback is selected from these measurements.
 | 800×1344 | 2 | encoder | 111.64 | 165.22 | 834.79 | 597.93 |
 | 800×1344 | 2 | decoder | 4.57 | 10.39 | 30.63 | 33.41 |
 
-See [2.14.0 raw measurements](pytorch-2.14.0-benchmark.json), including first-call
+See [2.14.0 raw measurements](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/mps/pytorch-2.14.0-benchmark.json), including first-call
 latency, minimum/maximum timings, and observed tensor memory. Memory is sampled
 at PyTorch operator boundaries in a separate untimed run. It excludes allocator
 cache and may miss intra-operator workspace; it is not an exact peak counter.

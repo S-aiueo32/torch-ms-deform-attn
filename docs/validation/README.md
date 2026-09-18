@@ -1,8 +1,8 @@
 # Validation
 
-Validation is organized by the compatibility or behavior being checked.
-The [support matrix](../support.md) summarizes CPU and CUDA
-status; the records below provide conditions, results and source-bound evidence.
+Validation is organized by the compatibility or behavior being checked. The
+[support matrix](../support.md) summarizes CPU and CUDA status; the records below
+capture the reviewed conclusions and reproduction context.
 
 | Verification target | Record | Coverage |
 | --- | --- | --- |
@@ -16,6 +16,22 @@ status; the records below provide conditions, results and source-bound evidence.
 | Kernel Hub benchmarks | [Phase 3 L4 measurements](kernel-hub-benchmarks/README.md) | Six implementations measured on L4; all common-policy correctness checks passed; fresh-process comparison identifies eager training slowdowns to investigate |
 | MSDA dispatch overhead | [L4 performance investigation](kernel-hub-performance/README.md) | Direct C++ registration, native control and pinned previous-source comparison; precision policy unchanged |
 
+## Artifact storage
+
+Generated evidence is not committed to the current source tree. Logs, JSON
+reports, wheels, source archives, profiler traces and checksums produced by CI
+are stored with the relevant
+[GitHub Actions run](https://github.com/S-aiueo32/torch-ms-deform-attn/actions).
+Evidence required to approve a release is attached to that
+[GitHub release](https://github.com/S-aiueo32/torch-ms-deform-attn/releases)
+before publication, as described in the
+[release validation procedure](../gpu-runner.md#required-release-validation).
+
+Existing raw-evidence links below point to the final pre-migration Git snapshot,
+so historical logs remain reviewable after their files leave the current tree.
+New validation summaries must link to their Actions run or release assets; do
+not copy generated output back into `docs/validation`.
+
 ## Reading the evidence
 
 Results apply to the source SHA and environment recorded with each suite.
@@ -25,8 +41,8 @@ Benchmark timings and emulated Docker runs are not native performance baselines.
 
 Each record links to reports, logs, environment details and available checksum
 manifests. Raw evidence filenames retain their run identifiers for traceability.
-Binary artifacts are committed only where explicitly linked; other manifests
-may also identify binaries retained outside the repository.
+Actions artifacts are temporary; release assets are the durable record for a
+shipped version.
 
 For reproduction, see [local CPU validation](../development.md),
 [GPU validation](../gpu-runner.md), and [benchmark methodology](../benchmarks.md).

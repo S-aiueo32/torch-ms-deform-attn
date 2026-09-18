@@ -32,8 +32,8 @@ racecheck also reports zero warnings/hazards.
 
 ## Evidence and scope
 
-- CUDA 12.4: [report](cu124/cuda-tests.json), [log](cu124/cuda-checks.log), [cleanup](cu124/cleanup.json), [checksums](cu124/sha256.json).
-- CUDA 12.6: [report](cu126/cuda-tests.json), [log](cu126/cuda-checks.log), [cleanup](cu126/cleanup.json), [checksums](cu126/sha256.json).
+- CUDA 12.4: [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu124/cuda-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu124/cuda-checks.log), [cleanup](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu124/cleanup.json), [checksums](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu124/sha256.json).
+- CUDA 12.6: [report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu126/cuda-tests.json), [log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu126/cuda-checks.log), [cleanup](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu126/cleanup.json), [checksums](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-correctness/cu126/sha256.json).
 - Root CPU logs record lower-bound environments and the cross-version rebuild.
   Controller unit tests: 39 passed; Ruff and ty passed.
 

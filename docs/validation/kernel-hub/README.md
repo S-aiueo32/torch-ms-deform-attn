@@ -27,13 +27,13 @@ arithmetic are unchanged. The earlier failure below remains part of the record:
 it did not recur in this full run or the direct diagnostics, but its cause has
 not been isolated. The dependency update alone is not evidence of its cause.
 
-The [suite summary](run-35275929141/kernel-hub-summary.json),
-[source manifest](run-35275929141/UPSTREAM.json),
-[BF16 AMP report](run-35275929141/e2e-bf16-amp.json), and
-[replay fixture and graphs](run-35275929141/e2e-bf16-amp-debug.tar.gz)
+The [suite summary](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35275929141/kernel-hub-summary.json),
+[source manifest](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35275929141/UPSTREAM.json),
+[BF16 AMP report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35275929141/e2e-bf16-amp.json), and
+[replay fixture and graphs](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35275929141/e2e-bf16-amp-debug.tar.gz)
 preserve the tested configuration. All precision reports, native artifact
 hashes, package versions and logs are archived alongside them.
-[Pod deletion](run-35275929141/runpod-state.json) was verified.
+[Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35275929141/runpod-state.json) was verified.
 
 The evidence verifier passes:
 
@@ -87,7 +87,7 @@ The failed case's diagnostics show:
 
 These observations establish a remaining compiled BF16 AMP discrepancy; they
 do not isolate its cause or prove it harmless. Subsequent
-[L4 diagnostics](direct-20260918/README.md) compared captured MSDA inputs,
+[L4 diagnostics](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/direct-20260918/README.md) compared captured MSDA inputs,
 outputs and backward results, including a rebuild with the failed run's exact
 namespace. The discrepancy did not recur: forward inputs/outputs matched
 exactly and native value-gradient differences were at most `7.45e-9`. This does
@@ -96,13 +96,13 @@ the runner now archives BF16 AMP fixtures and graphs for exact replay.
 Nix distribution validation and HF adoption remain
 separate, uncompleted gates.
 
-Evidence: [suite summary](run-35233588181/kernel-hub-summary.json),
-[BF16 AMP cases and diagnostics](run-35233588181/e2e-bf16-amp.json),
-[Phase 1 log](run-35233588181/phase1.log),
-[source manifest](run-35233588181/UPSTREAM.json),
-[candidate hashes](run-35233588181/candidate-files.json),
-[baseline hashes](run-35233588181/baseline-files.json), and
-[verified Pod deletion](run-35233588181/runpod-state.json).
+Evidence: [suite summary](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35233588181/kernel-hub-summary.json),
+[BF16 AMP cases and diagnostics](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35233588181/e2e-bf16-amp.json),
+[Phase 1 log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35233588181/phase1.log),
+[source manifest](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35233588181/UPSTREAM.json),
+[candidate hashes](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35233588181/candidate-files.json),
+[baseline hashes](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35233588181/baseline-files.json), and
+[verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35233588181/runpod-state.json).
 
 Local checks of the corrected harness passed all 20 CPU fixture cases (four
 tests). Exporter tests passed 3/3; controller/evidence tests passed 55/55, as did
@@ -123,11 +123,11 @@ The harness now compares graph targets directly with the registered overload
 and uses its `name()` for profiler matching. Numerical tolerances, compiler
 policies and operator execution requirements are unchanged.
 
-Evidence: [suite summary](run-35231276149/kernel-hub-summary.json),
-[Phase 1 log](run-35231276149/phase1.log),
-[FP32 failures](run-35231276149/e2e-fp32.json),
-[source manifest](run-35231276149/UPSTREAM.json), and
-[verified Pod deletion](run-35231276149/runpod-state.json).
+Evidence: [suite summary](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35231276149/kernel-hub-summary.json),
+[Phase 1 log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35231276149/phase1.log),
+[FP32 failures](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35231276149/e2e-fp32.json),
+[source manifest](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35231276149/UPSTREAM.json), and
+[verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35231276149/runpod-state.json).
 
 ## Earlier integration evidence
 
@@ -190,14 +190,14 @@ numerics from kernel replacement. The investigation below isolates candidate
 eager/compiled and baseline eager/compiled behavior, including proposal identity,
 without changing tolerances. No pretrained dataset accuracy claim is made.
 
-Evidence: [suite summary](run-35191748862/kernel-hub-summary.json),
-[individual reports and logs](run-35191748862/),
-[source manifest](run-35191748862/UPSTREAM.json),
-[candidate hashes](run-35191748862/candidate-files.json),
-[baseline hashes](run-35191748862/baseline-files.json), and
-[verified Pod deletion](run-35191748862/runpod-state.json).
+Evidence: [suite summary](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35191748862/kernel-hub-summary.json),
+[individual reports and logs](https://github.com/S-aiueo32/torch-ms-deform-attn/tree/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35191748862),
+[source manifest](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35191748862/UPSTREAM.json),
+[candidate hashes](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35191748862/candidate-files.json),
+[baseline hashes](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35191748862/baseline-files.json), and
+[verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35191748862/runpod-state.json).
 The overall run correctly failed. No Pod remains from this run.
-Earlier setup failures and fixes are recorded in [Runpod attempts](runpod-attempts.md).
+Earlier setup failures and fixes are recorded in [Runpod attempts](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/runpod-attempts.md).
 
 ## Compiler-numerics investigation
 
@@ -220,9 +220,9 @@ investigation. FP16 AMP's proposal difference (5.41634464263916) also occurred
 upstream of MSDA. This identifies model/compiler numerics as a contributor;
 it is not evidence that all default-mode kernel replacements are equivalent.
 
-See [per-case diagnostics](run-35193235122/),
-[suite summary](run-35193235122/kernel-hub-summary.json), and
-[verified Pod deletion](run-35193235122/runpod-state.json).
+See [per-case diagnostics](https://github.com/S-aiueo32/torch-ms-deform-attn/tree/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35193235122),
+[suite summary](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35193235122/kernel-hub-summary.json), and
+[verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35193235122/runpod-state.json).
 
 [Run 35195362147](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35195362147)
 at `a5b226c` fixed the math policy further: TF32 disabled, math SDPA selected,
@@ -231,7 +231,7 @@ the original tolerances. Maximum checked absolute differences were
 `9.5367431640625e-07` in inference and `6.103515625e-05` in training (241
 parameter gradients checked). AMP training still failed. This combined control
 does not isolate which individual optimization caused the FP32 discrepancy.
-See [reports](run-35195362147/) and [Pod deletion](run-35195362147/runpod-state.json).
+See [reports](https://github.com/S-aiueo32/torch-ms-deform-attn/tree/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35195362147) and [Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35195362147/runpod-state.json).
 
 [Run 35196661730](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35196661730)
 at `138e4fd` corrected AOT's backward autocast assumption and checked query
@@ -240,7 +240,7 @@ image had exchanged places, while the selected proposal set was unchanged.
 Only output rows were aligned; loss and all gradients passed unchanged.
 BF16 AMP still had the same gradient discrepancy, so changing the backward
 autocast assumption alone did not resolve that case.
-See [reports](run-35196661730/) and [Pod deletion](run-35196661730/runpod-state.json).
+See [reports](https://github.com/S-aiueo32/torch-ms-deform-attn/tree/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35196661730) and [Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35196661730/runpod-state.json).
 
 [Run 35197412721](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35197412721)
 at `a433fa0` passed the focused BF16 AMP compiled training check. The historical
@@ -257,10 +257,10 @@ compiling the baseline itself removed the previously reported `0.0634765625`
 gradient discrepancy. It establishes substitution parity under matched
 compilation; the earlier run-to-run eager/compiled variation remains recorded.
 
-See [passing report](run-35197412721/e2e-bf16-amp.json),
-[source manifest](run-35197412721/UPSTREAM.json),
-[suite summary](run-35197412721/kernel-hub-summary.json), and
-[verified Pod deletion](run-35197412721/runpod-state.json).
+See [passing report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35197412721/e2e-bf16-amp.json),
+[source manifest](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35197412721/UPSTREAM.json),
+[suite summary](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35197412721/kernel-hub-summary.json), and
+[verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35197412721/runpod-state.json).
 
 The confirmed rechecks are:
 
@@ -315,20 +315,20 @@ establish pretrained model accuracy or every possible input shape.
 
 The diagnostic run failed its three retained native-half assertions; all added
 accuracy controls, layer eager/compile checks and autocast checks passed.
-See [numerical report](run-35199275357/phase1-numerics.json),
-[test log](run-35199275357/phase1.log),
-[source manifest](run-35199275357/UPSTREAM.json), and
-[verified Pod deletion](run-35199275357/runpod-state.json).
+See [numerical report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199275357/phase1-numerics.json),
+[test log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199275357/phase1.log),
+[source manifest](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199275357/UPSTREAM.json), and
+[verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199275357/runpod-state.json).
 
 [Run 35199874809](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35199874809)
 at `4e21ffc` reran the corrected Phase 1 suite on L4 with PyTorch 2.10.0+cu126.
 All three tests passed, covering FP32/FP64 native-HF parity, FP16/BF16
 FP32-compute parity and FP64 accuracy, eager/compiled layer gradients, autocast,
 and device/dtype validation. This was an operator-only run, not a new E2E matrix.
-See [passing suite](run-35199874809/kernel-hub-summary.json),
-[numerical comparisons](run-35199874809/phase1-numerics.json),
-[test log](run-35199874809/phase1.log), and
-[verified Pod deletion](run-35199874809/runpod-state.json).
+See [passing suite](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199874809/kernel-hub-summary.json),
+[numerical comparisons](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199874809/phase1-numerics.json),
+[test log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199874809/phase1.log), and
+[verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/run-35199874809/runpod-state.json).
 
 ## Earlier CPU fixture
 
@@ -368,8 +368,8 @@ This adaptation does not establish unmodified HF artifact dtype support.
 
 Artifacts:
 
-- [Matrix, source hashes, native binary hash and dependency versions](cpu-fixture.json)
-- [Test execution log](cpu-fixture-tests.log)
+- [Matrix, source hashes, native binary hash and dependency versions](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/cpu-fixture.json)
+- [Test execution log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/kernel-hub/cpu-fixture-tests.log)
 
 The native CPU extension was built from `8afa986` in an isolated temporary
 environment. The export manifest records the same base commit plus hashes of

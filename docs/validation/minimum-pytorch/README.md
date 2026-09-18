@@ -27,7 +27,7 @@ parallel backend. Both jobs build an sdist, build and install its wheel, and run
 the suite outside the checkout. CPU results include AMP, explicit low-precision
 inputs, FakeTensor/opcheck, dynamic compilation and upstream module parity.
 See the [CPU workflow](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35168376104),
-[serial log](cpu-py310-serial.log) and [OpenMP log](cpu-py311-openmp.log).
+[serial log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cpu-py310-serial.log) and [OpenMP log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cpu-py311-openmp.log).
 
 The [GPU workflow](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35168376014)
 used driver 580.159.04 and CUDA toolkit 12.4.131. The two expected skips were the
@@ -37,14 +37,14 @@ no unexpected skips. CUDA checks include forward/backward, metadata rejection,
 AMP training, explicit fp16/bf16 inputs, dynamic compilation, opcheck, and pinned
 upstream module parity.
 
-- [Test report](cuda/cuda-tests.json), [completion marker](cuda/cuda-completion.json),
-  [CPU-only wheel report](cuda/cpu-only-gpu-tests.json), [full test log](cuda/cuda-checks.log).
-- [memcheck](cuda/sanitizer-memcheck.log), [racecheck](cuda/sanitizer-racecheck.log),
-  [synccheck](cuda/sanitizer-synccheck.log), [initcheck](cuda/sanitizer-initcheck.log).
-- [Workflow log including verified Pod deletion](cuda/workflow.log),
-  [environment](cuda/nvidia-smi.txt), [artifact checksums](cuda/sha256.json).
+- [Test report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/cuda-tests.json), [completion marker](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/cuda-completion.json),
+  [CPU-only wheel report](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/cpu-only-gpu-tests.json), [full test log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/cuda-checks.log).
+- [memcheck](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/sanitizer-memcheck.log), [racecheck](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/sanitizer-racecheck.log),
+  [synccheck](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/sanitizer-synccheck.log), [initcheck](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/sanitizer-initcheck.log).
+- [Workflow log including verified Pod deletion](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/workflow.log),
+  [environment](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/nvidia-smi.txt), [artifact checksums](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda/sha256.json).
 - [CUDA build workflow](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35168376086)
-  and [2.4 build log](cuda-build.log). The existing 2.5.1/12.4 and 2.7.1/12.6
+  and [2.4 build log](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/cuda-build.log). The existing 2.5.1/12.4 and 2.7.1/12.6
   build jobs also passed. CPU CI, including rebuilding across PyTorch versions,
   and [Lint](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35168376050)
   passed. Controller/evidence tests: 42 passed.
@@ -59,7 +59,7 @@ logs have ANSI escape sequences and trailing whitespace removed for readability.
 ## Evidence boundaries
 
 The results above apply to the stated source SHA. The
-[compile diagnostic archive](initial-cuda-failure.log) belongs to source
+[compile diagnostic archive](https://github.com/S-aiueo32/torch-ms-deform-attn/blob/324030908cd66a625d6794a5fb0389228b257a5a/docs/validation/minimum-pytorch/initial-cuda-failure.log) belongs to source
 `1107b8a054ecf3aa8ab08403909a39c0ab21c903` and supplies no runtime or sanitizer
 evidence. PyTorch 2.4 device checks use `CUDA_KERNEL_ASSERT`; subprocess tests
 verify forward/backward metadata assertions and their diagnostic text.

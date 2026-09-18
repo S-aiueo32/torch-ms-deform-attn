@@ -8,7 +8,6 @@ import tarfile
 import tempfile
 import unittest
 from pathlib import Path
-from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import prepare_kernel_hub_nix as nix
@@ -38,20 +37,26 @@ class PrepareNixTest(unittest.TestCase):
             )
             (record / "export-revision.txt").write_text("b" * 40)
             target = root / "prepared"
-            with mock.patch.object(nix, "RECORD", record):
-                nix.prepare(root, target, "c" * 40)
-                self.assertEqual(
-                    (target / "build" / nix.VARIANT / "fixture.so").read_bytes(), binary
-                )
-                provenance = json.loads((target / "NIX_BUILD.json").read_text())
-                self.assertEqual(provenance["artifact_source_sha"], "a" * 40)
-                self.assertEqual(
-                    provenance["files"], {"fixture.so": hashlib.sha256(binary).hexdigest()}
-                )
-                archive.write_bytes(archive.read_bytes() + b"tampered")
-                with self.assertRaisesRegex(ValueError, "archive checksum"):
-                    nix.prepare(root, root / "bad", "c" * 40)
-                self.assertFalse((root / "bad").exists())
+            for name in (
+                "distribution.sha256",
+                "distribution-files.json",
+                "UPSTREAM.json",
+                "export-revision.txt",
+            ):
+                (root / name).write_bytes((record / name).read_bytes())
+            nix.prepare(root, target, "c" * 40)
+            self.assertEqual(
+                (target / "build" / nix.VARIANT / "fixture.so").read_bytes(), binary
+            )
+            provenance = json.loads((target / "NIX_BUILD.json").read_text())
+            self.assertEqual(provenance["artifact_source_sha"], "a" * 40)
+            self.assertEqual(
+                provenance["files"], {"fixture.so": hashlib.sha256(binary).hexdigest()}
+            )
+            archive.write_bytes(archive.read_bytes() + b"tampered")
+            with self.assertRaisesRegex(ValueError, "archive checksum"):
+                nix.prepare(root, root / "bad", "c" * 40)
+            self.assertFalse((root / "bad").exists())
 
     def test_changed_sources_rejected_before_export(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -61,7 +66,6 @@ class PrepareNixTest(unittest.TestCase):
             (root / "UPSTREAM.json").write_text(
                 json.dumps({"source_sha256": {"kernel-hub/flake.lock": "0" * 64}})
             )
-            with mock.patch.object(nix, "RECORD", root):
-                with self.assertRaisesRegex(ValueError, "source changed"):
-                    nix.prepare(root, root / "bad", "c" * 40)
+            with self.assertRaisesRegex(ValueError, "source changed"):
+                nix.prepare(root, root / "bad", "c" * 40)
             self.assertFalse((root / "bad").exists())

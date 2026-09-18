@@ -1,28 +1,0 @@
-test_autocast_and_validation (test_kernel.KernelTest.test_autocast_and_validation) ... /workspace/ci/kernel-hub.bfI6VhI3/venv/lib/python3.11/site-packages/torch/jit/_script.py:362: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
-  warnings.warn(
-ok
-test_layer (test_kernel.KernelTest.test_layer) ... ok
-test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline) ... Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1515.99it/s]
-Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1667.05it/s]
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1483.51it/s]
-FAIL
-
-======================================================================
-FAIL: test_pinned_hf_baseline (test_kernel.KernelTest.test_pinned_hf_baseline)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/workspace/ci/kernel-hub.bfI6VhI3/candidate/tests/test_kernel.py", line 69, in test_pinned_hf_baseline
-    torch.testing.assert_close(
-  File "/workspace/ci/kernel-hub.bfI6VhI3/venv/lib/python3.11/site-packages/torch/testing/_comparison.py", line 1600, in assert_close
-    raise error_metas[0].to_error(msg)
-AssertionError: Tensor-likes are not close!
-
-Mismatched elements: 8 / 448 (1.8%)
-Greatest absolute difference: 0.009765625 at index (0, 1, 1, 0, 0, 0) (up to 0.002 allowed)
-Greatest relative difference: 0.01436614990234375 at index (1, 6, 0, 0, 2, 1) (up to 0.002 allowed)
-
-----------------------------------------------------------------------
-Ran 3 tests in 11.662s
-
-FAILED (failures=1)

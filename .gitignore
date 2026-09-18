@@ -8,3 +8,13 @@ dist/
 .venv/
 .ruff_cache/
 .DS_Store
+
+# Generated validation output belongs in GitHub Actions artifacts or release
+# assets, not in source control. Keep only the curated validation summaries.
+/artifacts/
+/runpod-results/
+/validation-results/
+/docs/validation/**
+!/docs/validation/README.md
+!/docs/validation/*/
+!/docs/validation/*/README.md

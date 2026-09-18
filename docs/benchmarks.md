@@ -95,16 +95,16 @@ Configure the account and `RUNPOD_API_KEY` using the
 [GPU runner guide](gpu-runner.md), including its cleanup and cost controls. Then:
 
 ```bash
-gh workflow run cuda-benchmark.yml --repo S-aiueo32/torch-ms-deform-attn --ref main \
-  --field operation=benchmark --field gpu='NVIDIA L4' \
+gh workflow run cuda.yml --repo S-aiueo32/torch-ms-deform-attn --ref main \
+  --field task=benchmark --field gpu='NVIDIA L4' \
   --field max_hourly_usd=0.50 --field timeout_minutes=45
 ```
 
-Use `operation=check` to check credentials and pricing without creating a Pod.
+Use `task=check` to check credentials and pricing without creating a Pod.
 The workflow builds and tests an installed CUDA wheel, runs the benchmark, and
 deletes the Pod. A correctness or benchmark failure fails the job.
 
-Download `cuda-benchmark-<run-id>-<attempt>` from the workflow run within seven
+Download `cuda-runpod-<run-id>-<attempt>` from the workflow run within seven
 days. It contains `artifacts/benchmark-cuda.json`, GPU information, logs, and
 built distributions.
 

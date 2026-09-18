@@ -1,0 +1,109 @@
+name: Reusable CUDA GPU
+on:
+  workflow_call:
+    inputs:
+      task:
+        required: true
+        type: string
+      kernel_hub_suite:
+        required: true
+        type: string
+      torch_version:
+        required: true
+        type: string
+      sanitizer:
+        required: true
+        type: string
+      gpu:
+        required: true
+        type: string
+      max_hourly_usd:
+        required: true
+        type: string
+      timeout_minutes:
+        required: true
+        type: number
+      capacity_wait_minutes:
+        required: true
+        type: number
+    secrets:
+      runpod_api_key:
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: runpod-cuda
+  cancel-in-progress: false
+jobs:
+  runpod:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/cache/restore@v4
+        id: builder-cache
+        if: inputs.task == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full'
+        with:
+          path: ~/.cargo/bin/kernel-builder
+          key: kernel-builder-0.16.1-ubuntu-x86_64
+      - name: Prepare Kernel Hub build
+        if: inputs.task == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full'
+        env:
+          KERNEL_HUB_SUITE: ${{ inputs.kernel_hub_suite }}
+        run: |
+          if ! command -v kernel-builder; then
+            rustup toolchain install 1.94.0 --profile minimal
+            cargo +1.94.0 install hf-kernel-builder --version 0.16.1 --locked
+          fi
+          python3 kernel-hub/export.py "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
+          kernel-builder create-pyproject "$RUNNER_TEMP/kernel-hub-preflight" --unique-id "$GITHUB_SHA"
+          if [ "$KERNEL_HUB_SUITE" = benchmark ]; then
+            python3 kernel-hub/benchmarks/competitors.py "$RUNNER_TEMP/kernel-hub-preflight/benchmark-sources"
+          fi
+      - uses: actions/cache/save@v4
+        if: inputs.task == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full' && steps.builder-cache.outputs.cache-hit != 'true'
+        with:
+          path: ~/.cargo/bin/kernel-builder
+          key: kernel-builder-0.16.1-ubuntu-x86_64
+      - name: Prepare reviewed Nix distribution
+        if: inputs.task == 'kernel-hub' && inputs.kernel_hub_suite == 'nix-full'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 35280414318 --name kernel-hub-nix-35280414318 --dir "$RUNNER_TEMP/nix-artifact"
+          python3 scripts/prepare_kernel_hub_nix.py \
+            "$RUNNER_TEMP/nix-artifact" "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
+      - name: Run CUDA task on Runpod
+        uses: ./.github/actions/runpod-cuda
+        with:
+          task: ${{ inputs.task }}
+          kernel-hub-suite: ${{ inputs.kernel_hub_suite }}
+          torch-version: ${{ inputs.torch_version }}
+          sanitizer: ${{ inputs.sanitizer }}
+          gpu: ${{ inputs.gpu }}
+          max-hourly-usd: ${{ inputs.max_hourly_usd }}
+          timeout-minutes: ${{ inputs.timeout_minutes }}
+          capacity-wait-minutes: ${{ inputs.capacity_wait_minutes }}
+          api-key: ${{ secrets.runpod_api_key }}
+      - name: Upload CUDA results, logs, and wheel
+        if: always() && inputs.task != 'check'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cuda-runpod-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runpod-results/
+          if-no-files-found: ignore
+          retention-days: ${{ inputs.task == 'benchmark' && 7 || 90 }}
+      - name: Record revision and GPU evidence location
+        if: always() && inputs.task != 'check'
+        env:
+          TASK: ${{ inputs.task }}
+        run: |
+          echo "Source SHA: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "Task: $TASK" >> "$GITHUB_STEP_SUMMARY"
+          echo "GPU results: cuda-runpod-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$TASK" = core ]; then
+            echo "Review cuda-tests.json, cuda-completion.json and cuda-checks.log; archive with the release." >> "$GITHUB_STEP_SUMMARY"
+          fi

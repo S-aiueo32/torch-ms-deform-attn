@@ -1,14 +1,14 @@
-name: CUDA correctness
+name: CUDA GPU
 on:
   workflow_dispatch:
     inputs:
-      workload:
-        description: Core CUDA suite or Kernel Hub build and Transformers E2E
+      task:
+        description: Check access, validate core CUDA, benchmark it, or test Kernel Hub
         type: choice
         default: core
-        options: [core, kernel-hub]
+        options: [check, core, benchmark, kernel-hub]
       kernel_hub_suite:
-        description: Full Kernel Hub matrix, focused checks, or Phase 3 benchmark
+        description: Kernel Hub only — full matrix, focused checks, or Phase 3 benchmark
         type: choice
         default: full
         options: [full, nix-full, compile-amp, phase1, benchmark]
@@ -18,15 +18,10 @@ on:
         default: '2.5.1'
         options: ['2.4.0', '2.5.1', '2.7.1', '2.8.0', '2.14.0']
       sanitizer:
-        description: Optional CUDA kernel memory/synchronization check
+        description: Core CUDA only — optional memory/synchronization check
         type: choice
         default: none
         options: [none, memcheck, racecheck, synccheck, initcheck, all]
-      operation:
-        description: Run CUDA tests, or check Runpod credentials/pricing without renting a GPU
-        type: choice
-        default: test
-        options: [test, check]
       gpu:
         description: Rent one Secure Cloud GPU (no automatic model substitution)
         type: choice
@@ -47,111 +42,17 @@ on:
 permissions:
   contents: read
   actions: read
-concurrency:
-  group: runpod-cuda
-  cancel-in-progress: false
 jobs:
-  test:
-    # This controller provisions a Runpod GPU and runs the checks over SSH.
-    runs-on: ubuntu-latest
-    timeout-minutes: 70
-    env:
-      WORKLOAD: ${{ inputs.workload }}
-      KERNEL_HUB_SUITE: ${{ inputs.kernel_hub_suite }}
-      TORCH_VERSION: ${{ inputs.torch_version }}
-      GPU: ${{ inputs.gpu }}
-      SANITIZER: ${{ inputs.sanitizer }}
-      MAX_HOURLY_USD: ${{ inputs.max_hourly_usd }}
-      TIMEOUT_MINUTES: ${{ inputs.timeout_minutes }}
-      CAPACITY_WAIT_MINUTES: ${{ inputs.capacity_wait_minutes }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Check account access and GPU quote
-        if: inputs.operation == 'check'
-        env:
-          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
-        run: |
-          python3 scripts/runpod_ci.py check \
-            --gpu "$GPU" --max-hourly-usd "$MAX_HOURLY_USD"
-      - uses: actions/cache/restore@v4
-        id: builder-cache
-        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full'
-        with:
-          path: ~/.cargo/bin/kernel-builder
-          key: kernel-builder-0.16.1-ubuntu-x86_64
-      - name: Validate Kernel Builder configuration before renting a GPU
-        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full'
-        run: |
-          if ! command -v kernel-builder; then
-            rustup toolchain install 1.94.0 --profile minimal
-            cargo +1.94.0 install hf-kernel-builder --version 0.16.1 --locked
-          fi
-          python3 kernel-hub/export.py "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
-          kernel-builder create-pyproject "$RUNNER_TEMP/kernel-hub-preflight" --unique-id "$GITHUB_SHA"
-          if [ "$KERNEL_HUB_SUITE" = benchmark ]; then
-            python3 kernel-hub/benchmarks/competitors.py "$RUNNER_TEMP/kernel-hub-preflight/benchmark-sources"
-          fi
-      - uses: actions/cache/save@v4
-        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite != 'nix-full' && steps.builder-cache.outputs.cache-hit != 'true'
-        with:
-          path: ~/.cargo/bin/kernel-builder
-          key: kernel-builder-0.16.1-ubuntu-x86_64
-      - name: Verify and prepare the reviewed Nix distribution before GPU rental
-        if: inputs.operation == 'test' && inputs.workload == 'kernel-hub' && inputs.kernel_hub_suite == 'nix-full'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh run download 35280414318 --name kernel-hub-nix-35280414318 --dir "$RUNNER_TEMP/nix-artifact"
-          python3 scripts/prepare_kernel_hub_nix.py \
-            "$RUNNER_TEMP/nix-artifact" "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
-      - name: Start Runpod GPU, test CUDA, and delete Pod
-        if: inputs.operation == 'test'
-        env:
-          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
-        run: |
-          prepared=()
-          if [ "$WORKLOAD" = kernel-hub ]; then
-            prepared=(--prepared-kernel "$RUNNER_TEMP/kernel-hub-preflight")
-          fi
-          python3 scripts/runpod_ci.py run \
-            --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
-            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
-            --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
-            --output-dir "$RUNNER_TEMP/runpod-results" \
-            --gpu "$GPU" --sanitizer "$SANITIZER" --torch-version "$TORCH_VERSION" \
-            --workload "$WORKLOAD" --kernel-hub-suite "$KERNEL_HUB_SUITE" "${prepared[@]}" \
-            --max-hourly-usd "$MAX_HOURLY_USD" --timeout-minutes "$TIMEOUT_MINUTES" \
-            --capacity-wait-minutes "$CAPACITY_WAIT_MINUTES"
-      - name: Retry cleanup after failure or cancellation
-        if: always() && inputs.operation == 'test'
-        timeout-minutes: 5
-        env:
-          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
-        run: |
-          python3 scripts/runpod_ci.py cleanup \
-            --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
-            --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
-            --state-dir "$RUNNER_TEMP/runpod-state"
-      - name: Preserve Pod cleanup state
-        if: always() && inputs.operation == 'test'
-        run: |
-          if [ -f "$RUNNER_TEMP/runpod-state/state.json" ]; then
-            mkdir -p "$RUNNER_TEMP/runpod-results"
-            cp "$RUNNER_TEMP/runpod-state/state.json" "$RUNNER_TEMP/runpod-results/runpod-state.json"
-          fi
-      - name: Upload CUDA logs and wheel
-        if: always() && inputs.operation == 'test'
-        uses: actions/upload-artifact@v4
-        with:
-          name: cuda-runpod-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/runpod-results/
-          if-no-files-found: ignore
-          retention-days: 90
-      - name: Record revision and GPU evidence location
-        if: always() && inputs.operation == 'test'
-        run: |
-          echo "Source SHA: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
-          echo "GPU runtime evidence: cuda-runpod-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_STEP_SUMMARY"
-          echo "Review cuda-tests.json, cuda-completion.json and cuda-checks.log; archive with the release." >> "$GITHUB_STEP_SUMMARY"
+  run:
+    uses: ./.github/workflows/reusable-cuda-gpu.yml
+    with:
+      task: ${{ inputs.task }}
+      kernel_hub_suite: ${{ inputs.kernel_hub_suite }}
+      torch_version: ${{ inputs.torch_version }}
+      sanitizer: ${{ inputs.sanitizer }}
+      gpu: ${{ inputs.gpu }}
+      max_hourly_usd: ${{ inputs.max_hourly_usd }}
+      timeout_minutes: ${{ inputs.timeout_minutes }}
+      capacity_wait_minutes: ${{ inputs.capacity_wait_minutes }}
+    secrets:
+      runpod_api_key: ${{ secrets.RUNPOD_API_KEY }}

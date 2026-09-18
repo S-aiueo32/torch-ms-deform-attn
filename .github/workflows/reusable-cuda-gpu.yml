@@ -101,9 +101,11 @@ jobs:
         env:
           TASK: ${{ inputs.task }}
         run: |
-          echo "Source SHA: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
-          echo "Task: $TASK" >> "$GITHUB_STEP_SUMMARY"
-          echo "GPU results: cuda-runpod-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_STEP_SUMMARY"
-          if [ "$TASK" = core ]; then
-            echo "Review cuda-tests.json, cuda-completion.json and cuda-checks.log; archive with the release." >> "$GITHUB_STEP_SUMMARY"
-          fi
+          {
+            echo "Source SHA: $GITHUB_SHA"
+            echo "Task: $TASK"
+            echo "GPU results: cuda-runpod-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+            if [ "$TASK" = core ]; then
+              echo "Review cuda-tests.json, cuda-completion.json and cuda-checks.log; archive with the release."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

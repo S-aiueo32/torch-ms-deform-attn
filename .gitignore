@@ -18,3 +18,4 @@ dist/
 !/docs/validation/README.md
 !/docs/validation/*/
 !/docs/validation/*/README.md
+!/docs/validation/kernel-hub-benchmarks/2026-09-26.md

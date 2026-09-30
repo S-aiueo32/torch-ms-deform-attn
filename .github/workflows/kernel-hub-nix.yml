@@ -5,6 +5,7 @@ on:
     paths:
       - kernel-hub/**
       - scripts/run_kernel_hub_nix.sh
+      - scripts/record_kernel_hub_distribution.py
       - .github/workflows/kernel-hub-nix.yml
 permissions:
   contents: read

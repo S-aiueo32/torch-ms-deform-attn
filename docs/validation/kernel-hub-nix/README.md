@@ -5,7 +5,57 @@ variant, using Kernel Builder 0.16.1 and the committed
 [`flake.lock`](../../../kernel-hub/flake.lock). It is separate from the
 [PyTorch 2.10 CMake/GPU validation](../kernel-hub/README.md).
 
-## Passing GPU validation of the distribution artifact
+## Current manifest-producing distribution and GPU validation
+
+[Nix run 36701171510](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/36701171510)
+built the distribution with the automated per-file evidence recorder and passed
+the builder's ABI and loading checks. The `nix-full` workflow now selects this
+artifact. Its generated `distribution-files.json` covers all eight archived
+files, preserving their exact tar member names. Local GPU preparation verified
+the archive checksum, every file hash, and the implementation/build source hashes
+against the validation checkout before extracting the candidate.
+
+- Build source (PR merge revision): `2ccbdc7f91d90b89c00c50c48e654207b1bc615a`.
+- Export revision: `ddd49a33750aad1c76945f0bd5b21ab3463b77dc`.
+- Archive SHA-256: `949937f14c14eb367ac1c3f9174af2bd447a1f0017a70a21d4883032bc06c4d4`.
+- Native module: `_deformable_detr_cuda_ddd49a3.abi3.so`.
+- Native module SHA-256: `8c599c89c700e920442c5cbe38cc55b62a806c584259848673ef1958cdb61fa2`.
+- Evidence and distribution: Actions artifact `kernel-hub-nix-36701171510`.
+
+[GPU run 40168791878](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/40168791878)
+passed **Phase 1 3/3 and all 20 RT-DETR cases** on L4 with PyTorch 2.11.0+cu126
+and CUDA 12.6. The validation source is
+`4e1e051d52f85c4de9864374406dda47355fcd51`. FP32, FP16, BF16, FP16 AMP and
+BF16 AMP each passed eager/compiled inference and training. Compiled AMP compares
+candidate and HF under the same compiler policy, as described in the historical
+record below.
+
+The GPU host loaded the unchanged archive identified above without recompiling
+the candidate. All eight loaded file hashes matched the recorded distribution.
+Pod deletion was verified, and `scripts/verify_kernel_hub.py` passed against the
+downloaded evidence. The run used the one-time approved $0.60/hour limit; the
+quoted L4 compute rate was $0.59/hour.
+
+The raw reports, source and binary manifests, replay artifacts, logs and cleanup
+record are retained in Actions artifact `cuda-runpod-40168791878-1`. Reproduce
+the evidence check after downloading it:
+
+```bash
+gh run download 40168791878 --repo S-aiueo32/torch-ms-deform-attn \
+  --name cuda-runpod-40168791878-1 --dir /tmp/msda-nix-gpu-40168791878
+cp /tmp/msda-nix-gpu-40168791878/runpod-state.json \
+  /tmp/msda-nix-gpu-40168791878/artifacts/
+python scripts/verify_kernel_hub.py \
+  --sha 4e1e051d52f85c4de9864374406dda47355fcd51 \
+  --evidence /tmp/msda-nix-gpu-40168791878/artifacts
+```
+
+The [current-source Nix CI build](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/40168557354)
+also passed. It is separate from the pinned archive used by the GPU run; this
+record does not claim byte-for-byte reproducibility between those builds.
+The results below apply to the earlier artifact and remain historical evidence.
+
+## Historical passing GPU validation of the distribution artifact
 
 [Run 35291667815](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35291667815)
 passed **Phase 1 3/3 and RT-DETR 20/20** on NVIDIA L4, PyTorch 2.11.0+cu126,

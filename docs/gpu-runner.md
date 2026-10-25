@@ -179,7 +179,7 @@ of distribution portability. Builder artifacts are not uploaded to HF.
 
 To validate the reviewed Nix distribution instead, select
 `--field kernel_hub_suite=nix-full`. This downloads the artifact from Nix build
-35280414318 and checks its archive/file hashes and exported source hashes
+36701171510 and checks its archive/file hashes and exported source hashes
 against the committed validation record before renting the GPU. It installs
 PyTorch 2.11.0 / torchvision 0.26.0 with CUDA 12.6 and runs the full Phase 1 and
 20-case RT-DETR matrix without recompiling the candidate.

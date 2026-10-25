@@ -71,7 +71,10 @@ The committed `kernel-hub/flake.lock` is required; dependencies are never
 silently updated by the build script.
 The `evidence/` directory contains the lock, upstream and export revisions,
 exported source archive, derivation, build log, store metadata, and the
-`distribution.tar.gz` artifact with a SHA-256 checksum. A successful build
+`distribution.tar.gz` artifact with a SHA-256 checksum and a
+`distribution-files.json` manifest of its individual file hashes for checked GPU
+preparation. The manifest is generated from the archived bytes and rejects
+unsafe paths, duplicate file paths, and non-regular files. A successful build
 writes `status.txt`; failed attempts still retain their available evidence.
 
 This step builds one distribution variant without a GPU. CUDA Phase 1 and

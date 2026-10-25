@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Run from the upstream checkout on an x86_64 Linux Nix host.
 # This is a distribution build; GPU numerical validation is a separate gate.
+root=$(pwd)
 output=${1:?Provide a new output directory}
 mkdir "$output"
 output=$(realpath "$output")
@@ -39,5 +40,8 @@ test -d "$output/distribution/$variant"
 find "$output/distribution" -name '*.so' -print -quit | grep -q .
 tar -C "$output/distribution" -czf "$output/evidence/distribution.tar.gz" .
 (cd "$output/evidence" && sha256sum distribution.tar.gz > distribution.sha256)
+python3 "$root/scripts/record_kernel_hub_distribution.py" \
+  "$output/evidence/distribution.tar.gz" "$output/evidence/distribution-files.json" \
+  --variant "$variant"
 nix path-info --json "$output/result" > "$output/evidence/store-path.json"
 printf 'passed\n' > "$output/evidence/status.txt"

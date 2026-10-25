@@ -83,7 +83,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download 35280414318 --name kernel-hub-nix-35280414318 --dir "$RUNNER_TEMP/nix-artifact"
+          gh run download 36701171510 --name kernel-hub-nix-36701171510 --dir "$RUNNER_TEMP/nix-artifact"
           python3 scripts/prepare_kernel_hub_nix.py \
             "$RUNNER_TEMP/nix-artifact" "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
       - name: Run CUDA task on Runpod

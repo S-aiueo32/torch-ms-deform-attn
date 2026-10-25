@@ -32,6 +32,10 @@ no network volumes, saved templates, or account-wide SSH keys. Runpod API
 credentials stay on the GitHub-hosted controller and are not sent to the GPU.
 The Pod's SSH host key is also generated for the run and pinned by the controller.
 
+The controller uses a patched certifi bundle for API TLS verification; see the
+[TLS tooling baseline](development.md#tls-tooling-baseline). Local examples below
+use uv to supply the same bundle without building the package.
+
 First dispatch `task=check`. This checks API access and the GPU price without
 creating or modifying a Pod. It does not prove that credit or quota is sufficient
 for a subsequent deployment.
@@ -83,7 +87,7 @@ Set `RUNPOD_API_KEY` in the local controller environment. It is never transferre
 to the GPU. Use a unique numeric run identifier and fresh, separate directories:
 
 ```bash
-python scripts/runpod_ci.py run \
+uv run --no-project --with certifi==2026.10.23 python scripts/runpod_ci.py run \
   --repository OWNER/REPO --repository-id NUMERIC_REPOSITORY_ID \
   --run-id UNIQUE_NUMERIC_ID --attempt 1 --source . \
   --state-dir /tmp/msda-state-UNIQUE_ID --output-dir /tmp/msda-results-UNIQUE_ID \
@@ -102,7 +106,7 @@ The local controller can reuse a Pod for up to nine pairs that share a CUDA
 toolkit. Select the container with `--torch-version`, then list the pairs:
 
 ```bash
-python scripts/runpod_ci.py run \
+uv run --no-project --with certifi==2026.10.23 python scripts/runpod_ci.py run \
   --repository OWNER/REPO --repository-id NUMERIC_REPOSITORY_ID \
   --run-id UNIQUE_NUMERIC_ID --attempt 1 --source . \
   --state-dir /tmp/msda-matrix-state --output-dir /tmp/msda-matrix-results \

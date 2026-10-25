@@ -31,6 +31,9 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: astral-sh/setup-uv@v10.3.2
+      with:
+        version: '0.13.5'
     - name: Check account access and GPU quote
       if: inputs.task == 'check'
       shell: bash
@@ -39,7 +42,7 @@ runs:
         GPU: ${{ inputs.gpu }}
         MAX_HOURLY_USD: ${{ inputs.max-hourly-usd }}
       run: |
-        python3 scripts/runpod_ci.py check \
+        uv run --no-project --with certifi==2026.10.23 python scripts/runpod_ci.py check \
           --gpu "$GPU" --max-hourly-usd "$MAX_HOURLY_USD"
     - name: Start GPU, run task, and delete Pod
       if: inputs.task != 'check'
@@ -64,7 +67,7 @@ runs:
         elif [ "$TASK" = benchmark ]; then
           benchmark=(--benchmark)
         fi
-        python3 scripts/runpod_ci.py run \
+        uv run --no-project --with certifi==2026.10.23 python scripts/runpod_ci.py run \
           --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
           --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
           --source "$GITHUB_WORKSPACE" --state-dir "$RUNNER_TEMP/runpod-state" \
@@ -80,7 +83,7 @@ runs:
       env:
         RUNPOD_API_KEY: ${{ inputs.api-key }}
       run: |
-        python3 scripts/runpod_ci.py cleanup \
+        uv run --no-project --with certifi==2026.10.23 python scripts/runpod_ci.py cleanup \
           --repository "$GITHUB_REPOSITORY" --repository-id "$GITHUB_REPOSITORY_ID" \
           --run-id "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT" \
           --state-dir "$RUNNER_TEMP/runpod-state"

@@ -2,8 +2,8 @@
 
 [Back to README](../README.md)
 
-Release `0.1.0` is available on
-[PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.0/).
+Release `0.1.1` is available on
+[PyPI](https://pypi.org/project/torch-ms-deform-attn/0.1.1/).
 It is distributed as a source archive (sdist), so installation compiles the
 extension against your environment's PyTorch, with CPU, CUDA, or Apple Silicon MPS support.
 
@@ -14,7 +14,7 @@ existing environment with your chosen PyTorch version.
 
 ## Prerequisites
 
-| Requirement | Published `0.1.0` | Current checkout |
+| Requirement | Published `0.1.1` | Current checkout |
 | --- | --- | --- |
 | Python | 3.10+ | 3.10+ |
 | PyTorch | >=2.4.0,<3 | >=2.4.0,<3 |
@@ -31,13 +31,13 @@ development lock uses PyTorch 2.5.1.
 
 ## Apple Silicon MPS
 
-MPS support is available from the published `0.1.0` and the current checkout.
+MPS support is available from the published `0.1.1` and the current checkout.
 Use Apple Silicon, macOS 13.3+, Python 3.10+, PyTorch >=2.4,<3, and Xcode Command
 Line Tools. Install the extension against your chosen PyTorch:
 
 ```bash
 python -m pip install 'torch>=2.4,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 python -c 'import torch; from torch_ms_deform_attn import _C; print(_C.with_mps, torch.backends.mps.is_available())'
 ```
 
@@ -63,7 +63,7 @@ satisfies `>=2.4,<3`.
 ```bash
 python -m pip install 'torch>=2.4,<3'
 python -m pip install 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 ```
 
 `--no-build-isolation` uses the installed PyTorch and build tools instead of
@@ -77,7 +77,7 @@ This uses the validated Python 3.11 / PyTorch 2.5.1 combination:
 ```bash
 python -m pip install 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cpu
 python -m pip install 'setuptools>=77' 'packaging>=24.2' wheel ninja
-FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 ```
 
 ### Linux CUDA example
@@ -87,7 +87,7 @@ For Python 3.11 with the CUDA 12.4 toolkit (`nvcc`) installed and a visible GPU:
 ```bash
 python -m pip install 'torch==2.5.1' --index-url https://download.pytorch.org/whl/cu124
 python -m pip install 'setuptools>=77' 'packaging>=24.2' wheel ninja
-FORCE_CUDA=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+FORCE_CUDA=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 ```
 
 The PyTorch wheel alone does not supply the CUDA compiler. `FORCE_CUDA=1` makes
@@ -134,9 +134,9 @@ and a visible GPU are available. Otherwise the extension builds for CPU.
 CUDA builds also support CPU. To select a backend explicitly:
 
 ```bash
-FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+FORCE_CPU=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 # Requires CUDA-enabled PyTorch and a matching CUDA toolkit:
-FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="8.0;8.6" python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="8.0;8.6" python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 ```
 
 For builds without a visible GPU, set `TORCH_CUDA_ARCH_LIST` to the compute
@@ -154,7 +154,7 @@ After installing your chosen PyTorch version, force a fresh source build:
 
 ```bash
 python -m pip install --no-build-isolation --no-deps --force-reinstall \
-  --no-cache-dir --no-binary=torch-ms-deform-attn torch-ms-deform-attn==0.1.0
+  --no-cache-dir --no-binary=torch-ms-deform-attn torch-ms-deform-attn==0.1.1
 ```
 
 Prefix this command with the desired build variables, such as `FORCE_CUDA=1`.
@@ -174,9 +174,9 @@ PyTorch builds with the native thread pool use that backend directly.
 
 ```bash
 # Require OpenMP; fail if unavailable:
-FORCE_OPENMP=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+FORCE_OPENMP=1 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 # Disable OpenMP (native stays native):
-FORCE_OPENMP=0 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+FORCE_OPENMP=0 python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 python -c 'from torch_ms_deform_attn import _C; print(_C.cpu_parallel_backend)'
 ```
 

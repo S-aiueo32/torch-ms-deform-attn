@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "torch-ms-deform-attn"
-version = "0.1.0"
+version = "0.1.1"
 description = "Standalone CPU/CUDA/MPS multi-scale deformable attention with PyTorch autograd"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -32,6 +32,8 @@ dev = [
     "packaging>=24.2",
     "wheel",
     "ninja",
+    "pip>=26.2.2",
+    "certifi>=2026.10.19",
 ]
 lint = ["ruff>=0.15,<0.16", "ty", "jaxtyping>=0.3,<0.4"]
 
@@ -55,6 +57,7 @@ minversion = "8.0"
 testpaths = ["tests"]
 
 [tool.uv]
+required-version = ">=0.13.5"
 # Install PyTorch and build tools before compiling the editable extension.
 no-build-isolation-package = ["torch-ms-deform-attn"]
 cache-keys = [

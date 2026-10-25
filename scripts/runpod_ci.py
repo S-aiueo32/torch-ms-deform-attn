@@ -6,6 +6,7 @@ repository and temporary SSH keys, never a GitHub or Runpod API credential.
 
 import argparse
 import base64
+import hashlib
 import ipaddress
 import json
 import os
@@ -14,6 +15,7 @@ import selectors
 import shlex
 import shutil
 import signal
+import ssl
 import subprocess
 import sys
 import tarfile
@@ -26,12 +28,20 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path, PurePosixPath
 
+import certifi
 from cuda_matrix import TORCH_CONFIGS
 
 REST_URL = "https://api.runpod.io/v2"
 GPU_IDS = {"A5000": "NVIDIA RTX A5000", "L4": "NVIDIA L4", "RTX4090": "NVIDIA GeForce RTX 4090"}
 ARTIFACT_SUFFIXES = {".whl", ".log", ".txt", ".json", ".xml"}
 MAX_ARTIFACT_BYTES = 128 * 1024 * 1024
+# Direct and cross-signing roots from the eMudhra incident's roots.json.
+BLOCKED_CA_SHA256 = {
+    "7dd78d5f4f13459a83dff9abbba62edbaf6f2d102bf257fd712f4d9f2746ed8d",
+    "f2edaaff3d9b701fb4d14c9f285f8c0bad90fc3bcc1fa07d47f4718edaba34a5",
+    "d7a7a0fb5d7e2731d771e9484ebcdef71d5f0c3e0a2948782bc83ee0ea699ef4",
+    "86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b",
+}
 
 
 class ControllerError(RuntimeError):
@@ -79,11 +89,22 @@ def money(value):
         raise ControllerError("Runpod did not provide a valid hourly price") from error
 
 
+def api_tls_context():
+    # Supplying cafile avoids importing an outdated system trust store or a
+    # caller's SSL_CERT_FILE. API credentials only travel over this context.
+    context = ssl.create_default_context(cafile=certifi.where())
+    roots = {hashlib.sha256(cert).hexdigest() for cert in context.get_ca_certs(binary_form=True)}
+    if roots & BLOCKED_CA_SHA256:
+        raise ControllerError("Unsafe CA bundle: upgrade certifi to >=2026.10.19")
+    return context
+
+
 class RunpodAPI:
     def __init__(self, key):
         if not key or any(character.isspace() for character in key):
             raise ControllerError("Set RUNPOD_API_KEY in the controller environment")
         self.key = key
+        self.tls_context = api_tls_context()
 
     def request(self, method, path, payload=None):
         url = REST_URL + path
@@ -101,7 +122,7 @@ class RunpodAPI:
         # In particular, POST /pods is sent exactly once. A lost response is
         # recovered by ownership metadata, not by repeating a rental request.
         try:
-            with urllib.request.urlopen(request, timeout=30) as response:
+            with urllib.request.urlopen(request, timeout=30, context=self.tls_context) as response:
                 raw = response.read(8 * 1024 * 1024 + 1)
             if len(raw) > 8 * 1024 * 1024:
                 raise APIError(f"{method} response exceeded the size limit")
@@ -678,9 +699,8 @@ def run(api, args):
         if matrix_cases:
             # uv provisions standard CPython versions without changing system Python.
             workload = (
-                "python3 -m venv /workspace/ci/uv && "
-                "/workspace/ci/uv/bin/pip install uv==0.12.5 && "
-                "PATH=/workspace/ci/uv/bin:$PATH python3 scripts/run_support_matrix.py "
+                "python3 scripts/bootstrap_uv.py /workspace/ci/uv && "
+                "PATH=/workspace/ci/uv:$PATH python3 scripts/run_support_matrix.py "
                 "--output /workspace/ci/results --cases "
                 + " ".join(shlex.quote(case) for case in matrix_cases)
             )

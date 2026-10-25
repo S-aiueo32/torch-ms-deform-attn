@@ -137,8 +137,8 @@ can test several pairs on one disposable host without GitHub Actions.
 Package workflows build an sdist, build a wheel from it, and test the installed
 wheel outside the checkout. `scripts/cuda_matrix.py` is the shared source for
 the CUDA build containers and the Runpod controller's PyTorch/toolkit mapping.
-The CUDA entry workflow delegates GPU jobs to `reusable-cuda-gpu.yml`; local
-composite actions own the Runpod lifecycle and containerized package build.
+The CUDA entry workflow runs the GPU job directly; local composite actions own
+the Runpod lifecycle and containerized package build.
 
 ### Actions usage
 

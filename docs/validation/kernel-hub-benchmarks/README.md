@@ -1,6 +1,18 @@
 # Phase 3 benchmark evidence
 
 Harness and methodology: [Kernel Hub benchmarks](../../../kernel-hub/benchmarks/README.md).
+
+## Current implementation, 2026-09-26
+
+[Two full L4 runs](2026-09-26.md) at `7361cfb` each passed all 54 common-policy
+correctness configurations and produced 486 timing rows. Both Pods were deleted.
+The first run flagged one adapter decoder BF16 training comparison; the repeat
+flagged none, so no HF latency regression crossed the investigation threshold
+in both processes. Encoder timings were within about 2% of HF. Short training
+measurements remain variable; the report retains both runs and their limitations.
+
+## Historical measurements before the implementation changes
+
 **The six-implementation L4 benchmark completed successfully** in
 [run 35206461746](https://github.com/S-aiueo32/torch-ms-deform-attn/actions/runs/35206461746),
 source `ba51116`, PyTorch 2.10.0+cu126, NVIDIA driver 580.159.04.

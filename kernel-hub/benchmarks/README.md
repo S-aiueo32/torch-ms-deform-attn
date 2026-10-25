@@ -1,8 +1,8 @@
 # Phase 3: MSDA comparison
 
-Status: [Six-implementation L4 results and repeat comparison](../../docs/validation/kernel-hub-benchmarks/README.md).
-All common-policy correctness checks passed. Small/decoder eager training
-slowdowns remain an investigation item before the HF proposal.
+Status: [Current and historical L4 results](../../docs/validation/kernel-hub-benchmarks/README.md).
+The validation records retain source revisions, repeat comparisons, performance
+investigation flags, and measurement limitations.
 
 This harness compares the installed canonical package, its Kernel Hub adapter,
 the pinned published HF artifact, MMCV's MSDA CUDA source, PyTorch `grid_sample`,
@@ -15,9 +15,9 @@ package's PyTorch fallback. Native BF16 is unsupported by that pinned frontend.
 Run through the existing ownership-aware Runpod controller:
 
 ```bash
-gh workflow run cuda.yml --ref perf/msda-dispatch-overhead \
-  -f workload=kernel-hub -f kernel_hub_suite=benchmark \
-  -f torch_version=2.8.0 -f gpu='NVIDIA L4' \
+gh workflow run cuda.yml --ref main \
+  -f task=kernel-hub -f kernel_hub_suite=benchmark \
+  -f torch_version=2.14.0 -f gpu='NVIDIA L4' \
   -f max_hourly_usd=0.50 -f capacity_wait_minutes=15 -f timeout_minutes=45
 ```
 
@@ -60,10 +60,12 @@ Pod environment or SSH credentials if a created host fails to become ready.
   Allocator baselines include the inputs and oracle tensors; backward-only
   also includes its retained graph. Reservations and driver memory are excluded.
 
-The diagnostic workflow runs adapter eager/compile correctness, canonical
-CUDA regressions and opcheck before timing. It currently selects canonical,
-adapter, HF and `upstream-before-perf` via `--backends`, with decoder/encoder,
-FP32/FP16 and forward/forward+backward. The previous upstream is pinned to
+The benchmark workflow runs adapter eager/compile correctness and canonical
+CUDA regressions before timing the full six-implementation, three-shape,
+three-dtype, three-mode comparison. For a focused old/new diagnostic, invoke
+the harness with `--backends torch-ms-deform-attn kernel-hub-adapter hf-native
+upstream-before-perf --cases decoder encoder --dtypes float32 float16
+--modes forward forward_backward`. The previous upstream is pinned to
 `e07889a886a9e3052ffc10d019ac5d88ba3f40f6`; its CUDA source is compiled unchanged
 and its Python API is loaded under an isolated operator namespace. This gives
 an old/new comparison in the same process on the same GPU. The summary JSON

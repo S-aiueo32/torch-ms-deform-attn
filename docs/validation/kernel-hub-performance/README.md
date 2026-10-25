@@ -2,7 +2,10 @@
 
 PR #16 reduces CUDA indexing and eager autograd overhead, and makes CUDA
 metadata-content validation optional. This page summarizes the implemented
-changes, their measured effects, and the remaining HF performance gap.
+changes, their measured effects, and the HF performance gaps observed during
+that investigation. The subsequent [full-matrix remeasurement](../kernel-hub-benchmarks/2026-09-26.md)
+passed twice with no HF latency comparison exceeding the investigation threshold
+in both processes; short training measurements remain variable.
 
 ## Implemented behavior
 

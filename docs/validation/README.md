@@ -13,7 +13,7 @@ capture the reviewed conclusions and reproduction context.
 | Execution and measurement | [Execution, builds and benchmarks](execution-and-benchmarks/README.md) | Two-GPU behavior, dynamic compile, near-knot precision, CPU backends and benchmark grids |
 | Kernel Hub / Transformers | [RT-DETR CPU and L4 validation](kernel-hub/README.md) | Full L4 run at `2ae90ab`: Phase 1 3/3, RT-DETR 20/20; CPU fixture 20/20; earlier BF16 AMP discrepancy archived and not reproduced |
 | Kernel Hub Nix distribution | [Locked Nix build and L4 validation](kernel-hub-nix/README.md) | PyTorch 2.11 / CUDA 12.6 / x86_64: build, ABI/loading, Phase 1 3/3 and RT-DETR 20/20 passed on the same distribution binary |
-| Kernel Hub benchmarks | [Phase 3 L4 measurements](kernel-hub-benchmarks/README.md) | Six implementations measured on L4; all common-policy correctness checks passed; fresh-process comparison identifies eager training slowdowns to investigate |
+| Kernel Hub benchmarks | [Phase 3 L4 measurements](kernel-hub-benchmarks/README.md) | Two full runs at `7361cfb`: each passed 54 common-policy configurations and produced 486 timing rows; no repeatable HF latency flag; short training measurements remain variable |
 | MSDA dispatch overhead | [L4 performance investigation](kernel-hub-performance/README.md) | Direct C++ registration, native control and pinned previous-source comparison; precision policy unchanged |
 
 ## Artifact storage

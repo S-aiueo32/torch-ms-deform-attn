@@ -178,9 +178,13 @@ real native adapter build and loader run, but not a Nix release build or proof
 of distribution portability. Builder artifacts are not uploaded to HF.
 
 To validate the reviewed Nix distribution instead, select
-`--field kernel_hub_suite=nix-full`. This downloads the artifact from Nix build
-36701171510 and checks its archive/file hashes and exported source hashes
-against the committed validation record before renting the GPU. It installs
+`--field kernel_hub_suite=nix-full --field nix_build_run=BUILD_RUN_ID`.
+The run ID is required for this suite; there is no implicit latest build.
+For example, `36701171510` is the build in the
+[passing validation record](validation/kernel-hub-nix/README.md).
+The workflow downloads `kernel-hub-nix-BUILD_RUN_ID` from that Actions run and
+checks its archive/file hashes and exported source hashes against the validation
+checkout before renting the GPU. It installs
 PyTorch 2.11.0 / torchvision 0.26.0 with CUDA 12.6 and runs the full Phase 1 and
 20-case RT-DETR matrix without recompiling the candidate.
 
@@ -191,9 +195,16 @@ checkout. The original artifact's implementation/build inputs and Phase 1 tests
 must match that checkout; E2E harness changes are independently hashed so
 compiler-version adaptations do not require recompiling the distribution.
 The suite checks the actually loaded candidate files against the Nix record,
-and the evidence verifier checks that identity across all 20 cases. Replacing
-the pinned artifact requires an explicit update to the reviewed build record
-and preparation script.
+and the evidence verifier checks that identity across all 20 cases. The selected
+run ID is recorded in `NIX_BUILD.json`. Select a new build explicitly and record
+its validation results when changing the distribution.
+
+When the Actions artifact has expired, add
+`--field nix_archive_release=RELEASE_TAG` to download the saved
+`kernel-hub-nix-BUILD_RUN_ID.zip` release asset instead. Both download paths run
+the same source and binary checks. See
+[long-term Nix evidence storage](../kernel-hub/README.md#long-term-evidence-storage)
+for archiving the distribution and its GPU evidence before expiration.
 
 The existing HF kernel revision is pinned in that script. Collected artifacts
 include source and binary hashes, builder metadata, individual test logs/E2E

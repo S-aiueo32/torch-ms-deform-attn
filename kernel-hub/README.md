@@ -81,6 +81,62 @@ This step builds one distribution variant without a GPU. CUDA Phase 1 and
 RT-DETR validation must subsequently load this exact artifact. It does not
 publish to the Hub or validate all supported build variants.
 
+The Nix PR workflow also runs for changes under `csrc/` and `src/`, and for
+LICENSE/NOTICE changes, because the export consumes those upstream files.
+To validate a particular build, pass `nix_build_run=BUILD_RUN_ID` with the CUDA
+workflow's `kernel_hub_suite=nix-full`; see the [GPU runner](../docs/gpu-runner.md).
+
+## Long-term evidence storage
+
+Actions artifacts expire. Before expiration, save the original Nix artifact ZIP
+and the complete passing GPU artifact ZIP as assets on a dedicated **draft**
+GitHub release. Draft assets remain available to authorized maintainers and
+repository workflows; they are not public downloads. Keep this archive release
+unpublished: publishing a release invokes the PyPI workflow. Use a tag such as
+`validation/kernel-hub-nix-BUILD_RUN_ID` and attach:
+
+- `kernel-hub-nix-BUILD_RUN_ID.zip`: the complete original Actions artifact,
+  including `distribution.tar.gz`, its checksums, source manifest and build logs.
+- `cuda-runpod-GPU_RUN_ID-ATTEMPT.zip`: the complete GPU artifact, including the
+  20-case reports, loaded-file hashes and Pod deletion record.
+- `SHA256SUMS`: checksums of both ZIP files.
+
+Download the original ZIPs with `gh api
+repos/OWNER/REPO/actions/artifacts/ARTIFACT_ID/zip > ASSET_NAME.zip`; the artifact
+IDs are listed by `gh api repos/OWNER/REPO/actions/runs/RUN_ID/artifacts`.
+Extract a separate copy of each ZIP with `python -m zipfile -e` for verification.
+Put the GPU artifact's `runpod-state.json` alongside its `artifacts/` contents,
+then run `scripts/verify_kernel_hub.py --sha VALIDATION_SHA --evidence GPU/artifacts`.
+Also prepare the Nix artifact against a checkout with matching implementation
+sources:
+
+```bash
+python scripts/prepare_kernel_hub_nix.py NIX_EVIDENCE NEW_PREPARED_DIRECTORY \
+  --revision VALIDATION_SHA --build-run BUILD_RUN_ID
+```
+
+Before uploading, compare the prepared `NIX_BUILD.json` with the GPU report's
+`NIX_BUILD.json`: the build run, archive hash, original source/export revisions,
+variant and every file hash must agree. Record both Actions links and source
+SHAs in the release notes. Create the archive using `gh release create` with
+`--draft --target VALIDATION_SHA --notes-file NOTES_FILE` and the three assets;
+do not publish it or replace assets from an earlier validation.
+
+To reuse the archive, supply both `nix_build_run=BUILD_RUN_ID` and
+`nix_archive_release=RELEASE_TAG` to the CUDA workflow. It loads the ZIP's original
+distribution through the same source/hash checks as the Actions download.
+An archive tag is an explicit selection, not an automatic fallback to a different
+build. Reading drafts requires push access. The workflow grants `contents: write`
+only to an archive-download job that runs no repository code, then passes the ZIP
+to the controller job with its existing read-only permissions. The CLI equivalent
+requires a maintainer login:
+
+```bash
+python scripts/prepare_kernel_hub_nix.py NEW_DOWNLOAD_DIRECTORY NEW_PREPARED_DIRECTORY \
+  --revision VALIDATION_SHA --build-run BUILD_RUN_ID \
+  --download --release RELEASE_TAG
+```
+
 ## Validation
 
 Local Python-glue checks (requires an installed upstream CPU extension):

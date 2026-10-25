@@ -3,6 +3,10 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - csrc/**
+      - src/**
+      - LICENSE
+      - NOTICE
       - kernel-hub/**
       - scripts/run_kernel_hub_nix.sh
       - scripts/record_kernel_hub_distribution.py

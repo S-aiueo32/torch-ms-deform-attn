@@ -37,7 +37,15 @@ downloaded evidence. The run used the one-time approved $0.60/hour limit; the
 quoted L4 compute rate was $0.59/hour.
 
 The raw reports, source and binary manifests, replay artifacts, logs and cleanup
-record are retained in Actions artifact `cuda-runpod-40168791878-1`. Reproduce
+record are retained in Actions artifact `cuda-runpod-40168791878-1`.
+The original Nix and GPU artifact ZIPs are also saved with `SHA256SUMS` in the
+[maintainer archive draft](https://github.com/S-aiueo32/torch-ms-deform-attn/releases/tag/untagged-76ede841ea4916709536),
+selected by tag `validation/kernel-hub-nix-36701171510`. This archive survives
+Actions artifact expiration and requires repository authorization. Before
+archiving, the full evidence verifier passed and the prepared Nix provenance
+matched the GPU record, including all eight file hashes. No new GPU run was
+performed for archival. See the [storage and reuse procedure](../../../kernel-hub/README.md#long-term-evidence-storage).
+Reproduce
 the evidence check after downloading it:
 
 ```bash

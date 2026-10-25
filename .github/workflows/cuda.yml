@@ -12,6 +12,12 @@ on:
         type: choice
         default: full
         options: [full, nix-full, compile-amp, phase1, benchmark]
+      nix_build_run:
+        description: Nix build run ID (required for nix-full)
+        type: string
+      nix_archive_release:
+        description: Optional release tag containing kernel-hub-nix-RUN_ID.zip
+        type: string
       torch_version:
         description: PyTorch version (2.4/2.5 use CUDA 12.4; newer versions use CUDA 12.6)
         type: choice
@@ -46,7 +52,34 @@ concurrency:
   group: runpod-cuda
   cancel-in-progress: false
 jobs:
+  nix-archive:
+    if: inputs.task == 'kernel-hub' && inputs.kernel_hub_suite == 'nix-full' && inputs.nix_archive_release != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # GitHub requires push access to read draft releases. This job never checks
+    # out or runs repository code; the GPU/controller job keeps read access.
+    permissions:
+      contents: write
+    steps:
+      - name: Download archived Nix artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NIX_BUILD_RUN: ${{ inputs.nix_build_run }}
+          NIX_ARCHIVE_RELEASE: ${{ inputs.nix_archive_release }}
+        run: |
+          [[ "$NIX_BUILD_RUN" =~ ^[1-9][0-9]*$ ]] || { echo 'A numeric nix_build_run is required'; exit 1; }
+          gh release download "$NIX_ARCHIVE_RELEASE" \
+            --pattern "kernel-hub-nix-$NIX_BUILD_RUN.zip" --dir "$RUNNER_TEMP/nix-archive"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: selected-nix-archive
+          path: ${{ runner.temp }}/nix-archive/*.zip
+          if-no-files-found: error
+          retention-days: 1
   runpod:
+    needs: nix-archive
+    if: always() && !cancelled() && (needs.nix-archive.result == 'success' || needs.nix-archive.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -78,14 +111,28 @@ jobs:
         with:
           path: ~/.cargo/bin/kernel-builder
           key: kernel-builder-0.16.1-ubuntu-x86_64
+      - uses: actions/download-artifact@v4
+        if: inputs.task == 'kernel-hub' && inputs.kernel_hub_suite == 'nix-full' && inputs.nix_archive_release != ''
+        with:
+          name: selected-nix-archive
+          path: ${{ runner.temp }}/nix-archive
       - name: Prepare reviewed Nix distribution
         if: inputs.task == 'kernel-hub' && inputs.kernel_hub_suite == 'nix-full'
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NIX_BUILD_RUN: ${{ inputs.nix_build_run }}
+          NIX_ARCHIVE_RELEASE: ${{ inputs.nix_archive_release }}
         run: |
-          gh run download 36701171510 --name kernel-hub-nix-36701171510 --dir "$RUNNER_TEMP/nix-artifact"
+          download_args=(--download)
+          if [ -n "$NIX_ARCHIVE_RELEASE" ]; then
+            python3 -m zipfile -e "$RUNNER_TEMP/nix-archive/kernel-hub-nix-$NIX_BUILD_RUN.zip" "$RUNNER_TEMP/nix-artifact"
+            download_args=()
+          fi
           python3 scripts/prepare_kernel_hub_nix.py \
-            "$RUNNER_TEMP/nix-artifact" "$RUNNER_TEMP/kernel-hub-preflight" --revision "$GITHUB_SHA"
+            "$RUNNER_TEMP/nix-artifact" "$RUNNER_TEMP/kernel-hub-preflight" \
+            --revision "$GITHUB_SHA" --build-run "$NIX_BUILD_RUN" \
+            "${download_args[@]}"
       - name: Run CUDA task on Runpod
         uses: ./.github/actions/runpod-cuda
         with:

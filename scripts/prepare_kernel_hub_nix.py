@@ -3,17 +3,44 @@
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import tarfile
+import tempfile
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD_RUN = "36701171510"
 VARIANT = "torch211-cxx11-cu126-x86_64-linux"
 
 
-def prepare(artifact, destination, revision):
+def validate_build_run(build_run):
+    if not re.fullmatch(r"[1-9][0-9]*", build_run):
+        raise ValueError("Nix build run must be a positive numeric Actions run ID")
+
+
+def download(artifact, build_run, release=""):
+    validate_build_run(build_run)
+    artifact.mkdir(parents=True, exist_ok=False)
+    name = f"kernel-hub-nix-{build_run}"
+    if release:
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(
+                ["gh", "release", "download", release, "--pattern", f"{name}.zip", "--dir", tmp],
+                check=True,
+            )
+            with zipfile.ZipFile(Path(tmp) / f"{name}.zip") as bundle:
+                bundle.extractall(artifact)
+    else:
+        subprocess.run(
+            ["gh", "run", "download", build_run, "--name", name, "--dir", str(artifact)],
+            check=True,
+        )
+
+
+def prepare(artifact, destination, revision, build_run):
+    validate_build_run(build_run)
     archive = artifact / "distribution.tar.gz"
     digest = hashlib.sha256(archive.read_bytes()).hexdigest()
     if digest != (artifact / "distribution.sha256").read_text().split()[0]:
@@ -57,7 +84,7 @@ def prepare(artifact, destination, revision):
     if len(files) != len(expected):
         raise ValueError("Incomplete distribution archive")
     provenance = {
-        "build_run": BUILD_RUN,
+        "build_run": build_run,
         "archive_sha256": digest,
         "artifact_source_sha": upstream["revision"],
         "export_revision": (artifact / "export-revision.txt").read_text().strip(),
@@ -73,5 +100,14 @@ if __name__ == "__main__":
     parser.add_argument("artifact", type=Path)
     parser.add_argument("destination", type=Path)
     parser.add_argument("--revision", required=True)
+    parser.add_argument("--build-run", required=True)
+    parser.add_argument(
+        "--download", action="store_true", help="Download into a new artifact directory"
+    )
+    parser.add_argument("--release", default="", help="Download a saved ZIP from this release tag")
     args = parser.parse_args()
-    prepare(args.artifact, args.destination, args.revision)
+    if args.release and not args.download:
+        parser.error("--release requires --download")
+    if args.download:
+        download(args.artifact, args.build_run, args.release)
+    prepare(args.artifact, args.destination, args.revision, args.build_run)

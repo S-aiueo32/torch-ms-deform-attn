@@ -116,7 +116,7 @@ class DistributionManifestTest(unittest.TestCase):
             {f"./{nix.VARIANT}/fixture.so": hashlib.sha256(binary).hexdigest()},
         )
         prepared = self.root / "prepared"
-        nix.prepare(evidence, prepared, "c" * 40)
+        nix.prepare(evidence, prepared, "c" * 40, "123456")
         self.assertEqual((prepared / "build" / nix.VARIANT / "fixture.so").read_bytes(), binary)
         self.assertEqual(
             json.loads((prepared / "NIX_BUILD.json").read_text())["files"],

@@ -8,13 +8,13 @@ outside the package's scope.
 
 ## Install
 
-Install `0.1.0` from PyPI. It requires Python 3.10+,
+Install `0.1.1` from PyPI. It requires Python 3.10+,
 PyTorch >=2.4,<3, and a compatible C++ compiler. Installation builds the extension
 from source against your installed PyTorch:
 
 ```bash
 python -m pip install 'torch>=2.4,<3' 'setuptools>=77' 'packaging>=24.2' wheel ninja
-python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.0
+python -m pip install --no-build-isolation torch-ms-deform-attn==0.1.1
 ```
 
 CPU builds need neither the CUDA toolkit nor torchvision. CUDA is built
@@ -45,6 +45,11 @@ All inputs must be on the same device, including `shapes` and
 `starts`. Outside autocast, floating inputs must share float16, bfloat16,
 float32, or float64 dtype.
 Weights are used directly, without softmax.
+
+CUDA trusts the contents of `shapes` and `starts` by default. Pass
+`check_cuda_metadata=True` to retain the metadata-content checks from `0.1.0`;
+invalid unchecked metadata can cause incorrect results or illegal memory accesses.
+See the [0.1.1 release notes](docs/releases/0.1.1.md) for migration details.
 
 Explicit `.half()` / `.bfloat16()` inputs compute in float32 and return the input
 dtype. AMP computes low-precision inputs in float32 and returns float32.

@@ -4,8 +4,8 @@ This is an experimental adapter, not an adopted or published Hugging Face kernel
 `torch-ms-deform-attn` remains the implementation source. No runtime import of,
 or dependency on, its PyPI package is added to the exported kernel.
 
-The repository is already at 0.1.0 with MPS support. This integration is a
-subsequent milestone; the initial HF build targets CUDA only.
+The PyPI package includes MPS support. Kernel Hub integration is a separate
+milestone; the initial HF build targets CUDA only.
 
 ## Export
 

@@ -20,10 +20,9 @@ export MSDA_HF_BASELINE_REVISION=abfd4042216fa4f84c9c5c4e3e844a3143c70ad5
 
 nvidia-smi > "$msda_output/nvidia-smi.txt"
 nvcc --version
-python3 -m venv "$msda_work/tools"
-"$msda_work/tools/bin/pip" install uv==0.12.5
-"$msda_work/tools/bin/uv" venv --python 3.11 --seed "$msda_work/venv"
-export PATH="$msda_work/venv/bin:$PATH"
+python3 scripts/bootstrap_uv.py "$msda_work/tools"
+"$msda_work/tools/uv" venv --managed-python --python 3.11 --seed "$msda_work/venv"
+export PATH="$msda_work/tools:$msda_work/venv/bin:$PATH" PIP_NO_INDEX=1
 msda_torch=2.10.0
 msda_vision=0.25.0
 if [[ "${2:-full}" == nix-full ]]; then
@@ -31,10 +30,10 @@ if [[ "${2:-full}" == nix-full ]]; then
     msda_vision=0.26.0
     test -f "$msda_source/kernel-hub-prepared/NIX_BUILD.json"
 fi
-python -m pip install --no-cache-dir "torch==$msda_torch" "torchvision==$msda_vision" \
+uv pip install --python python "torch==$msda_torch" "torchvision==$msda_vision" \
     --index-url https://download.pytorch.org/whl/cu126
-python -m pip install --no-cache-dir -r kernel-hub/e2e/requirements.txt \
-    'setuptools>=77' wheel ninja 'cmake>=3.26' numpy packaging 'pytest>=8,<10'
+uv pip install --python python -r kernel-hub/e2e/requirements.txt \
+    'pip>=26.2.2' 'certifi>=2026.10.19' 'setuptools>=77' wheel ninja 'cmake>=3.26' numpy packaging 'pytest>=8,<10'
 python -c 'import torch; assert torch.cuda.is_available(); assert torch.version.cuda == "12.6"; print(torch.__version__, torch.cuda.get_device_name())'
 
 # Configuration generation runs on the CPU controller before GPU rental.

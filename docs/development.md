@@ -8,7 +8,7 @@ For the pull-request checklist, start with [Contributing](../CONTRIBUTING.md).
 
 ## Set up with uv
 
-Install [uv](https://docs.astral.sh/uv/) and a C++17 compiler, then run from the
+Install [uv](https://docs.astral.sh/uv/) >=0.13.5 and a C++17 compiler, then run from the
 repository root:
 
 ```bash
@@ -37,6 +37,36 @@ uv sync --locked --reinstall-package torch-ms-deform-attn
 To update dependencies, run `uv lock --upgrade`, then `uv sync --locked` and the
 tests below. Commit `uv.lock` with dependency changes. Change the development
 group's PyTorch pin explicitly when validating a newer version.
+
+### TLS tooling baseline
+
+The October 2026 [eMudhra incident](https://emudhra.we-have-a-problem.com/)
+also affects clients with their own certificate stores. This repository requires
+[uv 0.13.5](https://github.com/astral-sh/uv/releases/tag/0.13.5) or newer.
+CI uses that version, pip >=26.2.2 for local wheel operations, and the corrected
+[PyPI publishing action v1.14.3](https://github.com/pypa/gh-action-pypi-publish/releases/tag/v1.14.3).
+Update existing development environments with:
+
+```bash
+uv self update
+uv python upgrade 3.11
+uv sync --locked
+```
+
+For a package-manager installation of uv, update it through that package manager.
+Networked Python dependency installation in CI uses uv. Remaining pip wheel and
+install commands run with `PIP_NO_INDEX=1`. Linux CUDA containers bootstrap uv
+through `scripts/bootstrap_uv.py`, which checks the committed release SHA-256
+before extracting or executing the binary. Keep its version and checksum together
+when updating uv.
+
+The Runpod controller uses a dedicated certifi bundle (>=2026.10.19; CI pins
+2026.10.23) and rejects the incident's affected trust anchors before sending an
+API request. Run it through `uv run --locked python scripts/runpod_ci.py ...`,
+or use `uv run --no-project --with certifi==2026.10.23 python ...` without
+installing the native extension. Browser updates alone do not update Python
+bundles. Do not work around certificate failures by disabling TLS verification
+or trusting an insecure host.
 
 ## Lint, format, and type checks
 
@@ -96,7 +126,7 @@ available. A CPU-only test run does not validate CUDA execution.
 
 `scripts/run_cpu_checks.sh OUTPUT_DIR` builds an sdist and CPU-only OpenMP wheel,
 runs the build-policy tests, and tests the installed wheel outside the checkout.
-It requires Python, CPU PyTorch and a C++ compiler. For example:
+It requires uv >=0.13.5, Python, CPU PyTorch and a C++ compiler. For example:
 
 ```bash
 mkdir -p build/cpu-validation
@@ -105,7 +135,9 @@ git archive HEAD | docker run --rm -i --platform linux/amd64 \
   -e CUDA_CHECKS_SOURCE_SHA="$(git rev-parse HEAD)" \
   python:3.12-bookworm bash -c '
     mkdir /tmp/source && tar -xf - -C /tmp/source && cd /tmp/source &&
-    python -m pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cpu &&
+    python scripts/bootstrap_uv.py /tmp/msda-uv &&
+    export PATH=/tmp/msda-uv:$PATH &&
+    uv pip install --system torch==2.4.0 --index-url https://download.pytorch.org/whl/cpu &&
     bash scripts/run_cpu_checks.sh /results
   '
 ```
@@ -272,7 +304,7 @@ version before uploading another candidate to the same index.
 
 Before publishing, complete the [required GPU release validation](gpu-runner.md#required-release-validation) for the exact source SHA and archive the evidence with the GitHub release. A CPU or CUDA build-only CI success is insufficient.
 
-The current release version is `0.1.0` in `pyproject.toml`. For later releases,
+The current release version is `0.1.1` in `pyproject.toml`. For later releases,
 update that version before building and use the matching filename below.
 
 For a manual upload, build from a clean release checkout and pin the packaged
@@ -288,13 +320,13 @@ git restore README.md
 Validate the archive without uploading it:
 
 ```bash
-uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.0.tar.gz
+uv publish --dry-run dist/pypi/torch_ms_deform_attn-0.1.1.tar.gz
 ```
 
 Set your PyPI API token in the `UV_PUBLISH_TOKEN` environment variable, then run:
 
 ```bash
-uv publish dist/pypi/torch_ms_deform_attn-0.1.0.tar.gz
+uv publish dist/pypi/torch_ms_deform_attn-0.1.1.tar.gz
 ```
 
 uv publishes to PyPI by default; no Twine or extra index configuration is needed.

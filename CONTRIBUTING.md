@@ -1,7 +1,7 @@
 # Contributing
 
 Use this checklist to prepare changes to Python or C++/CUDA code for review.
-Run commands from the repository root. You need uv, Python 3.10–3.12, and a C++17
+Run commands from the repository root. You need uv >=0.13.5, Python 3.10–3.12, and a C++17
 compiler for the locked PyTorch 2.5.1 environment. CUDA checks also need a matching
 toolkit and an NVIDIA GPU.
 
